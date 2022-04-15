@@ -150,7 +150,7 @@ export const PastedItemContextMenu: React.FC<
   return (
     <UI.Stack direction="row-reverse" spacing={1} {...stackProps}>
       <UI.Button
-        size="xs"
+        size="sm"
         onClick={toggle}
         opacity={0.35}
         _hover={{ opacity: 1 }}
@@ -160,11 +160,18 @@ export const PastedItemContextMenu: React.FC<
       {active ? (
         <React.Fragment>
           {buttons.map((button) => (
-            <UI.Button key={button.label} size="xs" onClick={button.onClick}>
+            <UI.Button
+              key={button.label}
+              size="sm"
+              onClick={() => {
+                button.onClick();
+                toggle();
+              }}
+            >
               {button.label}
             </UI.Button>
           ))}
-          <UI.Button size="xs" colorScheme="red" onClick={handleDeleteClick}>
+          <UI.Button size="sm" colorScheme="red" onClick={handleDeleteClick}>
             <FontAwesomeIcon icon={faTrash} />
           </UI.Button>
         </React.Fragment>
@@ -184,8 +191,8 @@ export const PastedItemView: React.FC<PastedItemProps> = ({
       <PastedItemContextMenu
         itemDoc={itemDoc}
         position="absolute"
-        top={2}
-        right={2}
+        top={3}
+        right={3}
         opacity={0}
       />
 
