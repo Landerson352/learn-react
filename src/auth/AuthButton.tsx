@@ -4,11 +4,7 @@ import * as UI from '@chakra-ui/react';
 import { signOut, useAuthState, useSignIn } from '.';
 
 export const SignOutButton: React.FC<UI.ButtonProps> = (props) => {
-  return (
-    <UI.Button onClick={() => signOut()} {...props}>
-      Sign Out
-    </UI.Button>
-  );
+  return <UI.Button onClick={() => signOut()} children="Sign Out" {...props} />;
 };
 
 export const SignInButton: React.FC<UI.ButtonProps> = (props) => {
@@ -21,10 +17,9 @@ export const SignInButton: React.FC<UI.ButtonProps> = (props) => {
       }}
       disabled={loading}
       loading={loading}
+      children="Sign In with Google"
       {...props}
-    >
-      Sign In with Google
-    </UI.Button>
+    />
   );
 };
 

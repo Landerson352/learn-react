@@ -4,9 +4,10 @@ import * as UI from '@chakra-ui/react';
 const PrivacyWarning: React.FC = () => {
   return (
     <UI.Alert
-      colorScheme="orange"
+      bg="orange.200"
+      color="orange.800"
       justifyContent="center"
-      fontWeight="bold"
+      fontWeight="medium"
       fontSize="sm"
     >
       <UI.Text textAlign="center">

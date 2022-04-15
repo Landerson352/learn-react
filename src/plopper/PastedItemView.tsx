@@ -5,6 +5,12 @@ import sanitizeHTML from 'sanitize-html';
 import ReactPlayer from 'react-player';
 
 import { PastedItem } from './pastedItem';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+  faArrowUpRightFromSquare,
+  faEllipsisVertical,
+  faTrash,
+} from '@fortawesome/free-solid-svg-icons';
 import useInnerElementBackgroundColor from '../helpers/useInnerElementBackgroundColor';
 
 interface PastedItemProps {
@@ -17,9 +23,11 @@ export const PastedItemWrapper = React.forwardRef<HTMLDivElement, UI.BoxProps>(
     return (
       <UI.Box
         ref={ref}
-        bg="white"
+        bg="gray.600"
+        color="white"
         borderRadius="lg"
         overflow="hidden"
+        shadow="lg"
         p={4}
         {...props}
       />
@@ -87,14 +95,22 @@ export const URLItem: React.FC<PastedItemProps> = ({
 
   return (
     <PastedItemWrapper p={0} {...wrapperProps}>
-      <UI.Box as="a" href={url.toString()} target="_blank">
-        <UI.Image src={meta.image} alt={meta.description} />
+      <UI.Box
+        as="a"
+        d="block"
+        href={url.toString()}
+        target="_blank"
+        _hover={{ bg: 'purple.500', '*': { color: 'white' } }}
+      >
+        {meta.image ? (
+          <UI.Image src={meta.image} alt={meta.description} />
+        ) : null}
         <UI.Box p={4}>
           <UI.Text fontWeight="bold" mb={2}>
             {meta.title}
           </UI.Text>
-          <UI.Text color="gray.500" fontSize="sm">
-            {url.hostname}
+          <UI.Text color="gray.400" fontSize="sm">
+            {url.hostname} <FontAwesomeIcon icon={faArrowUpRightFromSquare} />
           </UI.Text>
         </UI.Box>
       </UI.Box>
