@@ -2,6 +2,7 @@ import React from 'react';
 import isURL from 'is-url';
 import ReactPlayer from 'react-player';
 import axios from 'axios';
+import * as UI from '@chakra-ui/react';
 
 import { uploadImageBlob } from '../storage';
 
@@ -107,4 +108,86 @@ export const usePastedDataCallback = (onPaste: (data: PastedData) => any) => {
       window.document.body.removeEventListener('paste', handlePaste);
     };
   }, [onPaste]);
+};
+
+interface CopyButtonProps {
+  label: string;
+  onClick: () => void;
+}
+
+export const useCopyPastedDataButtons = (
+  itemData: PastedData
+): CopyButtonProps[] => {
+  const toast = UI.useToast();
+
+  const copy = async (textType: 'plain' | 'html' = 'plain') => {
+    let text = '';
+    let type = '';
+
+    if (itemData.type === 'image') {
+      text = itemData.src;
+    } else if (itemData.type === 'url') {
+      text = itemData.url;
+    } else if (itemData.type === 'text') {
+      text = itemData.text[textType];
+      type = `text/${textType}`;
+    } else if (itemData.type === 'player') {
+      text = itemData.url;
+    }
+
+    try {
+      await navigator.clipboard.write([
+        /* @ts-ignore */
+        new ClipboardItem({
+          /* @ts-ignore */
+          [type]: new Blob([text], {
+            type,
+          }),
+        }),
+      ]);
+      toast({
+        title: 'Copied to clipboard',
+        status: 'success',
+        position: 'top-right',
+        duration: 2000,
+      });
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  let buttons: CopyButtonProps[] = [];
+
+  if (
+    itemData.type === 'image' ||
+    itemData.type === 'url' ||
+    itemData.type === 'player'
+  ) {
+    buttons.push({
+      label: 'Copy URL',
+      onClick: () => {
+        copy();
+      },
+    });
+  }
+  if (itemData.type === 'text') {
+    if (itemData.text.html) {
+      buttons.push({
+        label: 'Copy formatted',
+        onClick: () => {
+          copy('html');
+        },
+      });
+    }
+    if (itemData.text.plain) {
+      buttons.push({
+        label: itemData.text.html ? 'Copy plain' : 'Copy',
+        onClick: () => {
+          copy();
+        },
+      });
+    }
+  }
+
+  return buttons;
 };
