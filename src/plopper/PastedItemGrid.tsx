@@ -29,8 +29,7 @@ const PastedItemGrid: React.FC<{ columnWidth?: number }> = ({
             .map((itemDoc) => (
               <PastedItemView
                 key={itemDoc.id}
-                item={itemDoc}
-                onRemoveClick={() => pastingContext.remove(itemDoc.id)}
+                itemDoc={itemDoc}
                 width={columnWidth}
               />
             ))}

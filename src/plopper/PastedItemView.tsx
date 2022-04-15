@@ -3,18 +3,21 @@ import * as UI from '@chakra-ui/react';
 import SanitizedHTML from 'react-sanitized-html';
 import sanitizeHTML from 'sanitize-html';
 import ReactPlayer from 'react-player';
-
-import { PastedItem } from './pastedItem';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faArrowUpRightFromSquare,
   faEllipsisVertical,
   faTrash,
 } from '@fortawesome/free-solid-svg-icons';
+import { useToggle } from 'react-use';
+
+import { usePlopper } from './PlopperProvider';
+import { useCopyPastedDataButtons } from './pastedData';
+import { PastedItemDocument } from './pastedItem';
 import useInnerElementBackgroundColor from '../helpers/useInnerElementBackgroundColor';
 
 interface PastedItemProps {
-  item: PastedItem;
+  itemDoc: PastedItemDocument;
   width: number;
 }
 
@@ -36,12 +39,12 @@ export const PastedItemWrapper = React.forwardRef<HTMLDivElement, UI.BoxProps>(
 );
 
 export const HTMLTextItem: React.FC<PastedItemProps> = ({
-  item,
+  itemDoc,
   ...wrapperProps
 }) => {
   const { ref, backgroundColor } = useInnerElementBackgroundColor(':scope>*>*');
 
-  if (item.data.type !== 'text') return null;
+  if (itemDoc.data.type !== 'text') return null;
 
   return (
     <PastedItemWrapper ref={ref} bg={backgroundColor} {...wrapperProps}>
@@ -50,21 +53,21 @@ export const HTMLTextItem: React.FC<PastedItemProps> = ({
           ...sanitizeHTML.defaults.allowedAttributes,
           '*': ['style'],
         }}
-        html={item.data.text.html}
+        html={itemDoc.data.text.html}
       />
     </PastedItemWrapper>
   );
 };
 
 export const PlainTextItem: React.FC<PastedItemProps> = ({
-  item,
+  itemDoc,
   ...wrapperProps
 }) => {
-  if (item.data.type !== 'text') return null;
+  if (itemDoc.data.type !== 'text') return null;
 
   return (
     <PastedItemWrapper {...wrapperProps}>
-      {item.data.text.plain.split('\n').map((line, index) => (
+      {itemDoc.data.text.plain.split('\n').map((line, index) => (
         <p key={index}>{line}</p>
       ))}
     </PastedItemWrapper>
@@ -72,26 +75,26 @@ export const PlainTextItem: React.FC<PastedItemProps> = ({
 };
 
 export const ImageItem: React.FC<PastedItemProps> = ({
-  item,
+  itemDoc,
   ...wrapperProps
 }) => {
-  if (item.data.type !== 'image') return null;
+  if (itemDoc.data.type !== 'image') return null;
 
   return (
     <PastedItemWrapper p={0} {...wrapperProps}>
-      <UI.Image src={item.data.src} alt="..." w="100%" />
+      <UI.Image src={itemDoc.data.src} alt="..." w="100%" />
     </PastedItemWrapper>
   );
 };
 
 export const URLItem: React.FC<PastedItemProps> = ({
-  item,
+  itemDoc,
   ...wrapperProps
 }) => {
-  if (item.data.type !== 'url') return null;
+  if (itemDoc.data.type !== 'url') return null;
 
-  const url = new URL(item.data.url);
-  const meta = item.data.meta;
+  const url = new URL(itemDoc.data.url);
+  const meta = itemDoc.data.meta;
 
   return (
     <PastedItemWrapper p={0} {...wrapperProps}>
@@ -119,10 +122,10 @@ export const URLItem: React.FC<PastedItemProps> = ({
 };
 
 export const PlayerItem: React.FC<PastedItemProps> = ({
-  item,
+  itemDoc,
   ...wrapperProps
 }) => {
-  if (item.data.type !== 'player') return null;
+  if (itemDoc.data.type !== 'player') return null;
 
   const playerAspectRatio = 16 / 9;
   const width = wrapperProps.width;
@@ -130,43 +133,74 @@ export const PlayerItem: React.FC<PastedItemProps> = ({
 
   return (
     <PastedItemWrapper p={0} {...wrapperProps}>
-      <ReactPlayer url={item.data.url} width={width} height={height} />
+      <ReactPlayer url={itemDoc.data.url} width={width} height={height} />
     </PastedItemWrapper>
   );
 };
 
-export const PastedItemView: React.FC<
-  PastedItemProps & {
-    onRemoveClick: () => any;
-  }
-> = ({ item, onRemoveClick, ...restProps }) => {
-  const itemProps = { item, ...restProps };
+export const PastedItemContextMenu: React.FC<
+  UI.StackProps & { itemDoc: PastedItemDocument }
+> = ({ itemDoc, ...stackProps }) => {
+  const pastingContext = usePlopper();
+  const [active, toggle] = useToggle(false);
+  const buttons = useCopyPastedDataButtons(itemDoc.data);
+
+  const handleDeleteClick = () => pastingContext.remove(itemDoc.id);
 
   return (
-    <UI.Box position="relative">
+    <UI.Stack direction="row-reverse" spacing={1} {...stackProps}>
       <UI.Button
+        size="xs"
+        onClick={toggle}
+        opacity={0.35}
+        _hover={{ opacity: 1 }}
+      >
+        <FontAwesomeIcon icon={faEllipsisVertical} />
+      </UI.Button>
+      {active ? (
+        <React.Fragment>
+          {buttons.map((button) => (
+            <UI.Button key={button.label} size="xs" onClick={button.onClick}>
+              {button.label}
+            </UI.Button>
+          ))}
+          <UI.Button size="xs" colorScheme="red" onClick={handleDeleteClick}>
+            <FontAwesomeIcon icon={faTrash} />
+          </UI.Button>
+        </React.Fragment>
+      ) : null}
+    </UI.Stack>
+  );
+};
+
+export const PastedItemView: React.FC<PastedItemProps> = ({
+  itemDoc,
+  ...restProps
+}) => {
+  const itemProps = { itemDoc, ...restProps };
+
+  return (
+    <UI.Box position="relative" _hover={{ '> *': { opacity: 1 } }}>
+      <PastedItemContextMenu
+        itemDoc={itemDoc}
         position="absolute"
         top={2}
         right={2}
-        onClick={onRemoveClick}
-        size="xs"
-        colorScheme="red"
-      >
-        Delete
-      </UI.Button>
+        opacity={0}
+      />
 
-      {item.data.type === 'text' ? (
+      {itemDoc.data.type === 'text' ? (
         <React.Fragment>
-          {item.data.text.html ? (
+          {itemDoc.data.text.html ? (
             <HTMLTextItem {...itemProps} />
           ) : (
             <PlainTextItem {...itemProps} />
           )}
         </React.Fragment>
       ) : null}
-      {item.data.type === 'image' ? <ImageItem {...itemProps} /> : null}
-      {item.data.type === 'url' ? <URLItem {...itemProps} /> : null}
-      {item.data.type === 'player' ? <PlayerItem {...itemProps} /> : null}
+      {itemDoc.data.type === 'image' ? <ImageItem {...itemProps} /> : null}
+      {itemDoc.data.type === 'url' ? <URLItem {...itemProps} /> : null}
+      {itemDoc.data.type === 'player' ? <PlayerItem {...itemProps} /> : null}
     </UI.Box>
   );
 };
