@@ -23,16 +23,13 @@ const PastedItemGrid: React.FC<{ columnWidth?: number }> = ({
           gutterHeight={12}
           duration={300}
         >
-          {pastingContext.itemDocs
-            .slice()
-            .reverse()
-            .map((itemDoc) => (
-              <PastedItemView
-                key={itemDoc.id}
-                itemDoc={itemDoc}
-                width={columnWidth}
-              />
-            ))}
+          {pastingContext.itemDocs.map((itemDoc) => (
+            <PastedItemView
+              key={itemDoc.id}
+              itemDoc={itemDoc}
+              width={columnWidth}
+            />
+          ))}
         </StackGrid>
       )}
     </UI.Box>

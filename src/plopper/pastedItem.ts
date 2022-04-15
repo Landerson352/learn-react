@@ -8,6 +8,7 @@ export interface PastedItemInput {
 
 export interface PastedItem extends PastedItemInput {
   userId: string;
+  created: Date;
 }
 
 export interface PastedItemDocument extends PastedItem {
@@ -32,6 +33,7 @@ export const usePastedItems = (): PastedItems => {
     return addItem({
       ...item,
       userId: user?.uid,
+      created: new Date(),
     });
   };
 
@@ -39,5 +41,15 @@ export const usePastedItems = (): PastedItems => {
     return removeItem(itemId);
   };
 
-  return { itemDocs, add, remove, loading, errorMessage };
+  const itemDocsSortedByCreated = itemDocs.sort(
+    (a, b) => b.created?.getTime() || 0 - a.created?.getTime() || 0
+  );
+
+  return {
+    itemDocs: itemDocsSortedByCreated,
+    add,
+    remove,
+    loading,
+    errorMessage,
+  };
 };

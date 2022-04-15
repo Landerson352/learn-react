@@ -25,10 +25,14 @@ export const useOwnedItemDocs = (): [PastedItemDocument[], boolean, string] => {
     }
   );
   const docs: PastedItemDocument[] =
-    itemsSnapshot?.docs.map((doc) => ({
-      id: doc.id,
-      ...(doc.data() as PastedItem),
-    })) || [];
+    itemsSnapshot?.docs.map((doc) => {
+      const data = doc.data();
+      return {
+        ...(data as PastedItem),
+        id: doc.id,
+        created: data.created?.toDate(),
+      };
+    }) || [];
 
   const loading = authStateLoading || itemsLoading;
   const errorMessage = authStateError?.message || itemsError?.message || '';
