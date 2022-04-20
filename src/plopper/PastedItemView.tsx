@@ -1,4 +1,5 @@
 import React from 'react';
+import _ from 'lodash';
 import * as UI from '@chakra-ui/react';
 import SanitizedHTML from 'react-sanitized-html';
 import sanitizeHTML from 'sanitize-html';
@@ -141,11 +142,11 @@ export const PlayerItem: React.FC<PastedItemProps> = ({
 export const PastedItemContextMenu: React.FC<
   UI.StackProps & { itemDoc: PastedItemDocument }
 > = ({ itemDoc, ...stackProps }) => {
-  const pastingContext = usePlopper();
+  const { pastedItems } = usePlopper();
   const [active, toggle] = useToggle(false);
   const buttons = useCopyPastedDataButtons(itemDoc.data);
 
-  const handleDeleteClick = () => pastingContext.remove(itemDoc.id);
+  const handleDeleteClick = () => pastedItems.remove(itemDoc.id);
 
   return (
     <UI.Stack direction="row-reverse" spacing={1} {...stackProps}>
@@ -180,6 +181,25 @@ export const PastedItemContextMenu: React.FC<
   );
 };
 
+export const PastedItemTagOverlay: React.FC<
+  UI.StackProps & { itemDoc: PastedItemDocument }
+> = ({ itemDoc, ...stackProps }) => {
+  const { tags } = usePlopper();
+
+  return (
+    <UI.Stack {...stackProps}>
+      {itemDoc.tagIds?.map((tagId) => {
+        const tag = _.find(tags.docs, { id: tagId });
+        return tag ? (
+          <UI.Tag key={tagId} colorScheme="purple">
+            {tag.label}
+          </UI.Tag>
+        ) : null;
+      })}
+    </UI.Stack>
+  );
+};
+
 export const PastedItemView: React.FC<PastedItemProps> = ({
   itemDoc,
   ...restProps
@@ -192,6 +212,13 @@ export const PastedItemView: React.FC<PastedItemProps> = ({
         itemDoc={itemDoc}
         position="absolute"
         top={3}
+        right={3}
+        opacity={0}
+      />
+      <PastedItemTagOverlay
+        itemDoc={itemDoc}
+        position="absolute"
+        bottom={3}
         right={3}
         opacity={0}
       />

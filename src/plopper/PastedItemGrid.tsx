@@ -10,12 +10,12 @@ import PastedItemView from './PastedItemView';
 const PastedItemGrid: React.FC<{ columnWidth?: number }> = ({
   columnWidth = 480,
 }) => {
-  const pastingContext = usePlopper();
+  const { pastedItems } = usePlopper();
   const [imageContainerRef, stackGridRef] = useMonitorStackGridImages();
 
   return (
     <UI.Box ref={imageContainerRef}>
-      {_.isEmpty(pastingContext.itemDocs) ? null : (
+      {_.isEmpty(pastedItems.docs) ? null : (
         <StackGrid
           ref={stackGridRef}
           columnWidth={columnWidth}
@@ -23,7 +23,7 @@ const PastedItemGrid: React.FC<{ columnWidth?: number }> = ({
           gutterHeight={12}
           duration={300}
         >
-          {pastingContext.itemDocs.map((itemDoc) => (
+          {pastedItems.docs.map((itemDoc) => (
             <PastedItemView
               key={itemDoc.id}
               itemDoc={itemDoc}

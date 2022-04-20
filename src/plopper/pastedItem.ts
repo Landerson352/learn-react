@@ -4,6 +4,7 @@ import { useOwnedItemDocs, addItem, removeItem } from '../data';
 
 export interface PastedItemInput {
   data: PastedData;
+  tagIds?: string[];
 }
 
 export interface PastedItem extends PastedItemInput {
@@ -16,7 +17,7 @@ export interface PastedItemDocument extends PastedItem {
 }
 
 export interface PastedItems {
-  itemDocs: PastedItemDocument[];
+  docs: PastedItemDocument[];
   add: (item: PastedItemInput) => Promise<string | undefined>;
   remove: (itemId: string) => Promise<void> | undefined;
   loading: boolean;
@@ -46,7 +47,7 @@ export const usePastedItems = (): PastedItems => {
   );
 
   return {
-    itemDocs: itemDocsSortedByCreated,
+    docs: itemDocsSortedByCreated,
     add,
     remove,
     loading,
