@@ -31,19 +31,16 @@ const createCities = (numCities: number): City[] => {
   });
 };
 
-const filterBuildingsByCostTiers = (buildings: Building[]) => {
-  const tierCosts = [
-    [1, 2, 3],
-    [4, 5],
-    [6, 7, 8, 9],
-  ];
-
+const filterBuildingsByCostTiers = (
+  buildings: Building[],
+  tierCosts: number[][]
+) => {
   return tierCosts.map((costs) => {
     return buildings.filter((b) => costs.includes(b.cost));
   });
 };
 
-const useHappyCity = (numCities = 3) => {
+const useHappyCity = (numCities = 2) => {
   const [turnIndex, setTurnIndex] = React.useState(0);
   const [phase, setPhase] = React.useState<
     'draw' | 'discard' | 'buy' | 'game-over'
@@ -57,12 +54,27 @@ const useHappyCity = (numCities = 3) => {
 
   // const bonusBuildings = useCollection([] as Building[], 'id');
 
-  const buildingsByCost = filterBuildingsByCostTiers(buildings.items);
+  const residencesByCost = filterBuildingsByCostTiers(residences.items, [
+    [1],
+    [3],
+    [6],
+  ]);
+  const buildingTierCosts = [
+    [1, 2, 3],
+    [4, 5],
+    [6, 7, 8, 9],
+  ];
+  const buildingsByCost = filterBuildingsByCostTiers(
+    buildings.items,
+    buildingTierCosts
+  );
   const buildingsForSaleByCost = filterBuildingsByCostTiers(
-    buildingsForSale.items
+    buildingsForSale.items,
+    buildingTierCosts
   );
   const discardedBuildingsByCost = filterBuildingsByCostTiers(
-    discardedBuildings.items
+    discardedBuildings.items,
+    buildingTierCosts
   );
 
   const currentCity = cities.items[turnIndex];
@@ -80,59 +92,68 @@ const useHappyCity = (numCities = 3) => {
       setPhase('game-over');
     } else {
       setTurnIndex(nextTurnIndex);
+      if (nextTurnIndex === 0) {
+        cities.items.forEach((city) => {
+          const income = _.sumBy(city.buildings, 'income');
+          cities.patch(city.id, (city) => ({ coins: city.coins + income }));
+        });
+      }
       setPhase('discard');
     }
   };
 
   const drawBuilding = (building: Building) => {
-    if (canDraw && buildings.items.includes(building)) {
-      buildings.remove(building);
-      buildingsForSale.push(building);
-      if (buildingsForSale.count + 1 >= 3) {
-        setPhase('buy');
-      }
+    if (!canDraw) return;
+    if (!buildings.items.includes(building)) return;
+
+    buildings.remove(building);
+    buildingsForSale.push(building);
+    if (buildingsForSale.count + 1 >= 3) {
+      setPhase('buy');
     }
   };
 
   const discardBuildingForSale = (building: Building) => {
-    if (canDiscard && buildingsForSale.items.includes(building)) {
-      buildingsForSale.remove(building);
-      discardedBuildings.push(building);
-      setPhase('draw');
-    }
+    if (!canDiscard) return;
+    if (!buildingsForSale.items.includes(building)) return;
+
+    buildingsForSale.remove(building);
+    discardedBuildings.push(building);
+    setPhase('draw');
   };
 
   const skipDiscard = () => {
-    if (phase === 'discard') {
-      if (buildingsForSale.count < 3) {
-        setPhase('draw');
-      } else {
-        setPhase('buy');
-      }
+    if (phase !== 'discard') return;
+
+    if (buildingsForSale.count < 3) {
+      setPhase('draw');
+    } else {
+      setPhase('buy');
     }
   };
 
   const buyBuilding = (building: Building) => {
     // TODO: bonus building requirements
-    // TODO: check if building with the same name is already in city
-    if (canBuy && currentCity.coins >= building.cost) {
-      buildingsForSale.remove(building);
-      cities.patch({
-        ...currentCity,
-        buildings: [...currentCity.buildings, building],
-        coins: currentCity.coins - building.cost,
-      });
-      nextTurn();
-    }
+    if (!canBuy) return;
+    if (currentCity.coins < building.cost) return;
+    if (_.find(currentCity.buildings, { name: building.name })) return;
+
+    residences.remove(building);
+    buildingsForSale.remove(building);
+    cities.patch(currentCity.id, (city) => ({
+      buildings: [...city.buildings, building],
+      coins: city.coins - building.cost,
+    }));
+    nextTurn();
   };
 
   const skipTurn = () => {
-    cities.patch({ ...currentCity, coins: currentCity.coins + 1 });
+    cities.patch(currentCity.id, (city) => ({ coins: city.coins + 1 }));
     nextTurn();
   };
 
   return {
-    residences,
+    residencesByCost,
     discardedBuildingsByCost,
     buildingsByCost,
     buildingsForSaleByCost,
@@ -290,7 +311,7 @@ const backRenderer: Card.CardRenderer = () => {
 
 const HappyCityPage: React.FC = () => {
   const {
-    residences,
+    residencesByCost,
     discardedBuildingsByCost,
     buildingsByCost,
     buildingsForSaleByCost,
@@ -337,11 +358,11 @@ const HappyCityPage: React.FC = () => {
               ) : null}
             </UI.Box>
             <UI.Stack direction="row" gridArea="1 / 3">
-              {residences.items.map((building, i) => {
+              {residencesByCost.map((residences, i) => {
                 return (
                   <Card.CardStack
                     key={i}
-                    cards={[building]}
+                    cards={residences}
                     showing={Card.CardShowing.Face}
                     onCardClick={canBuy ? buyBuilding : undefined}
                   />

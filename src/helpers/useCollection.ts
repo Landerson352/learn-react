@@ -1,5 +1,5 @@
 import React from 'react';
-import useLocalStorageState from 'use-local-storage-state';
+// import useLocalStorageState from 'use-local-storage-state';
 
 // type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 // type RequiredBy<T, K extends keyof T> = Partial<Omit<T, K>> &
@@ -8,27 +8,33 @@ import useLocalStorageState from 'use-local-storage-state';
 export const createCollectionSetterMethods = <T, K extends keyof T>(
   idField: K,
   items: T[],
-  setItems: (v: T[]) => void
+  setItems: React.Dispatch<React.SetStateAction<T[]>>
 ) => {
   const push = (item: T) => {
-    setItems([...items, { ...item }]);
+    setItems((items) => [...items, { ...item }]);
   };
   const unshift = (item: T) => {
-    setItems([item, ...items]);
+    setItems((items) => [item, ...items]);
   };
-  const overwrite = (item: T) => {
-    setItems(items.map((d) => (d[idField] === item[idField] ? item : d)));
+  const overwrite = (itemId: T[K], transformer: (item: T) => T) => {
+    setItems((items) =>
+      items.map((d) => (d[idField] === itemId ? transformer(d) : d))
+    );
   };
-  const patch = (item: Partial<T>) => {
-    setItems(
-      items.map((d) => (d[idField] === item[idField] ? { ...d, ...item } : d))
+  const patch = (itemId: T[K], transformer: (item: T) => Partial<T>) => {
+    setItems((items) =>
+      items.map((d) =>
+        d[idField] === itemId ? { ...d, ...transformer(d) } : d
+      )
     );
   };
   const remove = (itemToRemove: T) => {
-    setItems(items.filter((item) => item[idField] !== itemToRemove[idField]));
+    setItems((items) =>
+      items.filter((item) => item[idField] !== itemToRemove[idField])
+    );
   };
   const removeById = (id: T[K]) => {
-    setItems(items.filter((item) => item[idField] !== id));
+    setItems((items) => items.filter((item) => item[idField] !== id));
   };
   return {
     items,
@@ -50,13 +56,13 @@ export const useCollection = <T, K extends keyof T>(
   return createCollectionSetterMethods(idField, items, setItems);
 };
 
-export const useLocalStorageCollection = <T, K extends keyof T>(
-  key: string,
-  initialValue: T[] = [],
-  idField: K
-) => {
-  const [items, setItems] = useLocalStorageState(key, initialValue);
-  return createCollectionSetterMethods(idField, items, setItems);
-};
+// export const useLocalStorageCollection = <T, K extends keyof T>(
+//   key: string,
+//   initialValue: T[] = [],
+//   idField: K
+// ) => {
+//   const [items, setItems] = useLocalStorageState(key, initialValue);
+//   return createCollectionSetterMethods(idField, items, setItems);
+// };
 
 export default useCollection;

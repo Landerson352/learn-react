@@ -1,3 +1,5 @@
+import _ from 'lodash';
+
 import createShortCode from '../helpers/createShortCode';
 import { Building } from './types';
 
@@ -57,26 +59,32 @@ export const createBuildings = (): Building[] => {
 
 export const createResidences = (): Building[] => {
   return [
-    {
-      id: createShortCode(),
-      name: 'House',
-      color: 'green',
-      cost: 1,
-      citizens: 1,
-    },
-    {
-      id: createShortCode(),
-      name: 'Apartment Building',
-      color: 'green',
-      cost: 3,
-      citizens: 2,
-    },
-    {
-      id: createShortCode(),
-      name: 'High Rise',
-      color: 'green',
-      cost: 6,
-      citizens: 3,
-    },
+    ..._.times(3, () => {
+      return {
+        id: createShortCode(),
+        name: 'House',
+        color: 'green',
+        cost: 1,
+        citizens: 1,
+      } as Building;
+    }),
+    ..._.times(3, () => {
+      return {
+        id: createShortCode(),
+        name: 'Apartment Building',
+        color: 'green',
+        cost: 3,
+        citizens: 2,
+      } as Building;
+    }),
+    ..._.times(3, () => {
+      return {
+        id: createShortCode(),
+        name: 'High Rise',
+        color: 'green',
+        cost: 6,
+        citizens: 3,
+      } as Building;
+    }),
   ];
 };
