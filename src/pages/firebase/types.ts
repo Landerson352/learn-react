@@ -3,4 +3,5 @@ export interface Message {
   authorName: string;
   text: string;
   time: number;
+  avatar?: string; // creator: eran
 }
