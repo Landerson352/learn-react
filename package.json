@@ -27,6 +27,7 @@
     "babel-loader": "8.1.0",
     "date-fns": "^2.23.0",
     "firebase": "^9.8.1",
+    "font-color-contrast": "^11.1.0",
     "framer-motion": "^4",
     "lodash": "^4.17.21",
     "motion": "^10.6.2",
