@@ -7,6 +7,7 @@ import CompositionalPatterns from './pages/patterns/CompositionalPatternsPage';
 import JavascriptPatterns from './pages/patterns/JavascriptPatternsPage';
 import LincChallange1Page from './pages/challenges/LincChallenge1Page';
 import FirebasePage from './pages/firebase/FirebasePage';
+import DragAndDropExample from './pages/dnd/DragAndDropExample';
 
 const App: React.FC = () => {
   return (
@@ -21,6 +22,9 @@ const App: React.FC = () => {
           </Route>
           <Route path="/patterns/js">
             <JavascriptPatterns />
+          </Route>
+          <Route path="/dnd">
+            <DragAndDropExample />
           </Route>
           <Route path="/firebase">
             <FirebasePage />
