@@ -5,6 +5,7 @@ import { formatRelative } from 'date-fns';
 import _ from 'lodash';
 import fontColorContrast from 'font-color-contrast';
 import * as FramerMotion from 'framer-motion';
+import axios from 'axios';
 
 import { signOut, useAuthState, useSignIn } from '../../firebase/auth';
 import { addMessage, useMessages } from './data';
@@ -35,6 +36,7 @@ const MessageView: React.FC<{ message: Message } & UI.BoxProps> = ({
   message,
   ...boxProps
 }) => {
+  const [user] = useAuthState();
   const backgroundColor = getFirstMentionedColorFromMessage(message) || 'white';
   const color = backgroundColor ? fontColorContrast(backgroundColor) : '';
 
@@ -50,6 +52,7 @@ const MessageView: React.FC<{ message: Message } & UI.BoxProps> = ({
     ]).length > 0;
   const isFun =
     _.intersection(words, ['fun', 'comic', 'haha', 'ha', 'lol']).length > 0;
+  const isBig = message.text === message.text.toUpperCase();
 
   return (
     <UI.Box px={1} py="1px" {...boxProps}>
@@ -89,7 +92,18 @@ const MessageView: React.FC<{ message: Message } & UI.BoxProps> = ({
                 </UI.Text>
               </UI.Tooltip>
             </UI.Stack>
-            <UI.Text>{message.text}</UI.Text>
+            <UI.Box
+              fontSize={isBig ? '4xl' : ''}
+              lineHeight={isBig ? '1' : ''}
+              fontWeight={isBig ? 'bold' : ''}
+            >
+              <UI.Text>{message.text}</UI.Text>
+              {message.uid === user?.uid && message.triviaAnswer ? (
+                <UI.Text fontStyle="italic" color="purple.500">
+                  Answer: <b>{message.triviaAnswer}</b> (only you can see this)
+                </UI.Text>
+              ) : null}
+            </UI.Box>
           </UI.Box>
         </UI.Stack>
       </MotionUI.Box>
@@ -165,6 +179,23 @@ const NewMessageForm: React.FC<UI.StackProps> = (stackProps) => {
     form.reset();
   };
 
+  const handleTriviaClick = async () => {
+    try {
+      const result = await axios.get('http://jservice.io/api/random');
+      const trivia = result.data[0];
+      addMessage({
+        text: `Trivia question: "${trivia.question}"`,
+        triviaAnswer: trivia.answer,
+        authorName: user.displayName || 'Anonymous',
+        avatar: user.photoURL || '',
+        uid: user.uid,
+        time: Date.now(),
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
     <form onSubmit={form.handleSubmit(onValid)}>
       <UI.Stack direction="row" {...stackProps}>
@@ -182,6 +213,9 @@ const NewMessageForm: React.FC<UI.StackProps> = (stackProps) => {
           disabled={!formState.isValid}
         >
           Send
+        </UI.Button>
+        <UI.Button colorScheme="blue" onClick={handleTriviaClick}>
+          Trivia
         </UI.Button>
       </UI.Stack>
     </form>

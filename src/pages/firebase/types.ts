@@ -4,4 +4,5 @@ export interface Message {
   text: string;
   time: number;
   avatar?: string; // creator: eran
+  triviaAnswer?: string; // creator: linc
 }
