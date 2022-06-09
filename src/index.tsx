@@ -6,13 +6,13 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 
 const theme = extendTheme({
-  styles: {
-    global: {
-      body: {
-        bg: 'gray.200',
-      },
-    },
-  },
+  // styles: {
+  //   global: {
+  //     body: {
+  //       bg: 'gray.200',
+  //     },
+  //   },
+  // },
 });
 
 ReactDOM.render(
