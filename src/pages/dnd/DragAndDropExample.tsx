@@ -1,9 +1,12 @@
 import _ from 'lodash';
 import React from 'react';
 import * as UI from '@chakra-ui/react';
+import { useDrag, useDrop } from 'react-dnd';
 
-import { DnDMultiProvider, useCustomDragLayer, useDrag, useDrop } from './dnd';
 import { ChessState, ItemTypes, KnightPosition } from './chess';
+import CustomDragLayer from './dnd-helpers/CustomDragLayer';
+import DndMultiProvider from './dnd-helpers/DndMultiProvider';
+import { useDisableNativePreview } from './dnd-helpers/hooks';
 
 /**
  * In this example, we use our chess app logic and dnd helpers
@@ -12,9 +15,13 @@ import { ChessState, ItemTypes, KnightPosition } from './chess';
 
 const Knight: React.FC = () => {
   // Inform dnd that we can drag this knight
-  const [{ isDragging }, drag] = useDrag({
+  const [{ isDragging }, drag, preview] = useDrag({
     type: ItemTypes.KNIGHT,
+    collect: (monitor) => ({
+      isDragging: monitor.isDragging(),
+    }),
   });
+  useDisableNativePreview(preview);
 
   return (
     <UI.Box
@@ -40,6 +47,10 @@ const BoardSquare: React.FC<{ pos: KnightPosition }> = ({ pos }) => {
       accept: ItemTypes.KNIGHT,
       canDrop: () => chess.canMoveKnightTo(pos),
       drop: () => chess.moveKnightTo(pos),
+      collect: (monitor) => ({
+        isOver: monitor.isOver(),
+        canDrop: monitor.canDrop(),
+      }),
     },
     [pos.x, pos.y, chess.canMoveKnightTo, chess.moveKnightTo]
   );
@@ -73,7 +84,7 @@ const BoardSquare: React.FC<{ pos: KnightPosition }> = ({ pos }) => {
 
 const Board: React.FC = () => {
   return (
-    <UI.SimpleGrid columns={8} width={320}>
+    <UI.SimpleGrid columns={8} width={320} m={10}>
       {_.times(64, (i) => {
         const x = i % 8;
         const y = Math.floor(i / 8);
@@ -83,43 +94,18 @@ const Board: React.FC = () => {
   );
 };
 
-/**
- * A component for ALL drag and drop previews.
- * It can render different things based on the item type.
- */
-const CustomDragLayer: React.FC = () => {
-  const dragLayer = useCustomDragLayer();
-
-  if (!dragLayer.isOffset) {
-    return null;
-  }
-
-  const transform = `translate(${dragLayer.currentOffset?.x}px, ${dragLayer.currentOffset?.y}px)`;
-
-  return (
-    <UI.Box
-      position="fixed"
-      pointerEvents="none"
-      zIndex={100}
-      left={0}
-      top={0}
-      width="100%"
-      height="100%"
-      transform={transform}
-    >
-      {dragLayer.itemType === ItemTypes.KNIGHT && <Knight />}
-    </UI.Box>
-  );
-};
-
 const DragAndDropExample: React.FC = () => {
   return (
-    <DnDMultiProvider>
+    <DndMultiProvider>
       <ChessState.Provider value={null}>
         <Board />
-        <CustomDragLayer />
+        <CustomDragLayer>
+          {(dragLayer) => {
+            return dragLayer.itemType === ItemTypes.KNIGHT ? <Knight /> : null;
+          }}
+        </CustomDragLayer>
       </ChessState.Provider>
-    </DnDMultiProvider>
+    </DndMultiProvider>
   );
 };
 
