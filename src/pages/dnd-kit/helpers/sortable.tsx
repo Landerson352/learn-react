@@ -11,7 +11,6 @@ import {
   useSensor,
   useSensors,
   DragEndEvent,
-  UniqueIdentifier,
 } from '@dnd-kit/core';
 import {
   SortableContext,
@@ -20,36 +19,39 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 
-export type SortableItemData =
-  | UniqueIdentifier
-  | {
-      id: UniqueIdentifier;
-    };
-
 export const SortableListContext = React.createContext<{
-  items: SortableItemData[];
+  items: Sortable<any>[];
 }>({
   items: [],
 });
 
-export type SortableListMoveHandler = (
-  items: SortableItemData[],
+export interface Sortable<T> {
+  id: number;
+  data: T;
+}
+
+export type SortableListMoveHandler<T> = (
+  items: Sortable<T>[],
   fromIndex: number,
   toIndex: number
 ) => any;
 
-export const SortableList: React.FC<{
-  initialItems: SortableItemData[];
+export const SortableList = function <T>({
+  initialItems,
+  children,
+  onMove,
+}: {
+  initialItems: Sortable<T>[];
   children: React.ReactNode;
-  onMove: SortableListMoveHandler;
-}> = ({ initialItems, children, onMove }) => {
+  onMove: SortableListMoveHandler<T>;
+}) {
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
     })
   );
-  const [items, setItems] = React.useState<SortableItemData[]>(initialItems);
+  const [items, setItems] = React.useState<Sortable<T>[]>(initialItems);
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
@@ -66,13 +68,7 @@ export const SortableList: React.FC<{
           (o) => _.get(o, 'id', o) === over.id
         );
 
-        onMove(
-          items,
-          oldIndex,
-          newIndex
-          // { item: items[oldIndex], index: oldIndex },
-          // { item: items[newIndex], index: newIndex }
-        );
+        onMove(items, oldIndex, newIndex);
 
         return arrayMove(items, oldIndex, newIndex);
       });
@@ -121,22 +117,23 @@ export const SortableListItem: React.FC<
   });
 };
 
+export type SortableListItemRenderer<T> = (
+  props: React.HTMLAttributes<HTMLDivElement> & {
+    ref: (node: HTMLElement | null) => void;
+  },
+  item: Sortable<T>
+) => React.ReactElement;
+
 export const SortableListItemRepeater: React.FC<{
-  children: (
-    props: React.HTMLAttributes<HTMLDivElement> & {
-      ref: (node: HTMLElement | null) => void;
-    },
-    id: SortableItemData
-  ) => React.ReactElement;
+  children: SortableListItemRenderer<any>;
 }> = ({ children }) => {
   const { items } = React.useContext(SortableListContext);
   return (
     <React.Fragment>
-      {items.map((_id) => {
-        const id = _.get(_id, 'id', _id) as UniqueIdentifier;
+      {items.map((item) => {
         return (
-          <SortableListItem key={id} id={id}>
-            {(props) => children(props, _id)}
+          <SortableListItem key={item.id} id={item.id}>
+            {(props) => children(props, item)}
           </SortableListItem>
         );
       })}
@@ -190,3 +187,34 @@ export class PointerSensor extends LibPointerSensor {
     },
   ];
 }
+
+export const getNewSortableItemOrder: SortableListMoveHandler<any> = (
+  items,
+  fromIndex,
+  toIndex
+): number => {
+  let newOrder = items[fromIndex].data.order;
+  if (fromIndex < toIndex) {
+    // moving down, place after the "to" item
+    // if "to" is the last item, add 1 to its order
+    if (toIndex === items.length - 1) {
+      newOrder = items[toIndex].data.order + 1;
+      // otherwise, average the order of the "to" item and the one after it
+    } else {
+      newOrder =
+        (items[toIndex].data.order + items[toIndex + 1].data.order) / 2;
+    }
+  } else if (fromIndex > toIndex) {
+    // moving up, place before the "to" item
+    // if "to" is the first item, subtract 1 to its order
+    if (toIndex === 0) {
+      newOrder = items[toIndex].data.order - 1;
+      // otherwise, average the order of the "to" item and the one before it
+    } else {
+      newOrder =
+        (items[toIndex].data.order + items[toIndex - 1].data.order) / 2;
+    }
+  }
+
+  return newOrder;
+};
