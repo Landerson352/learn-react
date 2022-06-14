@@ -32,13 +32,16 @@ export const SortableListContext = React.createContext<{
   items: [],
 });
 
+export type SortableListMoveHandler = (
+  items: SortableItemData[],
+  fromIndex: number,
+  toIndex: number
+) => any;
+
 export const SortableList: React.FC<{
   initialItems: SortableItemData[];
   children: React.ReactNode;
-  onMove: (
-    a: { item: SortableItemData; index: number },
-    b: { item: SortableItemData; index: number }
-  ) => any;
+  onMove: SortableListMoveHandler;
 }> = ({ initialItems, children, onMove }) => {
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -64,8 +67,11 @@ export const SortableList: React.FC<{
         );
 
         onMove(
-          { item: items[oldIndex], index: oldIndex },
-          { item: items[newIndex], index: newIndex }
+          items,
+          oldIndex,
+          newIndex
+          // { item: items[oldIndex], index: oldIndex },
+          // { item: items[newIndex], index: newIndex }
         );
 
         return arrayMove(items, oldIndex, newIndex);
