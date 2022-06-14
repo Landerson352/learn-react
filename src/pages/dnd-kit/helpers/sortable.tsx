@@ -5,8 +5,9 @@ import _ from 'lodash';
 import {
   DndContext,
   closestCenter,
-  KeyboardSensor,
-  PointerSensor,
+  MouseSensor as LibMouseSensor,
+  KeyboardSensor as LibKeyboardSensor,
+  PointerSensor as LibPointerSensor,
   useSensor,
   useSensors,
   DragEndEvent,
@@ -114,7 +115,7 @@ export const SortableListItem: React.FC<
   });
 };
 
-export const SortableListItems: React.FC<{
+export const SortableListItemRepeater: React.FC<{
   children: (
     props: React.HTMLAttributes<HTMLDivElement> & {
       ref: (node: HTMLElement | null) => void;
@@ -136,3 +137,50 @@ export const SortableListItems: React.FC<{
     </React.Fragment>
   );
 };
+
+// Filters out elements with 'data-no-dnd' attribute
+function shouldHandleEvent(element: HTMLElement | null) {
+  let cur = element;
+
+  while (cur) {
+    if (cur.dataset && cur.dataset.noDnd) {
+      return false;
+    }
+    cur = cur.parentElement;
+  }
+
+  return true;
+}
+
+export class MouseSensor extends LibMouseSensor {
+  static activators = [
+    {
+      eventName: 'onMouseDown' as const,
+      handler: ({ nativeEvent: event }: React.MouseEvent) => {
+        return shouldHandleEvent(event.target as HTMLElement);
+      },
+    },
+  ];
+}
+
+export class KeyboardSensor extends LibKeyboardSensor {
+  static activators = [
+    {
+      eventName: 'onKeyDown' as const,
+      handler: ({ nativeEvent: event }: React.KeyboardEvent<Element>) => {
+        return shouldHandleEvent(event.target as HTMLElement);
+      },
+    },
+  ];
+}
+
+export class PointerSensor extends LibPointerSensor {
+  static activators = [
+    {
+      eventName: 'onPointerDown' as const,
+      handler: ({ nativeEvent: event }: React.PointerEvent) => {
+        return shouldHandleEvent(event.target as HTMLElement);
+      },
+    },
+  ];
+}

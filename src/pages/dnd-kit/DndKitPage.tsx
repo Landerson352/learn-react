@@ -1,18 +1,29 @@
 import React from 'react';
 import * as UI from '@chakra-ui/react';
 
-import { SortableItemData, SortableList, SortableListItems } from './sortable';
+import {
+  SortableItemData,
+  SortableList,
+  SortableListItemRepeater,
+} from './helpers/sortable';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faBars } from '@fortawesome/free-solid-svg-icons';
 
-interface ExamplePersonType {
-  id: number;
+interface Person {
   name: string;
+  order: number;
+}
+
+interface SortablePerson {
+  id: number;
+  data: Person;
 }
 
 const DndKitPage: React.FC = () => {
-  const initialItems: ExamplePersonType[] = [
-    { id: 1, name: 'Artemis' },
-    { id: 2, name: 'Bird' },
-    { id: 3, name: 'Charlie' },
+  const initialItems: SortablePerson[] = [
+    { id: 1, data: { name: 'Artemis', order: 1 } },
+    { id: 2, data: { name: 'Bird', order: 2 } },
+    { id: 3, data: { name: 'Charlie', order: 3 } },
   ];
 
   const handleMove = (
@@ -25,23 +36,28 @@ const DndKitPage: React.FC = () => {
   return (
     <SortableList initialItems={initialItems} onMove={handleMove}>
       <UI.Stack p={4} width="280px" mx="auto">
-        <SortableListItems>
+        <SortableListItemRepeater>
           {(props, item) => {
-            const person = item as ExamplePersonType;
+            const person = (item as SortablePerson).data;
             return (
-              <UI.Box
-                {...props}
-                px={4}
-                py={3}
+              <UI.Stack
+                direction="row"
+                alignItems="center"
+                p={2}
+                spacing={2}
                 bg="gray.50"
                 borderRadius="lg"
                 shadow="lg"
+                {...props}
               >
-                {person.name}
-              </UI.Box>
+                <UI.Input data-no-dnd defaultValue={person.name} />
+                <UI.Box p={2}>
+                  <FontAwesomeIcon icon={faBars} />
+                </UI.Box>
+              </UI.Stack>
             );
           }}
-        </SortableListItems>
+        </SortableListItemRepeater>
       </UI.Stack>
     </SortableList>
   );
