@@ -15,7 +15,6 @@ import {
 import {
   SortableContext,
   sortableKeyboardCoordinates,
-  arrayMove,
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 
@@ -26,24 +25,20 @@ export const SortableListContext = React.createContext<{
 });
 
 export interface Sortable<T> {
-  id: number;
+  id: number | string;
   data: T;
 }
 
-export type SortableListMoveHandler<T> = (
-  items: Sortable<T>[],
-  fromIndex: number,
-  toIndex: number
-) => any;
-
 export const SortableList = function <T>({
-  initialItems,
+  items,
   children,
+  onDragEnd,
   onMove,
 }: {
-  initialItems: Sortable<T>[];
+  items: Sortable<T>[];
   children: React.ReactNode;
-  onMove: SortableListMoveHandler<T>;
+  onDragEnd?: (event: DragEndEvent) => any;
+  onMove?: (activeIndex: number, overIndex: number) => any;
 }) {
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -51,28 +46,12 @@ export const SortableList = function <T>({
       coordinateGetter: sortableKeyboardCoordinates,
     })
   );
-  const [items, setItems] = React.useState<Sortable<T>[]>(initialItems);
 
-  const handleDragEnd = (event: DragEndEvent) => {
-    const { active, over } = event;
-    if (!active?.id || !over?.id) return;
-
-    if (active.id !== over.id) {
-      setItems((items) => {
-        const oldIndex = _.findIndex(
-          items,
-          (o) => _.get(o, 'id', o) === active.id
-        );
-        const newIndex = _.findIndex(
-          items,
-          (o) => _.get(o, 'id', o) === over.id
-        );
-
-        onMove(items, oldIndex, newIndex);
-
-        return arrayMove(items, oldIndex, newIndex);
-      });
-    }
+  const handleDragEnd = (e: DragEndEvent) => {
+    onDragEnd?.(e);
+    const activeIndex = _.findIndex(items, (o) => o.id === e.active.id);
+    const overIndex = _.findIndex(items, (o) => o.id === e.over?.id);
+    onMove?.(activeIndex, overIndex);
   };
 
   return (
@@ -121,7 +100,8 @@ export type SortableListItemRenderer<T> = (
   props: React.HTMLAttributes<HTMLDivElement> & {
     ref: (node: HTMLElement | null) => void;
   },
-  item: Sortable<T>
+  item: Sortable<T>,
+  index: number
 ) => React.ReactElement;
 
 export const SortableListItemRepeater: React.FC<{
@@ -130,10 +110,10 @@ export const SortableListItemRepeater: React.FC<{
   const { items } = React.useContext(SortableListContext);
   return (
     <React.Fragment>
-      {items.map((item) => {
+      {items.map((item, index) => {
         return (
           <SortableListItem key={item.id} id={item.id}>
-            {(props) => children(props, item)}
+            {(props) => children(props, item, index)}
           </SortableListItem>
         );
       })}
@@ -146,7 +126,12 @@ function shouldHandleEvent(element: HTMLElement | null) {
   let cur = element;
 
   while (cur) {
+    // exclude elements with data-no-dnd attribute
     if (cur.dataset && cur.dataset.noDnd) {
+      return false;
+    }
+    // exclude input and textarea elements
+    if (['BUTTON', 'INPUT', 'TEXTAREA'].includes(cur.tagName)) {
       return false;
     }
     cur = cur.parentElement;
@@ -187,34 +172,3 @@ export class PointerSensor extends LibPointerSensor {
     },
   ];
 }
-
-export const getNewSortableItemOrder: SortableListMoveHandler<any> = (
-  items,
-  fromIndex,
-  toIndex
-): number => {
-  let newOrder = items[fromIndex].data.order;
-  if (fromIndex < toIndex) {
-    // moving down, place after the "to" item
-    // if "to" is the last item, add 1 to its order
-    if (toIndex === items.length - 1) {
-      newOrder = items[toIndex].data.order + 1;
-      // otherwise, average the order of the "to" item and the one after it
-    } else {
-      newOrder =
-        (items[toIndex].data.order + items[toIndex + 1].data.order) / 2;
-    }
-  } else if (fromIndex > toIndex) {
-    // moving up, place before the "to" item
-    // if "to" is the first item, subtract 1 to its order
-    if (toIndex === 0) {
-      newOrder = items[toIndex].data.order - 1;
-      // otherwise, average the order of the "to" item and the one before it
-    } else {
-      newOrder =
-        (items[toIndex].data.order + items[toIndex - 1].data.order) / 2;
-    }
-  }
-
-  return newOrder;
-};

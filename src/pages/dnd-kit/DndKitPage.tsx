@@ -2,68 +2,117 @@ import React from 'react';
 import * as UI from '@chakra-ui/react';
 
 import {
-  getNewSortableItemOrder,
   Sortable,
   SortableList,
   SortableListItemRepeater,
-  SortableListMoveHandler,
 } from './helpers/sortable';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars } from '@fortawesome/free-solid-svg-icons';
+import { arrayMove } from '@dnd-kit/sortable';
+import { useForm, useFieldArray } from 'react-hook-form';
 
 interface Person {
   name: string;
-  order: number;
 }
 
-const DndKitPage: React.FC = () => {
-  const initialItems: Sortable<Person>[] = [
-    { id: 1, data: { name: 'Artemis', order: 1 } },
-    { id: 2, data: { name: 'Bird', order: 2 } },
-    { id: 3, data: { name: 'Charlie', order: 3 } },
-  ];
+type SortablePerson = Sortable<Person>;
 
-  const handleMove: SortableListMoveHandler<Person> = (
-    items,
-    fromIndex,
-    toIndex
-  ) => {
-    let newOrder = getNewSortableItemOrder(items, fromIndex, toIndex);
-    // console.log({ item: items[fromIndex], newOrder });
-    // Update for local sorting
-    items[fromIndex].data.order = newOrder;
-    // TODO: persist to the server
+interface PersonsFormData {
+  persons: SortablePerson[];
+}
+
+const initialPersons: SortablePerson[] = [
+  { id: 1, data: { name: 'Artemis' } },
+  { id: 2, data: { name: 'Bird' } },
+  { id: 3, data: { name: 'Charlie' } },
+];
+
+const DraggableRow = React.forwardRef<HTMLDivElement, UI.StackProps>(
+  ({ children, ...stackProps }, ref) => {
+    const pressed = !!stackProps['aria-pressed'];
+    return (
+      <UI.Stack
+        ref={ref}
+        direction="row"
+        alignItems="center"
+        p={2}
+        spacing={2}
+        bg="gray.50"
+        borderRadius="lg"
+        shadow="md"
+        position="relative"
+        zIndex={pressed ? 1 : 0}
+        {...stackProps}
+      >
+        {children}
+        <UI.Box p={2}>
+          <FontAwesomeIcon icon={faBars} />
+        </UI.Box>
+      </UI.Stack>
+    );
+  }
+);
+
+const SortableWithState: React.FC = () => {
+  const [items, setItems] = React.useState<SortablePerson[]>(initialPersons);
+
+  const handleMove = (activeIndex: number, overIndex: number) => {
+    setItems((items) => arrayMove(items, activeIndex, overIndex));
   };
 
   return (
-    <SortableList initialItems={initialItems} onMove={handleMove}>
-      <UI.Stack p={4} width="280px" mx="auto">
+    <SortableList items={items} onMove={handleMove}>
+      <UI.Stack width="280px">
         <SortableListItemRepeater>
-          {(props, { data: person }: Sortable<Person>) => {
-            const isPressed = props['aria-pressed'];
-            return (
-              <UI.Stack
-                direction="row"
-                alignItems="center"
-                p={2}
-                spacing={2}
-                bg="gray.50"
-                borderRadius="lg"
-                shadow="md"
-                position="relative"
-                zIndex={isPressed ? 1 : 0}
-                {...props}
-              >
-                <UI.Input data-no-dnd defaultValue={person.name} />
-                <UI.Box p={2}>
-                  <FontAwesomeIcon icon={faBars} />
-                </UI.Box>
-              </UI.Stack>
-            );
-          }}
+          {(props, { id, data: person }: SortablePerson) => (
+            <DraggableRow key={id} {...props}>
+              <UI.Input defaultValue={person.name} />
+            </DraggableRow>
+          )}
         </SortableListItemRepeater>
       </UI.Stack>
     </SortableList>
+  );
+};
+
+const SortableWithHookForm: React.FC = () => {
+  const { formState, ...form } = useForm<PersonsFormData>({
+    defaultValues: {
+      persons: initialPersons,
+    },
+  });
+  const personsArray = useFieldArray({
+    name: 'persons',
+    control: form.control,
+  });
+
+  const handleMove = (activeIndex: number, overIndex: number) => {
+    personsArray.move(activeIndex, overIndex);
+  };
+
+  return (
+    <SortableList items={personsArray.fields} onMove={handleMove}>
+      <UI.Stack width="280px">
+        <SortableListItemRepeater>
+          {(props, { id }: SortablePerson, index) => (
+            <DraggableRow key={id} {...props}>
+              <UI.Input {...form.register(`persons.${index}.data.name`)} />
+            </DraggableRow>
+          )}
+        </SortableListItemRepeater>
+      </UI.Stack>
+    </SortableList>
+  );
+};
+
+const DndKitPage: React.FC = () => {
+  return (
+    <UI.Stack p={8} spacing={8} alignItems="center">
+      <UI.Heading size="md">Using component state</UI.Heading>
+      <SortableWithState />
+      <UI.Heading size="md">Using hook-form</UI.Heading>
+      <SortableWithHookForm />
+    </UI.Stack>
   );
 };
 
