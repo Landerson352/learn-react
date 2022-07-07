@@ -8,6 +8,8 @@ import JavascriptPatterns from './pages/patterns/JavascriptPatternsPage';
 import LincChallange1Page from './pages/challenges/LincChallenge1Page';
 import FirebasePage from './pages/firebase/FirebasePage';
 import DragAndDropExample from './pages/dnd/DragAndDropExample';
+import DndKitPage from './pages/dnd-kit/DndKitPage';
+import TabContextDemoPage from './pages/TabContextDemoPage';
 
 const App: React.FC = () => {
   return (
@@ -26,8 +28,14 @@ const App: React.FC = () => {
           <Route path="/dnd">
             <DragAndDropExample />
           </Route>
+          <Route path="/tab-context">
+            <TabContextDemoPage />
+          </Route>
           <Route path="/firebase">
             <FirebasePage />
+          </Route>
+          <Route path="/dnd-kit">
+            <DndKitPage />
           </Route>
           <Route path="/:segment">
             <ExamplesPage />
