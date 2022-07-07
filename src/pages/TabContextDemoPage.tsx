@@ -1,7 +1,6 @@
 import React from 'react';
 import * as UI from '@chakra-ui/react';
 import TabCarouselControl from '../components/TabCarouselControl';
-import _ from 'lodash';
 
 const TabContextDemoPage: React.FC = () => {
   return (

@@ -5,7 +5,7 @@ import { QueryParamProvider } from 'use-query-params';
 import ExamplesPage from './pages/ExamplesPage';
 import CompositionalPatterns from './pages/patterns/CompositionalPatternsPage';
 import JavascriptPatterns from './pages/patterns/JavascriptPatternsPage';
-import LincChallange1Page from './pages/challenges/LincChallenge1Page';
+import LincChallenge1Page from './pages/challenges/LincChallenge1Page';
 import FirebasePage from './pages/firebase/FirebasePage';
 import DragAndDropExample from './pages/dnd/DragAndDropExample';
 import DndKitPage from './pages/dnd-kit/DndKitPage';
@@ -17,7 +17,7 @@ const App: React.FC = () => {
       <QueryParamProvider ReactRouterRoute={Route}>
         <Switch>
           <Route path="/challanges/linc/1">
-            <LincChallange1Page />
+            <LincChallenge1Page />
           </Route>
           <Route path="/patterns/composition">
             <CompositionalPatterns />
@@ -28,14 +28,14 @@ const App: React.FC = () => {
           <Route path="/dnd">
             <DragAndDropExample />
           </Route>
-          <Route path="/tab-context">
-            <TabContextDemoPage />
+          <Route path="/dnd-kit">
+            <DndKitPage />
           </Route>
           <Route path="/firebase">
             <FirebasePage />
           </Route>
-          <Route path="/dnd-kit">
-            <DndKitPage />
+          <Route path="/tab-context">
+            <TabContextDemoPage />
           </Route>
           <Route path="/:segment">
             <ExamplesPage />
