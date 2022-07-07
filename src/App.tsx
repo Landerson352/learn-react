@@ -8,6 +8,7 @@ import JavascriptPatterns from './pages/patterns/JavascriptPatternsPage';
 import LincChallange1Page from './pages/challenges/LincChallenge1Page';
 import FirebasePage from './pages/firebase/FirebasePage';
 import DndKitPage from './pages/dnd-kit/DndKitPage';
+import TabContextDemoPage from './pages/TabContextDemoPage';
 
 const App: React.FC = () => {
   return (
@@ -22,6 +23,9 @@ const App: React.FC = () => {
           </Route>
           <Route path="/patterns/js">
             <JavascriptPatterns />
+          </Route>
+          <Route path="/tab-context">
+            <TabContextDemoPage />
           </Route>
           <Route path="/firebase">
             <FirebasePage />
