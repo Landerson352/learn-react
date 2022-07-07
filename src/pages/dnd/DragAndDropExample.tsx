@@ -9,6 +9,8 @@ import DndMultiProvider from './dnd-helpers/DndMultiProvider';
 import { useDisableNativePreview } from './dnd-helpers/hooks';
 
 /**
+ * Adapted from https://react-dnd.github.io/react-dnd/docs/tutorial
+ *
  * In this example, we use our chess app logic and dnd helpers
  * to create a drag-and drop interface.
  */
