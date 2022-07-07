@@ -66,7 +66,9 @@ const SortableWithState: React.FC = () => {
         <SortableListItemRepeater>
           {(props, { id, data: person }: SortablePerson) => (
             <DraggableRow key={id} {...props}>
-              <UI.Input defaultValue={person.name} />
+              <UI.Text p={2} flexGrow={1}>
+                {person.name}
+              </UI.Text>
             </DraggableRow>
           )}
         </SortableListItemRepeater>
