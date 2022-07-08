@@ -186,7 +186,7 @@ const ContextExample: React.FC = () => {
   );
 };
 
-const ExamplesPage: React.FC = () => {
+const CompositionalPatternsPage: React.FC = () => {
   const exampleComponents = [
     NestedCompositionExample,
     ChildrenExample,
@@ -222,4 +222,4 @@ const ExamplesPage: React.FC = () => {
   );
 };
 
-export default ExamplesPage;
+export default CompositionalPatternsPage;
