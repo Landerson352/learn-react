@@ -51,7 +51,7 @@ const TileView: React.FC<{ tile: Tile } & UI.BoxProps> = ({
       opacity={isDragging ? 0 : 1}
       cursor="grab"
       sx={{
-        '-webkit-tap-highlight-color': 'rgba(0,0,0,0)',
+        WebkitTapHighlightColor: 'rgba(0,0,0,0)',
       }}
       {...boxProps}
     >
@@ -133,6 +133,7 @@ export const TileGamePage: React.FC = () => {
   return (
     <DndMultiProvider>
       <GameState.Provider value={null}>
+        {/* <LayoutGroup> */}
         <NonScrollingFlex.Root>
           <NonScrollingFlex.Child
             flex="1 0 auto"
@@ -185,10 +186,11 @@ export const TileGamePage: React.FC = () => {
             </UI.Flex>
           </NonScrollingFlex.Child>
         </NonScrollingFlex.Root>
+        {/* </LayoutGroup> */}
         <CustomDragLayer>
           {(dragLayer) => {
             return dragLayer.itemType === ItemTypes.tile ? (
-              <TileView tile={dragLayer.item} />
+              <TileView tile={dragLayer.item} boxShadow="dark-lg" />
             ) : null;
           }}
         </CustomDragLayer>
