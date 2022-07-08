@@ -10,6 +10,7 @@ import FirebasePage from './pages/firebase/FirebasePage';
 import DragAndDropExample from './pages/dnd/DragAndDropExample';
 import DndKitPage from './pages/dnd-kit/DndKitPage';
 import TabContextDemoPage from './pages/TabContextDemoPage';
+import { TileGamePage } from './pages/tileGame/TileGamePage';
 
 const App: React.FC = () => {
   return (
@@ -33,6 +34,9 @@ const App: React.FC = () => {
           </Route>
           <Route path="/firebase">
             <FirebasePage />
+          </Route>
+          <Route path="/layout">
+            <TileGamePage />
           </Route>
           <Route path="/tab-context">
             <TabContextDemoPage />
