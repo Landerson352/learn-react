@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import useAxios from 'axios-hooks';
 import * as dateFns from 'date-fns';
 import * as FramerMotion from 'framer-motion';
+import * as FramerMotion3D from 'framer-motion-3d';
 import * as Motion from 'motion';
 import _ from 'lodash';
 import numeral from 'numeral';
@@ -22,6 +23,7 @@ import logoSrc from '../images/logo.svg';
 const MotionUI = {
   Box: FramerMotion.motion(UI.Box),
 };
+const motion3d = FramerMotion3D.motion;
 
 // https://create-react-app.dev/docs/adding-images-fonts-and-files/
 const ImageExample: React.FC = () => {
@@ -167,6 +169,34 @@ const MotionOneExample: React.FC = () => {
         h="50px"
         m={4}
       />
+    </UI.Box>
+  );
+};
+
+// https://www.framer.com/docs/
+const FramerMotion3DExample: React.FC = () => {
+  const green300 = UI.theme.colors.green[300];
+
+  return (
+    <UI.Box mb={8}>
+      <UI.Heading size="md" mb={4}>
+        Working with Framer Motion 3D
+      </UI.Heading>
+      <UI.Box w="80px" h="80px">
+        <FramerMotion3D.MotionCanvas>
+          {/* @ts-ignore */}
+          <FramerMotion3D.LayoutCamera position={[0, 0, 6]} />
+          <motion3d.ambientLight intensity={0.3} />
+          <motion3d.pointLight position={[10, 10, 10]} />
+          <motion3d.mesh
+            animate={{ rotateY: Math.PI * 4, rotateZ: Math.PI * 2 }}
+            transition={{ repeat: Infinity, duration: 5, ease: 'linear' }}
+          >
+            <motion3d.boxGeometry args={[3, 3, 3]} />
+            <motion3d.meshStandardMaterial color={green300} />
+          </motion3d.mesh>
+        </FramerMotion3D.MotionCanvas>
+      </UI.Box>
     </UI.Box>
   );
 };
@@ -707,6 +737,7 @@ const ExamplesPage: React.FC = () => {
     FramerMotionPropsExample,
     FramerMotionHooksExample,
     MotionOneExample,
+    FramerMotion3DExample,
     ToastExample,
     LinksExample,
     CollectionsExample,
