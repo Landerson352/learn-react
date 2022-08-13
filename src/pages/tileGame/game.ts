@@ -5,7 +5,7 @@ import createContextProvider from '../../helpers/createContextProvider';
 import { immutablySwapItems } from '../../helpers/immutablySwapItems';
 
 export const boardSize = 16;
-export const traySize = 16;
+export const traySize = 4;
 
 export enum ItemTypes {
   tile = 'tile',
@@ -17,11 +17,9 @@ export interface TileColor {
 
 export const tileColors: { [key: string]: TileColor } = {
   grass: { hex: 'green.300' },
-  snow: { hex: 'gray.100' },
+  snow: { hex: 'purple.300' },
   sand: { hex: 'orange.300' },
-  asphalt: { hex: 'gray.700' },
-  concrete: { hex: 'gray.500' },
-  forest: { hex: 'green.500' },
+  asphalt: { hex: 'blue.300' },
 };
 
 export type TileColorKey = keyof typeof tileColors;

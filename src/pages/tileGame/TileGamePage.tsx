@@ -10,7 +10,7 @@ import CustomDragLayer from '../dnd/dnd-helpers/CustomDragLayer';
 import DndMultiProvider from '../dnd/dnd-helpers/DndMultiProvider';
 import { useDisableNativePreview } from '../dnd/dnd-helpers/hooks';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faMinus, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faHeart, faThumbsDown } from '@fortawesome/free-solid-svg-icons';
 
 const TileView: React.FC<{ tile: Tile; isDragLayer?: boolean } & UI.BoxProps> =
   ({ tile, isDragLayer, ...boxProps }) => {
@@ -51,71 +51,8 @@ const TileView: React.FC<{ tile: Tile; isDragLayer?: boolean } & UI.BoxProps> =
           WebkitTapHighlightColor: 'rgba(0,0,0,0)',
         }}
         boxShadow={isDragLayer ? 'dark-lg' : ''}
-        top={isDragLayer ? '-20px' : 0}
         {...boxProps}
       >
-        <UI.Flex
-          alignItems="end"
-          justifyContent="space-between"
-          w="80px"
-          h="100px"
-          borderRadius="lg"
-          bg="gray.600"
-          position="absolute"
-          top={0}
-          left={0}
-          visibility={isDragLayer ? 'visible' : 'hidden'}
-          px={1}
-          fontSize="8px"
-          color="gray.600"
-        >
-          <UI.HStack spacing="2px" px={1} py="5px">
-            {_.map(tile.mods, (mod, key) => {
-              if (mod.value <= 0) return null;
-
-              return (
-                <React.Fragment key={key}>
-                  {_.times(mod.value, (i) => {
-                    return (
-                      <UI.Box
-                        key={i}
-                        bg={mod.color.hex}
-                        borderRadius="2px"
-                        w={3}
-                        h={3}
-                      >
-                        <FontAwesomeIcon icon={faPlus} />
-                      </UI.Box>
-                    );
-                  })}
-                </React.Fragment>
-              );
-            })}
-          </UI.HStack>
-          <UI.HStack spacing="2px" px={1} py="5px">
-            {_.map(tile.mods, (mod, key) => {
-              if (mod.value >= 0) return null;
-
-              return (
-                <React.Fragment key={key}>
-                  {_.times(-mod.value, (i) => {
-                    return (
-                      <UI.Box
-                        key={i}
-                        bg={mod.color.hex}
-                        borderRadius="2px"
-                        w={3}
-                        h={3}
-                      >
-                        <FontAwesomeIcon icon={faMinus} />
-                      </UI.Box>
-                    );
-                  })}
-                </React.Fragment>
-              );
-            })}
-          </UI.HStack>
-        </UI.Flex>
         <UI.Box
           w="80px"
           h="80px"
@@ -125,7 +62,7 @@ const TileView: React.FC<{ tile: Tile; isDragLayer?: boolean } & UI.BoxProps> =
           position="absolute"
           top={0}
           left={0}
-          transform={isDragLayer ? 'scale(0.95)' : ''}
+          // transform={isDragLayer ? 'scale(0.95)' : ''}
         >
           <UI.Box
             ref={buttonRef}
@@ -221,6 +158,55 @@ const TileSlot: React.FC<
   );
 };
 
+const TileStats: React.FC<{ index: number }> = ({ index }) => {
+  const game = GameState.useContext();
+
+  const tile = game.tiles[index];
+
+  const mods = _.reverse(_.sortBy(tile?.mods, ['value', 'color']));
+
+  return (
+    <React.Fragment>
+      {_.map(mods, (mod, i) => {
+        if (mod.value === 0) return null;
+
+        const modValueColor = mod.value > 0 ? 'red.300' : 'yellow.300';
+        const modValueIcon = mod.value > 0 ? faHeart : faThumbsDown;
+        return (
+          <UI.HStack key={i} spacing="6px">
+            <UI.HStack color={modValueColor} spacing="1px">
+              {_.times(Math.abs(mod.value), (i) => {
+                return <FontAwesomeIcon key={i} icon={modValueIcon} />;
+              })}
+            </UI.HStack>
+            <UI.Box w={4} h={4} bg={mod.color.hex} borderRadius="sm" />
+          </UI.HStack>
+        );
+      })}
+    </React.Fragment>
+  );
+
+  // <UI.HStack spacing="6px">
+  //   <UI.HStack color="red.300" spacing="1px">
+  //     <FontAwesomeIcon icon={faHeart} />
+  //     <FontAwesomeIcon icon={faHeart} />
+  //   </UI.HStack>
+  //   <UI.Box w={4} h={4} bg="cyan.500" borderRadius="sm" />
+  // </UI.HStack>
+  // <UI.HStack spacing="6px">
+  //   <UI.HStack color="red.300" spacing="1px">
+  //     <FontAwesomeIcon icon={faHeart} />
+  //   </UI.HStack>
+  //   <UI.Box w={4} h={4} bg="purple.500" borderRadius="sm" />
+  // </UI.HStack>
+  // <UI.HStack spacing="6px">
+  //   <UI.HStack color="yellow.300" spacing="1px">
+  //     <FontAwesomeIcon icon={faThumbsDown} />
+  //   </UI.HStack>
+  //   <UI.Box w={4} h={4} bg="orange.500" borderRadius="sm" />
+  // </UI.HStack>
+};
+
 const Score: React.FC = () => {
   const game = GameState.useContext();
 
@@ -237,7 +223,7 @@ export const TileGamePage: React.FC = () => {
       <GameState.Provider value={null}>
         <NonScrollingFlex.Root>
           <NonScrollingFlex.Child
-            flex="1 0 auto"
+            flex="0 1 auto"
             alignItems="center"
             justifyContent="center"
             userSelect="none"
@@ -264,35 +250,45 @@ export const TileGamePage: React.FC = () => {
             justifyContent="start"
             userSelect="none"
           >
-            <UI.Flex
-              direction="column"
-              w="360px"
-              h="380px"
+            <UI.HStack
               flex="0 1 auto"
-              p="10px"
-              pb="30px"
+              alignItems="stretch"
+              w="360px"
+              h="300px"
+              p="20px"
               overflow="hidden"
+              spacing={0}
             >
-              <UI.Box
-                bg="gray.400"
-                flex="1 1 0"
-                p="10px"
-                borderRadius="lg"
-                overflow="scroll"
-                boxShadow="inset 0 10px 20px rgba(0, 0, 0, 0.15)"
-              >
-                <UI.SimpleGrid columns={4} spacing={0}>
-                  {_.times(traySize, (i) => (
-                    <TileSlot
-                      key={i}
-                      mode="tray"
-                      index={i + boardSize}
-                      transform="scale(0.875)"
-                    />
-                  ))}
-                </UI.SimpleGrid>
-              </UI.Box>
-            </UI.Flex>
+              {_.times(traySize, (i) => (
+                <UI.VStack key={i} spacing={2}>
+                  <TileSlot
+                    mode="board"
+                    index={i + boardSize}
+                    transform="scale(0.875)"
+                  />
+                  <TileStats index={i + boardSize} />
+                  {/* <UI.HStack spacing="6px">
+                    <UI.HStack color="red.300" spacing="1px">
+                      <FontAwesomeIcon icon={faHeart} />
+                      <FontAwesomeIcon icon={faHeart} />
+                    </UI.HStack>
+                    <UI.Box w={4} h={4} bg="cyan.500" borderRadius="sm" />
+                  </UI.HStack>
+                  <UI.HStack spacing="6px">
+                    <UI.HStack color="red.300" spacing="1px">
+                      <FontAwesomeIcon icon={faHeart} />
+                    </UI.HStack>
+                    <UI.Box w={4} h={4} bg="purple.500" borderRadius="sm" />
+                  </UI.HStack>
+                  <UI.HStack spacing="6px">
+                    <UI.HStack color="yellow.300" spacing="1px">
+                      <FontAwesomeIcon icon={faThumbsDown} />
+                    </UI.HStack>
+                    <UI.Box w={4} h={4} bg="orange.500" borderRadius="sm" />
+                  </UI.HStack> */}
+                </UI.VStack>
+              ))}
+            </UI.HStack>
           </NonScrollingFlex.Child>
         </NonScrollingFlex.Root>
         <CustomDragLayer>
