@@ -9,8 +9,8 @@ import { ItemTypes, Tile, GameState, boardSize, traySize } from './game';
 import CustomDragLayer from '../dnd/dnd-helpers/CustomDragLayer';
 import DndMultiProvider from '../dnd/dnd-helpers/DndMultiProvider';
 import { useDisableNativePreview } from '../dnd/dnd-helpers/hooks';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faMinus, faPlus } from '@fortawesome/free-solid-svg-icons';
+// import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+// import { faMinus, faPlus } from '@fortawesome/free-solid-svg-icons';
 
 const TileView: React.FC<{ tile: Tile; isDragLayer?: boolean } & UI.BoxProps> =
   ({ tile, isDragLayer, ...boxProps }) => {
@@ -52,9 +52,10 @@ const TileView: React.FC<{ tile: Tile; isDragLayer?: boolean } & UI.BoxProps> =
         }}
         boxShadow={isDragLayer ? 'dark-lg' : ''}
         top={isDragLayer ? '-20px' : 0}
+        transform={isDragLayer ? 'scale(0.95)' : ''}
         {...boxProps}
       >
-        <UI.Flex
+        {/* <UI.Flex
           alignItems="end"
           justifyContent="space-between"
           w="80px"
@@ -115,17 +116,17 @@ const TileView: React.FC<{ tile: Tile; isDragLayer?: boolean } & UI.BoxProps> =
               );
             })}
           </UI.HStack>
-        </UI.Flex>
+        </UI.Flex> */}
         <UI.Box
           w="80px"
           h="80px"
           borderRadius="lg"
-          bg={tile.color.hex}
-          color="gray.200"
+          // bg={tile.color.hex}
+          bg="orange.300"
+          // color="gray.200"
           position="absolute"
           top={0}
           left={0}
-          transform={isDragLayer ? 'scale(0.95)' : ''}
         >
           <UI.Box
             ref={buttonRef}
@@ -136,6 +137,18 @@ const TileView: React.FC<{ tile: Tile; isDragLayer?: boolean } & UI.BoxProps> =
             {/* {tile.id} */}
           </UI.Box>
         </UI.Box>
+
+        <UI.Box
+          w="80px"
+          h="80px"
+          borderRadius="lg"
+          // bg={tile.color.hex}
+          bg="green.500"
+          color="gray.200"
+          position="absolute"
+          top={-1}
+          left={0}
+        />
       </UI.Box>
     );
   };
@@ -188,12 +201,14 @@ const TileSlot: React.FC<
       <UI.Box
         gridArea="main"
         borderRadius="full"
-        bg={mode === 'tray' ? 'gray.400' : 'gray.100'}
+        // bg={mode === 'tray' ? 'gray.400' : 'gray.100'}
+        border="2px solid"
+        borderColor={mode === 'tray' ? 'gray.300' : 'blue.400'}
         w={6}
         h={6}
         m={1}
         opacity={1}
-        boxShadow="inset 0 10px 20px rgba(0, 0, 0, 0.15)"
+        // boxShadow="inset 0 10px 20px rgba(0, 0, 0, 0.15)"
       />
       <UI.Box
         gridArea="main"
@@ -249,6 +264,7 @@ export const TileGamePage: React.FC = () => {
             alignItems="center"
             justifyContent="end"
             userSelect="none"
+            bg="blue.600"
           >
             <UI.Box w="360px" h="360px" p="20px" pt="30px">
               <UI.SimpleGrid columns={4} spacing={0}>

@@ -35,7 +35,7 @@ const App: React.FC = () => {
           <Route path="/firebase">
             <FirebasePage />
           </Route>
-          <Route path="/layout">
+          <Route path="/tile-game">
             <TileGamePage />
           </Route>
           <Route path="/tab-context">

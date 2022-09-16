@@ -11,63 +11,68 @@ export enum ItemTypes {
   tile = 'tile',
 }
 
-export interface TileColor {
-  hex: string;
-}
+// export interface TileColor {
+//   hex: string;
+// }
 
-export const tileColors: { [key: string]: TileColor } = {
-  grass: { hex: 'green.300' },
-  snow: { hex: 'gray.100' },
-  sand: { hex: 'orange.300' },
-  asphalt: { hex: 'gray.700' },
-  concrete: { hex: 'gray.500' },
-  forest: { hex: 'green.500' },
-};
+// export const tileColors: { [key: string]: TileColor } = {
+//   grass: { hex: 'green.300' },
+//   snow: { hex: 'gray.100' },
+//   sand: { hex: 'orange.300' },
+//   asphalt: { hex: 'gray.700' },
+//   concrete: { hex: 'gray.500' },
+//   forest: { hex: 'green.500' },
+// };
 
-export type TileColorKey = keyof typeof tileColors;
+// export type TileColorKey = keyof typeof tileColors;
 
 export interface Tile {
   id: number;
-  color: TileColor;
-  mods?: TileColorMods;
+  // color: TileColor;
+  // mods?: TileColorMods;
+  buildingLevel?: number;
+  natureLevel?: number;
+  animalLevel?: number;
 }
 
 export type TilePosition = Tile | null;
 
-export interface TileColorMod {
-  color: TileColor;
-  value: number;
-}
+// export interface TileColorMod {
+//   color: TileColor;
+//   value: number;
+// }
 
-export interface TileColorMods {
-  [key: TileColorKey]: TileColorMod;
-}
+// export interface TileColorMods {
+//   [key: TileColorKey]: TileColorMod;
+// }
 
-const getRandomColor = (): TileColor => {
-  return _.sample(Object.values(tileColors)) as TileColor;
-};
+// const getRandomColor = (): TileColor => {
+//   return _.sample(Object.values(tileColors)) as TileColor;
+// };
 
-const getRandomColorMods = (): TileColorMods => {
-  const mods = _.mapValues(tileColors, (color) => {
-    return {
-      color,
-      value: 0,
-    };
-  });
+// const getRandomColorMods = (): TileColorMods => {
+//   const mods = _.mapValues(tileColors, (color) => {
+//     return {
+//       color,
+//       value: 0,
+//     };
+//   });
 
-  for (let i = 0; i < 4; i++) {
-    let color = _.sample(mods) as TileColorMod;
-    color.value += _.sample([-1, 0, 0, 1, 1, 1]) as number;
-  }
+//   for (let i = 0; i < 4; i++) {
+//     let color = _.sample(mods) as TileColorMod;
+//     color.value += _.sample([-1, 0, 0, 1, 1, 1]) as number;
+//   }
 
-  return mods;
-};
+//   return mods;
+// };
 
 const getInitialTiles = (): TilePosition[] => {
   return [
     ..._.times(boardSize, () => null),
     ..._.times(traySize, (i) => {
-      return { id: i, color: getRandomColor(), mods: getRandomColorMods() };
+      // return { id: i, color: getRandomColor(), mods: getRandomColorMods() };
+      // TODO: random levels
+      return { id: i };
     }),
   ];
 };
@@ -84,16 +89,18 @@ const getTileToTileScore = (
   if (!otherTile) {
     return 0;
   }
-  const score = _.reduce(
-    tile.mods,
-    (acc, mod) => {
-      if (mod.color === otherTile.color) {
-        return acc + mod.value;
-      }
-      return acc;
-    },
-    0
-  );
+  // TODO: add adjacent tile levels
+  const score = 1;
+  // const score = _.reduce(
+  //   tile.mods,
+  //   (acc, mod) => {
+  //     if (mod.color === otherTile.color) {
+  //       return acc + mod.value;
+  //     }
+  //     return acc;
+  //   },
+  //   0
+  // );
 
   return score;
 };
