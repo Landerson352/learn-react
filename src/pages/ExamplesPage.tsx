@@ -12,7 +12,6 @@ import * as reactHookForm from 'react-hook-form';
 import * as reactRouter from 'react-router-dom';
 import * as reactUse from 'react-use';
 import useLocalStorageState from 'use-local-storage-state';
-import { useQueryParam, NumberParam, withDefault } from 'use-query-params';
 import * as util from 'util';
 
 import logoSrc from '../images/logo.svg';
@@ -469,10 +468,17 @@ const PreviousExample: React.FC = () => {
   );
 };
 
-// https://github.com/pbeshai/use-query-params#readme
+// https://reactrouter.com/en/v6.3.0/api#usesearchparams
 // Note that this implementation is dependent on React Router.
+// Note that this example parses and casts an integer from the query-string.
 const QueryStateExample: React.FC = () => {
-  const [count, setCount] = useQueryParam('count', withDefault(NumberParam, 0));
+  const [searchParams, setSearchParams] = reactRouter.useSearchParams();
+
+  const count = parseInt(searchParams.get('count') || '0', 10);
+
+  const setCount = (newCount: number) => {
+    setSearchParams({ count: `${newCount}` });
+  };
 
   return (
     <UI.Box mb={8}>

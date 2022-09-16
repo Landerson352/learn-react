@@ -11,7 +11,7 @@ const CustomDragLayer: React.FC<
     children: (
       dragLayer: ReturnType<typeof useCustomDragLayer>
     ) => React.ReactNode;
-  } & UI.BoxProps
+  } & Omit<UI.BoxProps, 'children'>
 > = ({ children, ...boxProps }) => {
   const dragLayer = useCustomDragLayer();
 
