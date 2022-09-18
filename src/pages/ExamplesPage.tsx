@@ -495,7 +495,9 @@ const QueryStateExample: React.FC = () => {
 
 // https://www.npmjs.com/package/use-local-storage-state
 const LocalStorageExample: React.FC = () => {
-  const [count, setCount, { removeItem }] = useLocalStorageState('count', 0);
+  const [count, setCount, { removeItem }] = useLocalStorageState('count', {
+    defaultValue: 0,
+  });
 
   return (
     <UI.Box mb={8}>
