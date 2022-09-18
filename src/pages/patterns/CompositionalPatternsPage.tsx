@@ -44,7 +44,7 @@ const NestedCompositionExample: React.FC = () => {
   );
 };
 
-const Wrapper: React.FC = ({ children }) => {
+const Wrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
     <UI.Box
       borderRadius="8px"
