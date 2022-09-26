@@ -5,7 +5,7 @@ import createContextProvider from '../../helpers/createContextProvider';
 import { immutablySwapItems } from '../../helpers/immutablySwapItems';
 
 export const boardSize = 16;
-export const traySize = 16;
+export const traySize = 3;
 
 export enum ItemTypes {
   tile = 'tile',
