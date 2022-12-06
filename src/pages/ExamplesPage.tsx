@@ -15,6 +15,7 @@ import useLocalStorageState from 'use-local-storage-state';
 import * as util from 'util';
 
 import logoSrc from '../images/logo.svg';
+import { useRouteModal } from './modals/routeModal';
 
 // Wrap components with Framer Motion for use in animated components.
 // (You only have to do this once.)
@@ -706,6 +707,63 @@ const ContextExample: React.FC = () => {
   );
 };
 
+export const ExampleModal: React.FC<Omit<UI.ModalProps, 'children'>> = (
+  props
+) => {
+  return (
+    <UI.Modal {...props}>
+      <UI.ModalOverlay />
+      <UI.ModalContent>
+        <UI.ModalHeader>Modal Title</UI.ModalHeader>
+        <UI.ModalCloseButton />
+        <UI.ModalBody>...</UI.ModalBody>
+
+        <UI.ModalFooter>
+          <UI.Button colorScheme="blue" mr={3} onClick={props.onClose}>
+            Close
+          </UI.Button>
+        </UI.ModalFooter>
+      </UI.ModalContent>
+    </UI.Modal>
+  );
+};
+const ModalExample: React.FC = () => {
+  const modal = UI.useDisclosure();
+  const [routeModal, routeModalHref] = useRouteModal('example');
+  return (
+    <UI.Box mb={8}>
+      <ExampleModal {...routeModal} />
+
+      <UI.Heading size="md" mb={4}>
+        Working with modals
+      </UI.Heading>
+      <UI.Text mb={4}>
+        Modals are one of the easiest UI patterns to abuse. Simple modals for
+        temporary messages can be managed in component state. Larger modals that
+        act and feel like pages should be synced with the router, so that
+        refreshing keeps the window open, and hitting "back" closes the modal.
+      </UI.Text>
+      <UI.UnorderedList>
+        <UI.ListItem>
+          <UI.Link onClick={modal.onOpen} color="blue.300">
+            Open modal via component state
+          </UI.Link>
+        </UI.ListItem>
+        <UI.ListItem>
+          <UI.Link as={reactRouter.Link} to={routeModalHref} color="blue.300">
+            Open modal via link (href)
+          </UI.Link>
+        </UI.ListItem>
+        <UI.ListItem>
+          <UI.Link onClick={routeModal.onOpen} color="blue.300">
+            Open modal via link (programmatic)
+          </UI.Link>
+        </UI.ListItem>
+      </UI.UnorderedList>
+    </UI.Box>
+  );
+};
+
 const ExamplesPage: React.FC = () => {
   const exampleComponents = [
     ImageExample,
@@ -734,6 +792,7 @@ const ExamplesPage: React.FC = () => {
     FormExample,
     RestExample,
     ContextExample,
+    ModalExample,
   ];
 
   return (
