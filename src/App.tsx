@@ -11,6 +11,7 @@ import DragAndDropExample from './pages/dnd/DragAndDropExample';
 import DndKitPage from './pages/dnd-kit/DndKitPage';
 import TabContextDemoPage from './pages/TabContextDemoPage';
 import ModalExamplesPage from './pages/modals/ModalExamplesPage';
+import DataGridExamplesPage from './pages/data-grid/DataGridExamplesPage';
 
 const App: React.FC = () => {
   return (
@@ -24,6 +25,7 @@ const App: React.FC = () => {
         <Route path="/patterns/js" element={<JavascriptPatterns />} />
         <Route path="/dnd" element={<DragAndDropExample />} />
         <Route path="/dnd-kit" element={<DndKitPage />} />
+        <Route path="/data-grids" element={<DataGridExamplesPage />} />
         <Route
           path={createModalPath('/modals')}
           element={<ModalExamplesPage />}
