@@ -28,11 +28,12 @@ export enum ItemTypes {
 
 export interface Tile {
   id: number;
+  name: string;
   // color: TileColor;
   // mods?: TileColorMods;
-  buildingLevel?: number;
-  natureLevel?: number;
-  animalLevel?: number;
+  // buildingLevel?: number;
+  // natureLevel?: number;
+  // animalLevel?: number;
 }
 
 export type TilePosition = Tile | null;
@@ -72,7 +73,7 @@ const getInitialTiles = (): TilePosition[] => {
     ..._.times(traySize, (i) => {
       // return { id: i, color: getRandomColor(), mods: getRandomColorMods() };
       // TODO: random levels
-      return { id: i };
+      return { id: i, name: 'Tile ' + i };
     }),
   ];
 };
@@ -134,6 +135,7 @@ const getScore = (tiles: TilePosition[]): number => {
 
 export const GameState = createContextProvider(() => {
   const [tiles, setTiles] = React.useState<TilePosition[]>(getInitialTiles());
+  const [focusedTile, setFocusedTile] = React.useState<Tile>();
 
   const score = getScore(tiles);
 
@@ -155,5 +157,7 @@ export const GameState = createContextProvider(() => {
     score,
     canMoveTile,
     moveTile,
+    focusedTile,
+    setFocusedTile,
   };
 });

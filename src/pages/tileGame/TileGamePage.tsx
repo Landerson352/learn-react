@@ -18,6 +18,7 @@ import { useDisableNativePreview } from '../dnd/dnd-helpers/hooks';
 const TileView: React.FC<
   { tile: Tile; isDragLayer?: boolean; mode?: 'board' | 'tray' } & UI.BoxProps
 > = ({ tile, isDragLayer, mode, ...boxProps }) => {
+  const game = GameState.useContext();
   // Inform dnd that we can drag this tile
   const [{ isDragging }, drag, preview] = useDrag(
     {
@@ -33,11 +34,13 @@ const TileView: React.FC<
   const buttonRef = React.useRef<HTMLDivElement | null>(null);
   useDoubleClick({
     onSingleClick: (e) => {
-      console.log('single click');
+      // console.log('single click');
+      game.setFocusedTile(tile);
     },
-    onDoubleClick: (e) => {
-      console.log('double click');
-    },
+    // onDoubleClick: (e) => {
+    //   console.log('double click');
+    //   game.setFocusedTile(tile);
+    // },
     ref: buttonRef,
   });
 
@@ -71,16 +74,17 @@ const TileView: React.FC<
         top={0}
         left={0}
       >
-        <UI.Box
+        {/* <UI.Box
           ref={buttonRef}
           fontWeight="bold"
           fontSize="lg"
           lineHeight="80px"
-        />
+        /> */}
       </UI.Box>
 
       <UI.Box
         key="surface"
+        ref={buttonRef}
         w="80px"
         h="80px"
         borderRadius="md"
@@ -95,6 +99,34 @@ const TileView: React.FC<
         left={0}
       />
     </UI.Box>
+  );
+};
+
+const TileDetailModal: React.FC = () => {
+  const game = GameState.useContext();
+
+  const modal = {
+    isOpen: !!game.focusedTile,
+    onClose: () => {
+      game.setFocusedTile(undefined);
+    },
+  };
+
+  return (
+    <UI.Modal isCentered {...modal}>
+      <UI.ModalOverlay />
+      <UI.ModalContent maxW="240px">
+        <UI.VStack p={4} spacing={4} minH="320px">
+          <UI.Heading size="md">{game.focusedTile?.name}</UI.Heading>
+          <UI.HStack flex="1" spacing={4} justifyContent="center">
+            <UI.Text>{JSON.stringify(game.focusedTile)}</UI.Text>
+          </UI.HStack>
+          <UI.Button size="xs" onClick={modal.onClose}>
+            close
+          </UI.Button>
+        </UI.VStack>
+      </UI.ModalContent>
+    </UI.Modal>
   );
 };
 
@@ -287,6 +319,7 @@ export const TileGamePage: React.FC = () => {
             ) : null;
           }}
         </CustomDragLayer>
+        <TileDetailModal />
       </GameState.Provider>
     </DndMultiProvider>
   );
