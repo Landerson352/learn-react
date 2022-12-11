@@ -5,7 +5,7 @@ import createContextProvider from '../../helpers/createContextProvider';
 import { immutablySwapItems } from '../../helpers/immutablySwapItems';
 
 export const boardSize = 16;
-export const traySize = 3;
+export const traySize = 16;
 
 export enum ItemTypes {
   tile = 'tile',
@@ -112,14 +112,14 @@ const getTileScore = (tiles: TilePosition[], index: number): number => {
   }
 
   let score = 1;
-  score += getTileToTileScore(tile, tiles, index - 5);
+  // score += getTileToTileScore(tile, tiles, index - 5);
   score += getTileToTileScore(tile, tiles, index - 4);
-  score += getTileToTileScore(tile, tiles, index - 3);
+  // score += getTileToTileScore(tile, tiles, index - 3);
   score += getTileToTileScore(tile, tiles, index - 1);
   score += getTileToTileScore(tile, tiles, index + 1);
-  score += getTileToTileScore(tile, tiles, index + 3);
+  // score += getTileToTileScore(tile, tiles, index + 3);
   score += getTileToTileScore(tile, tiles, index + 4);
-  score += getTileToTileScore(tile, tiles, index + 5);
+  // score += getTileToTileScore(tile, tiles, index + 5);
 
   return score;
 };
