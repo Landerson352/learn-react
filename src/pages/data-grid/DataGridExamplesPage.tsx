@@ -21,7 +21,52 @@ type UnitConversion = {
   factor: number;
 };
 
-const data: UnitConversion[] = [
+const rawData: UnitConversion[] = [
+  {
+    fromUnit: 'inches',
+    toUnit: 'millimetres (mm)',
+    factor: 25.4,
+  },
+  {
+    fromUnit: 'feet',
+    toUnit: 'centimetres (cm)',
+    factor: 30.48,
+  },
+  {
+    fromUnit: 'yards',
+    toUnit: 'metres (m)',
+    factor: 0.91444,
+  },
+  {
+    fromUnit: 'inches',
+    toUnit: 'millimetres (mm)',
+    factor: 25.4,
+  },
+  {
+    fromUnit: 'feet',
+    toUnit: 'centimetres (cm)',
+    factor: 30.48,
+  },
+  {
+    fromUnit: 'yards',
+    toUnit: 'metres (m)',
+    factor: 0.91444,
+  },
+  {
+    fromUnit: 'inches',
+    toUnit: 'millimetres (mm)',
+    factor: 25.4,
+  },
+  {
+    fromUnit: 'feet',
+    toUnit: 'centimetres (cm)',
+    factor: 30.48,
+  },
+  {
+    fromUnit: 'yards',
+    toUnit: 'metres (m)',
+    factor: 0.91444,
+  },
   {
     fromUnit: 'inches',
     toUnit: 'millimetres (mm)',
@@ -62,6 +107,13 @@ const columns = [
 const DataGridExamplesPage: React.FC = () => {
   const exampleComponents = [DataGridIntro];
 
+  // TODO: replace this with fetch/axios hooks
+  const [data, setData] = React.useState(rawData);
+  const handleTableStateChange = (state: Partial<ReactTable.TableState>) => {
+    console.log(state);
+    setData((n) => _.shuffle(n));
+  };
+
   return (
     <UI.Box p="4">
       <UI.Heading size="3xl" mb={8}>
@@ -86,7 +138,12 @@ const DataGridExamplesPage: React.FC = () => {
         {/* </UI.SimpleGrid> */}
 
         <UI.Box bg="white" borderRadius="8px" py={2}>
-          <DataTable columns={columns} data={data} />
+          <DataTable
+            columns={columns}
+            data={data}
+            manual // aka. "I will update the data manually when onStateChange is called"
+            onStateChange={handleTableStateChange}
+          />
         </UI.Box>
       </UI.VStack>
     </UI.Box>

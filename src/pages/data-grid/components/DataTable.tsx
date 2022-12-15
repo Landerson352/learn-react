@@ -7,24 +7,151 @@ import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
 export type DataTableProps<Data extends object> = {
   data: Data[];
   columns: ReactTable.ColumnDef<Data, any>[];
+  tableOptions?: Partial<
+    Pick<ReactTable.TableOptions<Data>, 'onSortingChange'>
+  >;
+  onStateChange?: (state: Partial<ReactTable.TableState>) => void;
+  manual?: boolean;
 };
+
+// Notes:
+// When implementing table you must decide how to want to manage state.
+// Consider WHERE the sorting, filtering, and pagination occurs.
+// If it occurs in the component, you can leverage the automatic management of state.
+// If it occurs on the server, you will want to manage it manually.
 
 export function DataTable<Data extends object>({
   data,
   columns,
+  tableOptions,
+  onStateChange,
+  manual,
 }: DataTableProps<Data>): JSX.Element {
+  const [{ pageIndex, pageSize }, setPagination] =
+    React.useState<ReactTable.PaginationState>({
+      pageIndex: 0,
+      pageSize: 10,
+    });
   const [sorting, setSorting] = React.useState<ReactTable.SortingState>([]);
+  const state = {
+    pagination: {
+      pageIndex,
+      pageSize,
+    },
+    sorting,
+  };
+
+  // callback when state object changes
+  // in "manual" implementations, the callback should update the data prop
+  React.useEffect(() => {
+    onStateChange?.(state);
+  }, [JSON.stringify(state)]);
+
   const table = ReactTable.useReactTable({
     columns,
     data,
     getCoreRowModel: ReactTable.getCoreRowModel(),
-    onSortingChange: setSorting,
+
+    // These calls used by automatic management in local (component) state
+    getFilteredRowModel: ReactTable.getFilteredRowModel(),
+    getPaginationRowModel: ReactTable.getPaginationRowModel(),
     getSortedRowModel: ReactTable.getSortedRowModel(),
-    state: {
-      sorting,
-    },
+
+    // Local state is only used with automatic management, otherwise ignored
+    onPaginationChange: setPagination,
+    onSortingChange: setSorting,
+    state,
+
+    // When using manual management you must instead update the data
+    manualFiltering: manual,
+    manualPagination: manual,
+    manualSorting: manual,
+
+    ...tableOptions,
   });
 
+  return (
+    <React.Fragment>
+      <DataTableView table={table} />
+      <DataTablePagination table={table} />
+    </React.Fragment>
+  );
+}
+
+export function DataTablePagination<Data extends object>({
+  table,
+}: {
+  table: ReactTable.Table<Data>;
+}): JSX.Element {
+  return (
+    <div className="flex items-center gap-2">
+      <button
+        className="border rounded p-1"
+        onClick={() => table.setPageIndex(0)}
+        disabled={!table.getCanPreviousPage()}
+      >
+        {'<<'}
+      </button>
+      <button
+        className="border rounded p-1"
+        onClick={() => table.previousPage()}
+        disabled={!table.getCanPreviousPage()}
+      >
+        {'<'}
+      </button>
+      <button
+        className="border rounded p-1"
+        onClick={() => table.nextPage()}
+        disabled={!table.getCanNextPage()}
+      >
+        {'>'}
+      </button>
+      <button
+        className="border rounded p-1"
+        onClick={() => table.setPageIndex(table.getPageCount() - 1)}
+        disabled={!table.getCanNextPage()}
+      >
+        {'>>'}
+      </button>
+      <span className="flex items-center gap-1">
+        <div>Page</div>
+        <strong>
+          {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
+        </strong>
+      </span>
+      <span className="flex items-center gap-1">
+        | Go to page:
+        <input
+          type="number"
+          defaultValue={table.getState().pagination.pageIndex + 1}
+          onChange={(e) => {
+            const page = e.target.value ? Number(e.target.value) - 1 : 0;
+            table.setPageIndex(page);
+          }}
+          className="border p-1 rounded w-16"
+        />
+      </span>
+      <select
+        value={table.getState().pagination.pageSize}
+        onChange={(e) => {
+          table.setPageSize(Number(e.target.value));
+        }}
+      >
+        {[10, 20, 30, 40, 50].map((pageSize) => (
+          <option key={pageSize} value={pageSize}>
+            Show {pageSize}
+          </option>
+        ))}
+      </select>
+    </div>
+  );
+}
+
+export function DataTableView<Data extends object>({
+  table,
+}: {
+  table: ReactTable.Table<Data>;
+}): JSX.Element {
   return (
     <UI.Table>
       <UI.Thead>
