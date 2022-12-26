@@ -1,12 +1,16 @@
 import * as ReactTable from '@tanstack/react-table';
+import * as UI from '@chakra-ui/react';
+
+export type DataTablePaginationProps<Data extends object> = {
+  table: ReactTable.Table<Data>;
+} & UI.BoxProps;
 
 export function DataTablePagination<Data extends object>({
   table,
-}: {
-  table: ReactTable.Table<Data>;
-}): JSX.Element {
+  ...boxProps
+}: DataTablePaginationProps<Data>): JSX.Element {
   return (
-    <div className="flex items-center gap-2">
+    <UI.Box className="flex items-center gap-2" {...boxProps}>
       <button
         className="border rounded p-1"
         onClick={() => table.setPageIndex(0)}
@@ -65,6 +69,6 @@ export function DataTablePagination<Data extends object>({
           </option>
         ))}
       </select>
-    </div>
+    </UI.Box>
   );
 }

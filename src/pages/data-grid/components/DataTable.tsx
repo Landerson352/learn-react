@@ -4,15 +4,18 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
 import _ from 'lodash';
 
+export type DataTableProps<Data extends object> = {
+  skeleton?: boolean;
+  table: ReactTable.Table<Data>;
+} & UI.TableProps;
+
 export function DataTable<Data extends object>({
   skeleton,
   table,
-}: {
-  skeleton?: boolean;
-  table: ReactTable.Table<Data>;
-}): JSX.Element {
+  ...tableProps
+}: DataTableProps<Data>): JSX.Element {
   return (
-    <UI.Table>
+    <UI.Table {...tableProps}>
       <UI.Thead>
         {table.getHeaderGroups().map((headerGroup) => (
           <UI.Tr key={headerGroup.id}>

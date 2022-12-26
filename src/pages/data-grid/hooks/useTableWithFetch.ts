@@ -2,6 +2,20 @@ import React from 'react';
 import * as ReactTable from '@tanstack/react-table';
 import type { Promisable, SetOptional } from 'type-fest';
 
+export type TableWithFetchOptions<T> = SetOptional<
+  ReactTable.TableOptions<T>,
+  'data' | 'getCoreRowModel'
+>;
+export type FetchDataFromState<T> = (
+  state: ReactTable.TableState
+) => Promisable<T[]>;
+
+export type UseTableWithFetchReturn<T> = {
+  table: ReactTable.Table<T>;
+  fetching: boolean;
+  loading: boolean;
+};
+
 /**
  * useTableWithFetch is a wrapper around useReactTable that expects data to be fetched from a server.
  * @param options Providing anything other than "columns" may cause unexpected behaviour.
@@ -9,9 +23,9 @@ import type { Promisable, SetOptional } from 'type-fest';
  * @returns A tuple containing the table and an object containing the loading and fetching states.
  */
 export function useTableWithFetch<T>(
-  options: SetOptional<ReactTable.TableOptions<T>, 'data' | 'getCoreRowModel'>,
-  fetchDataFromState: (state: ReactTable.TableState) => Promisable<T[]>
-): [ReactTable.Table<T>, { fetching: boolean; loading: boolean }] {
+  options: TableWithFetchOptions<T>,
+  fetchDataFromState: FetchDataFromState<T>
+): UseTableWithFetchReturn<T> {
   const [loading, setLoading] = React.useState(true);
   const [fetching, setFetching] = React.useState(true);
   const [pageCount, setPageCount] = React.useState(100);
@@ -64,5 +78,5 @@ export function useTableWithFetch<T>(
     },
   });
 
-  return [table, { loading, fetching }];
+  return { table, loading, fetching };
 }
