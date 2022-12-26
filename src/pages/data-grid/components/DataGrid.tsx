@@ -1,5 +1,6 @@
 import * as UI from '@chakra-ui/react';
 
+import { ComponentOverride } from '../../../helpers/componentOverride';
 import {
   FetchDataFromState,
   TableWithFetchOptions,
@@ -11,9 +12,6 @@ import {
   DataTablePaginationProps,
 } from './DataTablePagination';
 
-type ComponentOverride<Props extends object> = false | Partial<Props>;
-
-// TODO: component prop objects, optional paging
 export function DataGrid<T extends object>({
   options,
   fetchDataFromState,

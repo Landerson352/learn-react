@@ -4,6 +4,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
 import _ from 'lodash';
 
+import { DataTableSkeleton } from './DataTableSkeleton';
+
 export type DataTableProps<Data extends object> = {
   skeleton?: boolean;
   table: ReactTable.Table<Data>;
@@ -34,6 +36,7 @@ export function DataTable<Data extends object>({
               return (
                 <UI.Th
                   key={header.id}
+                  colSpan={header.colSpan}
                   onClick={header.column.getToggleSortingHandler()}
                   isNumeric={meta?.isNumeric}
                   cursor="pointer"
@@ -64,27 +67,10 @@ export function DataTable<Data extends object>({
         ))}
       </UI.Thead>
       {skeleton ? (
-        <UI.Tbody>
-          {_.times(table.getState().pagination.pageSize, (i) => (
-            <UI.Tr key={i}>
-              {_.last(table.getHeaderGroups())?.headers.map((header) => {
-                return (
-                  <UI.Td key={header.id}>
-                    <UI.Box
-                      bg="gray.100"
-                      borderRadius="md"
-                      color="gray.100"
-                      _after={{
-                        content: '"—"',
-                        display: 'block',
-                      }}
-                    />
-                  </UI.Td>
-                );
-              })}
-            </UI.Tr>
-          ))}
-        </UI.Tbody>
+        <DataTableSkeleton
+          rows={table.getState().pagination.pageSize}
+          columns={table.getAllFlatColumns().length || 0}
+        />
       ) : (
         <UI.Tbody>
           {table.getRowModel().rows.map((row) => (

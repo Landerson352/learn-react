@@ -13,7 +13,7 @@ const DataGridExamplesPage: React.FC = () => {
           <DataGrid
             options={{ columns: getPersonColumns() }}
             fetchDataFromState={fetchPersons}
-            // dataTable={{ fontWeight: 'bold' }}
+            // dataTable={{ fontSize: '2xl' }}
             // pagination={false}
           />
         </UI.Box>

@@ -9,6 +9,21 @@ export type Person = {
 
 const columnHelper = ReactTable.createColumnHelper<Person>();
 
+// WIP
+// const schema = {
+//   person: {
+//     validationByRoles: {
+//       user: zod.number().required().min(1).max(10),
+//       admin: zod.number(),
+//     },
+//     hints: {
+//       expectedMin: 1,
+//       expectedMax: 10,
+//       help: 'This is a help text',
+//     },
+//   },
+// };
+
 const columns = {
   firstName: columnHelper.accessor('firstName', {
     cell: (info) => info.getValue(),
