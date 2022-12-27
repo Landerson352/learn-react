@@ -2,9 +2,10 @@ import * as UI from '@chakra-ui/react';
 import * as ReactTable from '@tanstack/react-table';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
-import _ from 'lodash';
 
 import { DataTableSkeleton } from './DataTableSkeleton';
+import { DataTableColumnFilter } from './DataTableColumnFilter';
+import React from 'react';
 
 export type DataTableProps<Data extends object> = {
   skeleton?: boolean;
@@ -37,29 +38,41 @@ export function DataTable<Data extends object>({
                 <UI.Th
                   key={header.id}
                   colSpan={header.colSpan}
-                  onClick={header.column.getToggleSortingHandler()}
                   isNumeric={meta?.isNumeric}
-                  cursor="pointer"
-                  _hover={{
-                    textDecoration: 'underline',
-                  }}
+                  pl={3}
                 >
-                  {meta?.isNumeric ? (
-                    <UI.Box display="inline-block" w={3} mr={2}>
-                      {sortIcon}
-                    </UI.Box>
-                  ) : null}
+                  <UI.VStack alignItems="stretch" spacing={1}>
+                    <UI.Button
+                      variant="ghost"
+                      size="sm"
+                      justifyContent={meta?.isNumeric ? 'end' : 'start'}
+                      onClick={header.column.getToggleSortingHandler()}
+                    >
+                      {meta?.isNumeric ? (
+                        <UI.Box display="inline-block" w={3} mr={2}>
+                          {sortIcon}
+                        </UI.Box>
+                      ) : null}
 
-                  {ReactTable.flexRender(
-                    header.column.columnDef.header,
-                    header.getContext()
-                  )}
+                      {ReactTable.flexRender(
+                        header.column.columnDef.header,
+                        header.getContext()
+                      )}
 
-                  {meta?.isNumeric ? null : (
-                    <UI.Box display="inline-block" w={3} ml={2}>
-                      {sortIcon}
-                    </UI.Box>
-                  )}
+                      {meta?.isNumeric ? null : (
+                        <UI.Box display="inline-block" w={3} ml={2}>
+                          {sortIcon}
+                        </UI.Box>
+                      )}
+                    </UI.Button>
+
+                    {header.column.getCanFilter() ? (
+                      <DataTableColumnFilter
+                        input={{ size: 'sm' }}
+                        column={header.column}
+                      />
+                    ) : null}
+                  </UI.VStack>
                 </UI.Th>
               );
             })}

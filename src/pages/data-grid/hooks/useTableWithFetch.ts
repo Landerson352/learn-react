@@ -56,7 +56,7 @@ export function useTableWithFetch<T>(
   // Initial load
   React.useEffect(() => {
     updateDataFromState(state);
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const table = ReactTable.useReactTable({
     ...options,

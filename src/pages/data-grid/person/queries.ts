@@ -93,6 +93,8 @@ export const fetchPersons = async (
   // State contains updated sorting, filtering and pagination.
   // This function is called whenever the state changes.
 
+  console.log('fetching Persons with state:', state);
+
   // Mock fetching data based on state.
   await delay(1000);
   return _.sampleSize(rawData, state.pagination.pageSize);
