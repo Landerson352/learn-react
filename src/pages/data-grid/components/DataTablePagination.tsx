@@ -8,7 +8,7 @@ export type DataTablePaginationProps<Data extends object> = {
 } & UI.BoxProps;
 
 /**
- * A diplay component for paginating a table using react-table + ChakraUI.
+ * A display component for paginating a table using react-table + ChakraUI.
  */
 export function DataTablePagination<Data extends object>({
   table,

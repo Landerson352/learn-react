@@ -11,28 +11,35 @@ export const INPUT_DEBOUNCE_MS = 500;
 export type DataTableGlobalFilterProps<Data extends object> = {
   table: ReactTable.Table<Data>;
   icon?: ComponentOverride<FontAwesomeIconProps>;
-  input?: UI.InputProps;
+  input?: ComponentOverride<UI.InputProps>;
 } & UI.BoxProps;
 
 /**
- * A diplay component for filtering a table using react-table + ChakraUI.
+ * A display component for filtering a table using react-table + ChakraUI.
  */
 export function DataTableGlobalFilter<Data extends object>({
   table,
-  icon = {},
-  input = {},
+  icon,
+  input,
   ...boxProps
 }: DataTableGlobalFilterProps<Data>): JSX.Element {
   return (
     <UI.Box p={4} pb={0} {...boxProps}>
-      <DebouncedInput
-        {...input}
-        value={table.getState().globalFilter ?? ''}
-        onChange={(value) => table.setGlobalFilter(value)}
-        leftIcon={{
-          icon: faSearch,
-        }}
-      />
+      {input === false ? null : (
+        <DebouncedInput
+          {...input}
+          value={table.getState().globalFilter ?? ''}
+          onChange={(value) => table.setGlobalFilter(value)}
+          leftIcon={
+            icon === false
+              ? undefined
+              : {
+                  icon: faSearch,
+                  ...icon,
+                }
+          }
+        />
+      )}
     </UI.Box>
   );
 }

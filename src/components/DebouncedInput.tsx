@@ -14,7 +14,7 @@ export type DebouncedInputProps = {
   debounce?: number;
   leftIcon?: FontAwesomeIconProps;
   rightIcon?: FontAwesomeIconProps;
-} & UI.InputProps;
+} & Omit<UI.InputProps, 'value' | 'onChange'>;
 
 export const DebouncedInput: React.FC<DebouncedInputProps> = (props, ref) => {
   const {
@@ -23,6 +23,7 @@ export const DebouncedInput: React.FC<DebouncedInputProps> = (props, ref) => {
     debounce = INPUT_DEBOUNCE_MS,
     leftIcon,
     rightIcon,
+    isDisabled,
     ...inputProps
   } = props;
   const [value, setValue] = React.useState(initialValue);
@@ -39,6 +40,14 @@ export const DebouncedInput: React.FC<DebouncedInputProps> = (props, ref) => {
     [value]
   );
 
+  // Soft-disable the input if it's disabled
+  // This allows focus to be maintained on the input
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!isDisabled) {
+      setValue(e.target.value);
+    }
+  };
+
   return (
     <UI.InputGroup>
       {leftIcon ? (
@@ -46,11 +55,7 @@ export const DebouncedInput: React.FC<DebouncedInputProps> = (props, ref) => {
           <FontAwesomeIcon {...leftIcon} />
         </UI.InputLeftElement>
       ) : null}
-      <UI.Input
-        {...inputProps}
-        value={value}
-        onChange={(e) => setValue(e.target.value)}
-      />
+      <UI.Input {...inputProps} value={value} onChange={handleChange} />
       {rightIcon ? (
         <UI.InputLeftElement>
           <FontAwesomeIcon {...rightIcon} />

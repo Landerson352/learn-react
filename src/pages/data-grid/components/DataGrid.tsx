@@ -40,16 +40,24 @@ export function DataGrid<Data extends object>({
         opacity: 0.5,
       }
     : {};
-
-  // TODO: Add fetching context, and use it to soft-disable debounced inputs
+  const isDisabled = fetching || loading;
 
   return (
     <UI.Box {...containerProps}>
       {globalFilter !== false ? (
-        <DataTableGlobalFilter table={table} {...globalFilter} />
+        <DataTableGlobalFilter
+          table={table}
+          input={{ isDisabled }}
+          {...globalFilter}
+        />
       ) : null}
       {dataTable !== false ? (
-        <DataTable skeleton={loading} table={table} {...dataTable} />
+        <DataTable
+          skeleton={loading}
+          table={table}
+          columnFilter={{ input: { isDisabled } }}
+          {...dataTable}
+        />
       ) : null}
       {pagination !== false ? (
         <DataTablePagination table={table} {...pagination} />

@@ -4,11 +4,16 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
 
 import { DataTableSkeleton } from './DataTableSkeleton';
-import { DataTableColumnFilter } from './DataTableColumnFilter';
+import {
+  DataTableColumnFilter,
+  DataTableColumnFilterProps,
+} from './DataTableColumnFilter';
+import { ComponentOverride } from '../../../helpers/componentOverride';
 
 export type DataTableProps<Data extends object> = {
   skeleton?: boolean;
   table: ReactTable.Table<Data>;
+  columnFilter?: ComponentOverride<DataTableColumnFilterProps<Data>>;
 } & UI.TableProps;
 
 /**
@@ -17,6 +22,7 @@ export type DataTableProps<Data extends object> = {
 export function DataTable<Data extends object>({
   skeleton,
   table,
+  columnFilter,
   ...tableProps
 }: DataTableProps<Data>): JSX.Element {
   return (
@@ -68,10 +74,11 @@ export function DataTable<Data extends object>({
                       )}
                     </UI.Button>
 
-                    {header.column.getCanFilter() ? (
+                    {header.column.getCanFilter() && columnFilter !== false ? (
                       <DataTableColumnFilter
-                        input={{ size: 'sm' }}
                         column={header.column}
+                        {...columnFilter}
+                        input={{ size: 'sm', ...columnFilter?.input }}
                       />
                     ) : null}
                   </UI.VStack>

@@ -15,10 +15,10 @@ const DataGridExamplesPage: React.FC = () => {
             fetchDataFromState={fetchPersons}
             // globalFilter={{
             //   bg: 'gray.500',
-            //   icon: false,
+            //   icon: { opacity: 0.5, icon: faSave },
             //   input: { bg: 'white' },
             // }}
-            // dataTable={{ fontSize: '2xl' }}
+            // dataTable={{ fontSize: '2xl', columnFilter: false }}
             // pagination={false}
           />
         </UI.Box>

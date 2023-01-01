@@ -20,6 +20,5 @@ export function DataGridWithFetch<Data extends object>({
     fetchDataFromState,
   });
 
-  // TODO: Add fetching context, and use it to soft-disable debounced inputs
   return <DataGrid {...tableWithFetch} {...restProps} />;
 }
