@@ -1,9 +1,6 @@
 import * as UI from '@chakra-ui/react';
 import * as ReactTable from '@tanstack/react-table';
-import {
-  FontAwesomeIcon,
-  FontAwesomeIconProps,
-} from '@fortawesome/react-fontawesome';
+import { FontAwesomeIconProps } from '@fortawesome/react-fontawesome';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
 
 import { ComponentOverride } from '../../../helpers/componentOverride';
@@ -17,6 +14,9 @@ export type DataTableGlobalFilterProps<Data extends object> = {
   input?: UI.InputProps;
 } & UI.BoxProps;
 
+/**
+ * A diplay component for filtering a table using react-table + ChakraUI.
+ */
 export function DataTableGlobalFilter<Data extends object>({
   table,
   icon = {},

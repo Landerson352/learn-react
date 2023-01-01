@@ -5,13 +5,15 @@ import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
 
 import { DataTableSkeleton } from './DataTableSkeleton';
 import { DataTableColumnFilter } from './DataTableColumnFilter';
-import React from 'react';
 
 export type DataTableProps<Data extends object> = {
   skeleton?: boolean;
   table: ReactTable.Table<Data>;
 } & UI.TableProps;
 
+/**
+ * A display component for react-table + ChakraUI.
+ */
 export function DataTable<Data extends object>({
   skeleton,
   table,

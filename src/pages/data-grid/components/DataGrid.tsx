@@ -1,11 +1,7 @@
 import * as UI from '@chakra-ui/react';
 
 import { ComponentOverride } from '../../../helpers/componentOverride';
-import {
-  FetchDataFromState,
-  TableWithFetchOptions,
-  useTableWithFetch,
-} from '../hooks/useTableWithFetch';
+import { UseTableWithFetchReturn } from '../hooks/useTableWithFetch';
 import { DataTable, DataTableProps } from './DataTable';
 import {
   DataTableGlobalFilter,
@@ -16,25 +12,27 @@ import {
   DataTablePaginationProps,
 } from './DataTablePagination';
 
-// TODO: extract fetching hook, and wrap DataGrid with "DataGridWithFetch" component.
-export function DataGrid<T extends object>({
-  options,
-  fetchDataFromState,
-  globalFilter = {},
-  dataTable = {},
-  pagination = {},
-}: {
-  options: TableWithFetchOptions<T>;
-  fetchDataFromState: FetchDataFromState<T>;
-  globalFilter?: ComponentOverride<DataTableGlobalFilterProps<T>>;
-  dataTable?: ComponentOverride<DataTableProps<T>>;
-  pagination?: ComponentOverride<DataTablePaginationProps<T>>;
-}) {
-  const { table, fetching, loading } = useTableWithFetch<T>(
-    options,
-    fetchDataFromState
-  );
+export type DataGridComponentOverrideProps<Data extends object> = {
+  globalFilter?: ComponentOverride<DataTableGlobalFilterProps<Data>>;
+  dataTable?: ComponentOverride<DataTableProps<Data>>;
+  pagination?: ComponentOverride<DataTablePaginationProps<Data>>;
+};
 
+type DataGridProps<Data extends object> = UseTableWithFetchReturn<Data> &
+  DataGridComponentOverrideProps<Data>;
+
+/**
+ * A flexible display componet for react-table + ChakraUI.
+ * Supply your own table state, and override the components as needed.
+ */
+export function DataGrid<Data extends object>({
+  table,
+  fetching = false,
+  loading = false,
+  globalFilter,
+  dataTable,
+  pagination,
+}: DataGridProps<Data>) {
   // Fade the UI and disable clicks when fetching data.
   const containerProps: UI.BoxProps = fetching
     ? {
@@ -47,13 +45,13 @@ export function DataGrid<T extends object>({
 
   return (
     <UI.Box {...containerProps}>
-      {globalFilter ? (
+      {globalFilter !== false ? (
         <DataTableGlobalFilter table={table} {...globalFilter} />
       ) : null}
-      {dataTable ? (
+      {dataTable !== false ? (
         <DataTable skeleton={loading} table={table} {...dataTable} />
       ) : null}
-      {pagination ? (
+      {pagination !== false ? (
         <DataTablePagination table={table} {...pagination} />
       ) : null}
     </UI.Box>

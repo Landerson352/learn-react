@@ -2,30 +2,35 @@ import React from 'react';
 import * as ReactTable from '@tanstack/react-table';
 import type { Promisable, SetOptional } from 'type-fest';
 
-export type TableWithFetchOptions<T> = SetOptional<
-  ReactTable.TableOptions<T>,
+export type TableWithFetchOptions<Data extends object> = SetOptional<
+  ReactTable.TableOptions<Data>,
   'data' | 'getCoreRowModel'
 >;
-export type FetchDataFromState<T> = (
+export type FetchDataFromState<Data extends object> = (
   state: ReactTable.TableState
-) => Promisable<T[]>;
+) => Promisable<Data[]>;
 
-export type UseTableWithFetchReturn<T> = {
-  table: ReactTable.Table<T>;
+export type UseTableWithFetchOptions<Data extends object> = {
+  tableOptions: TableWithFetchOptions<Data>;
+  fetchDataFromState: FetchDataFromState<Data>;
+};
+
+export type UseTableWithFetchReturn<Data extends object> = {
+  table: ReactTable.Table<Data>;
   fetching: boolean;
   loading: boolean;
 };
 
 /**
  * useTableWithFetch is a wrapper around useReactTable that expects data to be fetched from a server.
- * @param options Providing anything other than "columns" may cause unexpected behaviour.
+ * @param tableOptions Providing anything other than "columns" may cause unexpected behaviour.
  * @param fetchDataFromState A function that returns data based on the state of the table.
  * @returns A tuple containing the table and an object containing the loading and fetching states.
  */
-export function useTableWithFetch<T>(
-  options: TableWithFetchOptions<T>,
-  fetchDataFromState: FetchDataFromState<T>
-): UseTableWithFetchReturn<T> {
+export function useTableWithFetch<Data extends object>({
+  tableOptions,
+  fetchDataFromState,
+}: UseTableWithFetchOptions<Data>): UseTableWithFetchReturn<Data> {
   const [loading, setLoading] = React.useState(true);
   const [fetching, setFetching] = React.useState(true);
   const [pageCount, setPageCount] = React.useState(100);
@@ -35,9 +40,9 @@ export function useTableWithFetch<T>(
       pageSize: 10,
     },
     sorting: [{}], // not sure why this is required
-    ...options.initialState,
+    ...tableOptions.initialState,
   } as ReactTable.TableState);
-  const [data, setData] = React.useState<T[]>([]);
+  const [data, setData] = React.useState<Data[]>([]);
 
   const updateDataFromState = async (newState: ReactTable.TableState) => {
     setFetching(true);
@@ -59,7 +64,7 @@ export function useTableWithFetch<T>(
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const table = ReactTable.useReactTable({
-    ...options,
+    ...tableOptions,
     data,
     getCoreRowModel: ReactTable.getCoreRowModel(),
 

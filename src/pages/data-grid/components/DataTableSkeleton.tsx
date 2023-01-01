@@ -1,6 +1,9 @@
 import * as UI from '@chakra-ui/react';
 import _ from 'lodash';
 
+/**
+ * A diplay component for skeleton rows in a table using ChakraUI.
+ */
 export function DataTableSkeleton({
   rows,
   columns,

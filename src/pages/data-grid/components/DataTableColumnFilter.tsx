@@ -7,6 +7,9 @@ import {
   DebouncedInputProps,
 } from '../../../components/DebouncedInput';
 
+/**
+ * A diplay component for filtering a column using react-table + ChakraUI.
+ */
 export function DataTableColumnFilter<Data extends object, Value extends any>({
   column,
   input,
