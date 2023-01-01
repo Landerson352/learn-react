@@ -24,7 +24,7 @@ export function DataTableGlobalFilter<Data extends object>({
   ...boxProps
 }: DataTableGlobalFilterProps<Data>): JSX.Element {
   return (
-    <UI.Box p={4} pb={0} {...boxProps}>
+    <UI.Box {...boxProps}>
       {input === false ? null : (
         <DebouncedInput
           {...input}

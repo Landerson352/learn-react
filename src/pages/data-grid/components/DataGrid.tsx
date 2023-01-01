@@ -34,7 +34,7 @@ export function DataGrid<Data extends object>({
   pagination,
 }: DataGridProps<Data>) {
   // Fade the UI and disable clicks when fetching data.
-  const containerProps: UI.BoxProps = fetching
+  const containerProps: UI.StackProps = fetching
     ? {
         pointerEvents: 'none',
         opacity: 0.5,
@@ -43,7 +43,7 @@ export function DataGrid<Data extends object>({
   const isDisabled = fetching || loading;
 
   return (
-    <UI.Box {...containerProps}>
+    <UI.VStack alignItems="stretch" spacing={4} {...containerProps}>
       {globalFilter !== false ? (
         <DataTableGlobalFilter
           table={table}
@@ -60,8 +60,8 @@ export function DataGrid<Data extends object>({
         />
       ) : null}
       {pagination !== false ? (
-        <DataTablePagination table={table} {...pagination} />
+        <DataTablePagination table={table} py={2} {...pagination} />
       ) : null}
-    </UI.Box>
+    </UI.VStack>
   );
 }

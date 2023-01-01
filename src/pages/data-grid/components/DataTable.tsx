@@ -47,7 +47,7 @@ export function DataTable<Data extends object>({
                   key={header.id}
                   colSpan={header.colSpan}
                   isNumeric={meta?.isNumeric}
-                  pl={3}
+                  px={3}
                 >
                   <UI.VStack alignItems="stretch" spacing={1}>
                     <UI.Button

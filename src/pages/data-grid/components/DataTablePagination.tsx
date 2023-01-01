@@ -15,7 +15,7 @@ export function DataTablePagination<Data extends object>({
   ...boxProps
 }: DataTablePaginationProps<Data>): JSX.Element {
   return (
-    <UI.VStack p={4} {...boxProps}>
+    <UI.VStack {...boxProps}>
       <UI.ButtonGroup size="sm">
         <UI.Button
           onClick={() => table.setPageIndex(0)}

@@ -7,9 +7,9 @@ import { DataGridWithFetch } from './components/DataGridWithFetch';
 
 const DataGridExamplesPage: React.FC = () => {
   return (
-    <UI.Box p="4">
+    <UI.Box p={4}>
       <UI.VStack alignItems="stretch" spacing={4}>
-        <UI.Box bg="white" borderRadius="8px" overflow="hidden">
+        <UI.Box bg="white" borderRadius="lg" overflow="hidden" p={4}>
           <DataGridWithFetch
             tableOptions={{ columns: getPersonColumns() }}
             fetchDataFromState={fetchPersons}
