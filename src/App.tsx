@@ -11,6 +11,7 @@ import DndKitPage from './pages/dnd-kit/DndKitPage';
 import TabContextDemoPage from './pages/TabContextDemoPage';
 import ModalExamplesPage from './pages/modals/ModalExamplesPage';
 import DataGridExamplesPage from './pages/data-grid/DataGridExamplesPage';
+import FormExamplesPage from './pages/forms/FormExamplesPage';
 
 const App: React.FC = () => {
   return (
@@ -25,6 +26,7 @@ const App: React.FC = () => {
         <Route path="/dnd" element={<DragAndDropExample />} />
         <Route path="/dnd-kit" element={<DndKitPage />} />
         <Route path="/data-grids" element={<DataGridExamplesPage />} />
+        <Route path="/forms" element={<FormExamplesPage />} />
         {/* Support route modals by appending the "/*" catch-all to the path. */}
         <Route path="/modals/*" element={<ModalExamplesPage />} />
         <Route path="/firebase" element={<FirebasePage />} />

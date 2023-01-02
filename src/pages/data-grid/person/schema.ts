@@ -1,48 +1,48 @@
 import * as ReactTable from '@tanstack/react-table';
 import _ from 'lodash';
+import * as zod from 'zod';
 
-export type Person = {
-  firstName: string;
-  lastName: string;
-  age: number;
-};
+import { createColumnGetter } from './../helpers/createColumnGetter';
+
+const colors = ['red', 'green', 'blue', 'yellow', 'purple', 'orange'];
+const colorOptions = colors.map((color) => ({
+  label: _.startCase(color),
+  value: color,
+}));
+
+// Note: this could be generated from a database schema
+const validator = zod.object({
+  firstName: zod.string().min(2).max(20),
+  lastName: zod.string().min(2).max(20),
+  email: zod.string().email().optional(),
+  age: zod.number().min(0).max(100),
+  favoriteColor: zod.string().optional(),
+});
+
+export type Person = zod.infer<typeof validator>;
 
 const columnHelper = ReactTable.createColumnHelper<Person>();
-
-// WIP
-// const schema = {
-//   person: {
-//     validationByRoles: {
-//       user: zod.number().required().min(1).max(10),
-//       admin: zod.number(),
-//     },
-//     hints: {
-//       expectedMin: 1,
-//       expectedMax: 10,
-//       help: 'This is a help text',
-//     },
-//   },
-// };
-
-const columns = {
-  firstName: columnHelper.accessor('firstName', {
-    cell: (info) => info.getValue(),
-    header: 'First name',
-  }),
-  lastName: columnHelper.accessor('lastName', {
-    cell: (info) => info.getValue(),
-    header: 'Last name',
-  }),
-  age: columnHelper.accessor('age', {
-    cell: (info) => info.getValue(),
-    header: 'Age',
+const columns = [
+  columnHelper.accessor('firstName', {}),
+  columnHelper.accessor('lastName', {}),
+  columnHelper.accessor('email', {
     meta: {
-      isNumeric: true,
+      helpText: "We won't share your email with anyone.",
     },
   }),
-};
+  columnHelper.accessor('age', {}),
+  columnHelper.accessor('favoriteColor', {
+    header: 'Color', // Custom header override
+    meta: {
+      options: colorOptions,
+    },
+  }),
+];
 
-export const getPersonColumns = (filterKeys?: (keyof Person)[]) => {
-  if (filterKeys) return Object.values(_.pick(columns, filterKeys));
-  return Object.values(columns);
+const getColumns = createColumnGetter(columns, validator);
+
+export const personSchema = {
+  validator,
+  getColumns,
+  columns: getColumns(),
 };

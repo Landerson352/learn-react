@@ -2,8 +2,8 @@ import * as UI from '@chakra-ui/react';
 import React from 'react';
 
 import { fetchPersons } from './person/queries';
-import { getPersonColumns } from './person/schema';
 import { DataGridWithFetch } from './components/DataGridWithFetch';
+import { personSchema } from './person/schema';
 
 const DataGridExamplesPage: React.FC = () => {
   return (
@@ -11,7 +11,7 @@ const DataGridExamplesPage: React.FC = () => {
       <UI.VStack alignItems="stretch" spacing={4}>
         <UI.Box bg="white" borderRadius="lg" overflow="hidden" p={4}>
           <DataGridWithFetch
-            tableOptions={{ columns: getPersonColumns() }}
+            tableOptions={{ columns: personSchema.columns }}
             fetchDataFromState={fetchPersons}
             // globalFilter={{
             //   bg: 'gray.500',
