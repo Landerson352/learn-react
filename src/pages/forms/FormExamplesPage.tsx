@@ -1,24 +1,24 @@
 import React from 'react';
 import * as UI from '@chakra-ui/react';
 import { zodResolver } from '@hookform/resolvers/zod';
-import * as reactHookForm from 'react-hook-form';
 
+import { useLegitForm } from './helpers/useLegitForm';
 import { Person, personSchema } from '../data-grid/person/schema';
+import { ColumnMeta } from '../data-grid/helpers/createColumnGetter';
 
 const FormExamplesPage: React.FC = () => {
-  const form = reactHookForm.useForm<Person>({
-    mode: 'onTouched',
+  const form = useLegitForm<Person>({
     resolver: zodResolver(personSchema.validator),
   });
 
   return (
     <UI.Box p={4}>
+      {/* TODO: move into FormRenderer component */}
       {personSchema.columns.map((column) => {
-        // gross
-        const key = column.id as keyof typeof personSchema.validator.shape;
+        // const key = column.id;// as keyof Person;
         // const validator = personSchema.validator.shape[key];
-        // console.log(validator);
-        return <UI.Box key={key}>{column.id}</UI.Box>;
+        const meta = column.meta as ColumnMeta;
+        return <UI.Box key={column.id}>{meta.label}</UI.Box>;
       })}
     </UI.Box>
   );

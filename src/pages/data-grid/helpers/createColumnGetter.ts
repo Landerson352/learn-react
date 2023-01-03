@@ -1,34 +1,58 @@
+import * as ReactTable from '@tanstack/react-table';
 import _ from 'lodash';
 import * as zod from 'zod';
 
-export const createColumnGetter = <T extends { shape: object }, K extends any>(
-  columns: K[],
-  validator: T
+export type ColumnMeta = {
+  label: string; // TODO: fallback to titleCase(key), will be copied to table header
+  type: 'text' | 'number' | 'date' | 'boolean'; // TODO: driven off zod schema
+  helpText?: string;
+  options?: { label: string; value: string }[];
+  control?: 'select' | 'checkbox' | 'radio' | 'textarea';
+  expectedLength?: number;
+  group?: string;
+};
+
+export type EntityMeta<T> = Partial<Record<keyof T, Partial<ColumnMeta>>>;
+
+export type ColumnExtras<T> = Partial<
+  Record<keyof T, ReactTable.IdentifiedColumnDef<T>>
+>;
+
+export const createColumnGetter = <K extends zod.AnyZodObject>(
+  validator: K,
+  columnExtras: ColumnExtras<zod.infer<K>>
 ) => {
-  return (filterKeys?: (keyof T['shape'])[]): K[] => {
-    return _.reduce(
-      columns,
-      (acc, column) => {
-        // @ts-ignore
-        const key = column.accessorKey as keyof T['shape'] & string;
-        if (!filterKeys || filterKeys.includes(key)) {
-          acc.push(
-            _.merge(
-              {
-                id: key,
-                header: _.startCase(key),
-                meta: {
-                  // @ts-ignore
-                  isNumeric: validator.shape[key] instanceof zod.ZodNumber,
-                },
+  type Entity = zod.infer<K>;
+
+  const getColumns = (filterKeys?: (keyof Entity)[]) => {
+    const columnHelper = ReactTable.createColumnHelper<Entity>();
+    const result: ReactTable.ColumnDef<Entity, string | number | undefined>[] =
+      [];
+    for (let key of Object.keys(validator.shape)) {
+      if (filterKeys && !filterKeys.includes(key)) {
+        continue;
+      }
+
+      const shape = validator.shape[key];
+      result.push(
+        columnHelper.accessor(
+          // @ts-ignore
+          key,
+          _.merge(
+            {
+              id: key,
+              header: _.startCase(key),
+              meta: {
+                label: _.startCase(key),
+                isNumeric: shape instanceof zod.ZodNumber,
               },
-              column
-            )
-          );
-        }
-        return acc;
-      },
-      [] as typeof columns
-    );
+            },
+            columnExtras[key]
+          )
+        )
+      );
+    }
+    return result;
   };
+  return getColumns;
 };
