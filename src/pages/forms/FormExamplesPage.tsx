@@ -17,8 +17,12 @@ const FormExamplesPage: React.FC = () => {
       {personSchema.columns.map((column) => {
         // const key = column.id;// as keyof Person;
         // const validator = personSchema.validator.shape[key];
-        const meta = column.meta as ColumnMeta;
-        return <UI.Box key={column.id}>{meta.label}</UI.Box>;
+        const meta = column.meta as ColumnMeta<Person>;
+        return (
+          <UI.Box key={column.id}>
+            {meta.label} : {JSON.stringify(meta)}
+          </UI.Box>
+        );
       })}
     </UI.Box>
   );

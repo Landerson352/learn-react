@@ -2,25 +2,36 @@ import * as ReactTable from '@tanstack/react-table';
 import _ from 'lodash';
 import * as zod from 'zod';
 
-export type ColumnMeta = {
-  label: string; // TODO: fallback to titleCase(key), will be copied to table header
-  type: 'text' | 'number' | 'date' | 'boolean'; // TODO: driven off zod schema
+export type ColumnMeta<T> = {
+  label: string;
+  type: 'text' | 'number' | 'date' | 'boolean';
   helpText?: string;
   options?: { label: string; value: string }[];
   control?: 'select' | 'checkbox' | 'radio' | 'textarea';
   expectedLength?: number;
   group?: string;
+  tableColumn?: Partial<Record<keyof T, ReactTable.IdentifiedColumnDef<T>>>;
 };
 
-export type EntityMeta<T> = Partial<Record<keyof T, Partial<ColumnMeta>>>;
+export type EntityMeta<T> = Partial<Record<keyof T, Partial<ColumnMeta<T>>>>;
 
-export type ColumnExtras<T> = Partial<
-  Record<keyof T, ReactTable.IdentifiedColumnDef<T>>
->;
+const getTypeString = (type: zod.ZodTypeAny) => {
+  if (type instanceof zod.ZodString) {
+    return 'text';
+  } else if (type instanceof zod.ZodNumber) {
+    return 'number';
+  } else if (type instanceof zod.ZodDate) {
+    return 'date';
+  } else if (type instanceof zod.ZodBoolean) {
+    return 'boolean';
+  } else {
+    return 'text';
+  }
+};
 
 export const createColumnGetter = <K extends zod.AnyZodObject>(
   validator: K,
-  columnExtras: ColumnExtras<zod.infer<K>>
+  metas: EntityMeta<zod.infer<K>>
 ) => {
   type Entity = zod.infer<K>;
 
@@ -34,6 +45,7 @@ export const createColumnGetter = <K extends zod.AnyZodObject>(
       }
 
       const shape = validator.shape[key];
+      const fallbackLabel = _.capitalize(_.trimStart(_.lowerCase(key), 'is '));
       result.push(
         columnHelper.accessor(
           // @ts-ignore
@@ -41,13 +53,19 @@ export const createColumnGetter = <K extends zod.AnyZodObject>(
           _.merge(
             {
               id: key,
-              header: _.startCase(key),
-              meta: {
-                label: _.startCase(key),
-                isNumeric: shape instanceof zod.ZodNumber,
-              },
+              header: metas[key]?.label || fallbackLabel,
             },
-            columnExtras[key]
+            metas[key]?.tableColumn,
+            {
+              meta: _.merge(
+                {
+                  label: fallbackLabel,
+                  type: getTypeString(shape),
+                },
+                metas[key],
+                metas[key]?.tableColumn?.meta
+              ),
+            }
           )
         )
       );
