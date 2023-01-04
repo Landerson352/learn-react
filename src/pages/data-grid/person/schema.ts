@@ -4,20 +4,21 @@ import {
   createColumnsGetter,
   createFields,
   createFieldsGetter,
-  EntityMeta,
-} from './../helpers/createColumnGetter';
+  Metas,
+} from '../../../helpers/schemaHelpers';
 
 /**
  * Person schema
  * Used to validate, generate table columns, and generate form fields
  */
 
-// Note: this could be generated from a database schema
+// Note: The basis of this could be generated from a Prisma schema
+// e.g.: https://www.npmjs.com/package/prisma-zod-generator
 export const personSchema = zod.object({
   firstName: zod.string().min(2).max(20),
   lastName: zod.string().min(2).max(20),
   email: zod.string().email().optional(),
-  age: zod.number().min(0).max(100),
+  age: zod.number().min(0).max(100).optional(),
   favoriteColor: zod.string().optional(),
   isAlive: zod.boolean().optional(),
   bio: zod.string().optional(),
@@ -25,7 +26,10 @@ export const personSchema = zod.object({
 
 export type Person = zod.infer<typeof personSchema>;
 
-export const personMetas: EntityMeta<Person> = {
+/**
+ * Optional metadata for each field
+ */
+export const personMetas: Metas<Person> = {
   email: {
     helpText: "We won't share your email with anyone.",
   },

@@ -17,9 +17,8 @@ const DataGridExamplesPage: React.FC = () => {
             tableOptions={{ columns }}
             fetchDataFromState={fetchPersons}
             // globalFilter={{
-            //   bg: 'gray.500',
-            //   icon: { opacity: 0.5, icon: faSave },
-            //   input: { bg: 'white' },
+            //   icon: { color: 'red' },
+            //   input: { bg: 'yellow' },
             // }}
             // dataTable={{ fontSize: '2xl', columnFilter: false }}
             // pagination={false}

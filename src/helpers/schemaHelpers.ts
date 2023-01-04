@@ -10,13 +10,14 @@ import * as zod from 'zod';
 type TypeString = 'text' | 'number' | 'date' | 'boolean';
 
 export const getTypeStringFromZod = (type: zod.ZodTypeAny): TypeString => {
-  if (type instanceof zod.ZodString) {
+  const innerType = type._def.innerType;
+  if (innerType instanceof zod.ZodString) {
     return 'text';
-  } else if (type instanceof zod.ZodNumber) {
+  } else if (innerType instanceof zod.ZodNumber) {
     return 'number';
-  } else if (type instanceof zod.ZodDate) {
+  } else if (innerType instanceof zod.ZodDate) {
     return 'date';
-  } else if (type instanceof zod.ZodBoolean) {
+  } else if (innerType instanceof zod.ZodBoolean) {
     return 'boolean';
   } else {
     return 'text';
@@ -24,7 +25,7 @@ export const getTypeStringFromZod = (type: zod.ZodTypeAny): TypeString => {
 };
 
 export type Field<T> = {
-  id: keyof T;
+  id: keyof T & string;
   label: string;
   type: TypeString;
   helpText?: string;
@@ -35,29 +36,28 @@ export type Field<T> = {
   tableColumn?: Partial<Record<keyof T, ReactTable.IdentifiedColumnDef<T>>>;
 };
 
-export type EntityFields<T> = Field<T>[];
+export type Fields<T> = Field<T>[];
 
-export type EntityMeta<T> = Partial<Record<keyof T, Partial<Field<T>>>>;
+export type Metas<T> = Partial<Record<keyof T, Partial<Field<T>>>>;
 
 export const createFields = <K extends zod.AnyZodObject>(
   validator: K,
-  metas: EntityMeta<zod.infer<K>>
+  metas?: Metas<zod.infer<K>>
 ) => {
   type Entity = zod.infer<K>;
-  const result: EntityFields<Entity> = [];
+  const result: Fields<Entity> = [];
   for (let key of Object.keys(validator.shape)) {
-    const shape = validator.shape[key];
+    const type = getTypeStringFromZod(validator.shape[key]);
     const fallbackLabel = _.capitalize(_.trimStart(_.lowerCase(key), 'is '));
     result.push(
       _.merge(
         {
           id: key,
           label: fallbackLabel,
-          type: getTypeStringFromZod(shape),
-          isNumeric: shape instanceof zod.ZodNumber,
+          type: type,
         },
-        metas[key],
-        metas[key]?.tableColumn?.meta
+        metas?.[key],
+        metas?.[key]?.tableColumn?.meta
       )
     );
   }
@@ -68,7 +68,7 @@ export type Columns<T> = ReactTable.ColumnDef<T, string | number | undefined>[];
 
 export const createColumns = <K extends zod.AnyZodObject>(
   validator: K,
-  metas: EntityMeta<zod.infer<K>>
+  metas?: Metas<zod.infer<K>>
 ) => {
   const fields = createFields(validator, metas);
 
@@ -115,7 +115,7 @@ export function createColumnsGetter<T>(columns: Columns<T>) {
   };
 }
 
-export function createFieldsGetter<T>(fields: EntityFields<T>) {
+export function createFieldsGetter<T>(fields: Fields<T>) {
   // Returns a list of personColumns filtered by the given keys
   return (filterKeys: (keyof T)[]) => {
     return fields.filter((field) => {

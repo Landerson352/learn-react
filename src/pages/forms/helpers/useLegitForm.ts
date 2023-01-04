@@ -1,12 +1,11 @@
-import * as reactHookForm from 'react-hook-form';
+import { FieldValues, UseFormProps, useForm } from 'react-hook-form';
 
-// Sets the default mode to onTouched
 export function useLegitForm<
-  TFieldValues extends reactHookForm.FieldValues = reactHookForm.FieldValues,
+  TFieldValues extends FieldValues = FieldValues,
   TContext = any
->(...args: Parameters<typeof reactHookForm.useForm>) {
-  return reactHookForm.useForm<TFieldValues, TContext>({
+>(props?: UseFormProps<TFieldValues, TContext>) {
+  return useForm<TFieldValues, TContext>({
     mode: 'onTouched',
-    ...args,
+    ...props,
   });
 }
