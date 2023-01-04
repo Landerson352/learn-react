@@ -3,7 +3,10 @@ import React from 'react';
 
 import { fetchPersons } from './person/queries';
 import { DataGridWithFetch } from './components/DataGridWithFetch';
-import { personSchema } from './person/schema';
+import { personColumns, getPersonColumns } from './person/schema';
+
+//const columns = personColumns; // display all columns
+const columns = getPersonColumns(['firstName', 'lastName', 'age']); // display only firstName, lastName, age
 
 const DataGridExamplesPage: React.FC = () => {
   return (
@@ -11,7 +14,7 @@ const DataGridExamplesPage: React.FC = () => {
       <UI.VStack alignItems="stretch" spacing={4}>
         <UI.Box bg="white" borderRadius="lg" overflow="hidden" p={4}>
           <DataGridWithFetch
-            tableOptions={{ columns: personSchema.columns }}
+            tableOptions={{ columns }}
             fetchDataFromState={fetchPersons}
             // globalFilter={{
             //   bg: 'gray.500',

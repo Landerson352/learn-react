@@ -1,16 +1,19 @@
 import * as zod from 'zod';
 import {
-  createColumnGetter,
+  createColumns,
+  createColumnsGetter,
+  createFields,
+  createFieldsGetter,
   EntityMeta,
 } from './../helpers/createColumnGetter';
 
 /**
  * Person schema
- * Used to validate, generate columns, and generate form fields
+ * Used to validate, generate table columns, and generate form fields
  */
 
 // Note: this could be generated from a database schema
-const validator = zod.object({
+export const personSchema = zod.object({
   firstName: zod.string().min(2).max(20),
   lastName: zod.string().min(2).max(20),
   email: zod.string().email().optional(),
@@ -20,9 +23,9 @@ const validator = zod.object({
   bio: zod.string().optional(),
 });
 
-export type Person = zod.infer<typeof validator>;
+export type Person = zod.infer<typeof personSchema>;
 
-const metas: EntityMeta<Person> = {
+export const personMetas: EntityMeta<Person> = {
   email: {
     helpText: "We won't share your email with anyone.",
   },
@@ -39,10 +42,7 @@ const metas: EntityMeta<Person> = {
   },
 };
 
-const getColumns = createColumnGetter(validator, metas);
-
-export const personSchema = {
-  validator,
-  getColumns,
-  columns: getColumns(),
-};
+export const personFields = createFields(personSchema, personMetas);
+export const personColumns = createColumns(personSchema, personMetas);
+export const getPersonFields = createFieldsGetter(personFields);
+export const getPersonColumns = createColumnsGetter(personColumns);

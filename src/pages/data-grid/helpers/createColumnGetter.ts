@@ -2,20 +2,14 @@ import * as ReactTable from '@tanstack/react-table';
 import _ from 'lodash';
 import * as zod from 'zod';
 
-export type ColumnMeta<T> = {
-  label: string;
-  type: 'text' | 'number' | 'date' | 'boolean';
-  helpText?: string;
-  options?: { label: string; value: string }[];
-  control?: 'select' | 'checkbox' | 'radio' | 'textarea';
-  expectedLength?: number;
-  group?: string;
-  tableColumn?: Partial<Record<keyof T, ReactTable.IdentifiedColumnDef<T>>>;
-};
+/**
+ * Utilities for generating table columns and form fields from a zod schema
+ * The order is: zod --> form fields --> table columns
+ */
 
-export type EntityMeta<T> = Partial<Record<keyof T, Partial<ColumnMeta<T>>>>;
+type TypeString = 'text' | 'number' | 'date' | 'boolean';
 
-const getTypeString = (type: zod.ZodTypeAny) => {
+export const getTypeStringFromZod = (type: zod.ZodTypeAny): TypeString => {
   if (type instanceof zod.ZodString) {
     return 'text';
   } else if (type instanceof zod.ZodNumber) {
@@ -29,48 +23,103 @@ const getTypeString = (type: zod.ZodTypeAny) => {
   }
 };
 
-export const createColumnGetter = <K extends zod.AnyZodObject>(
+export type Field<T> = {
+  id: keyof T;
+  label: string;
+  type: TypeString;
+  helpText?: string;
+  options?: { label: string; value: string }[];
+  control?: 'select' | 'checkbox' | 'radio' | 'textarea';
+  expectedLength?: number;
+  group?: string;
+  tableColumn?: Partial<Record<keyof T, ReactTable.IdentifiedColumnDef<T>>>;
+};
+
+export type EntityFields<T> = Field<T>[];
+
+export type EntityMeta<T> = Partial<Record<keyof T, Partial<Field<T>>>>;
+
+export const createFields = <K extends zod.AnyZodObject>(
   validator: K,
   metas: EntityMeta<zod.infer<K>>
 ) => {
   type Entity = zod.infer<K>;
-
-  const getColumns = (filterKeys?: (keyof Entity)[]) => {
-    const columnHelper = ReactTable.createColumnHelper<Entity>();
-    const result: ReactTable.ColumnDef<Entity, string | number | undefined>[] =
-      [];
-    for (let key of Object.keys(validator.shape)) {
-      if (filterKeys && !filterKeys.includes(key)) {
-        continue;
-      }
-
-      const shape = validator.shape[key];
-      const fallbackLabel = _.capitalize(_.trimStart(_.lowerCase(key), 'is '));
-      result.push(
-        columnHelper.accessor(
-          // @ts-ignore
-          key,
-          _.merge(
-            {
-              id: key,
-              header: metas[key]?.label || fallbackLabel,
-            },
-            metas[key]?.tableColumn,
-            {
-              meta: _.merge(
-                {
-                  label: fallbackLabel,
-                  type: getTypeString(shape),
-                },
-                metas[key],
-                metas[key]?.tableColumn?.meta
-              ),
-            }
-          )
-        )
-      );
-    }
-    return result;
-  };
-  return getColumns;
+  const result: EntityFields<Entity> = [];
+  for (let key of Object.keys(validator.shape)) {
+    const shape = validator.shape[key];
+    const fallbackLabel = _.capitalize(_.trimStart(_.lowerCase(key), 'is '));
+    result.push(
+      _.merge(
+        {
+          id: key,
+          label: fallbackLabel,
+          type: getTypeStringFromZod(shape),
+          isNumeric: shape instanceof zod.ZodNumber,
+        },
+        metas[key],
+        metas[key]?.tableColumn?.meta
+      )
+    );
+  }
+  return result;
 };
+
+export type Columns<T> = ReactTable.ColumnDef<T, string | number | undefined>[];
+
+export const createColumns = <K extends zod.AnyZodObject>(
+  validator: K,
+  metas: EntityMeta<zod.infer<K>>
+) => {
+  const fields = createFields(validator, metas);
+
+  const columnHelper = ReactTable.createColumnHelper<zod.infer<K>>();
+  const result: ReactTable.ColumnDef<
+    zod.infer<K>,
+    string | number | undefined
+  >[] = [];
+  for (let field of fields) {
+    result.push(
+      columnHelper.accessor(
+        // @ts-ignore
+        field.id,
+        _.merge(
+          {
+            id: field.id,
+            header: field.label,
+          },
+          field.tableColumn,
+          {
+            meta: _.merge(
+              {
+                label: field.label,
+                type: field.type,
+                isNumeric: field.type === 'number',
+              },
+              field,
+              field.tableColumn?.meta
+            ),
+          }
+        )
+      )
+    );
+  }
+  return result;
+};
+
+export function createColumnsGetter<T>(columns: Columns<T>) {
+  // Returns a list of personColumns filtered by the given keys
+  return (filterKeys: (keyof T)[]) => {
+    return columns.filter((column) => {
+      return filterKeys.includes((column.meta as Field<T>).id);
+    });
+  };
+}
+
+export function createFieldsGetter<T>(fields: EntityFields<T>) {
+  // Returns a list of personColumns filtered by the given keys
+  return (filterKeys: (keyof T)[]) => {
+    return fields.filter((field) => {
+      return filterKeys.includes(field.id);
+    });
+  };
+}
