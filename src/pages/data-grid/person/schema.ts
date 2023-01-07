@@ -34,15 +34,8 @@ export const personMetas: Metas<Person> = {
     helpText: "We won't share your email with anyone.",
   },
   favoriteColor: {
-    label: 'Color',
-    options: [
-      { label: 'Red', value: 'red' },
-      { label: 'Green', value: 'green' },
-      { label: 'Blue', value: 'blue' },
-    ],
-  },
-  bio: {
-    control: 'textarea',
+    // Example label override
+    label: 'Your color',
   },
 };
 

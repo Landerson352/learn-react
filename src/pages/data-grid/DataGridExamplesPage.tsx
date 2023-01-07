@@ -12,7 +12,7 @@ const DataGridExamplesPage: React.FC = () => {
   return (
     <UI.Box p={4}>
       <UI.VStack alignItems="stretch" spacing={4}>
-        <UI.Box bg="white" borderRadius="lg" overflow="hidden" p={4}>
+        <UI.Box bg="white" borderRadius="lg" overflow="hidden">
           <DataGridWithFetch
             tableOptions={{ columns }}
             fetchDataFromState={fetchPersons}
@@ -21,6 +21,7 @@ const DataGridExamplesPage: React.FC = () => {
             //   input: { bg: 'yellow' },
             // }}
             // dataTable={{ fontSize: '2xl', columnFilter: false }}
+            dataTable={{ size: 'sm' }}
             // pagination={false}
           />
         </UI.Box>

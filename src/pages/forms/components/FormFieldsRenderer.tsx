@@ -3,6 +3,8 @@ import { Path, UseFormReturn } from 'react-hook-form';
 
 import { formatError } from '../helpers/formatError';
 import { Fields } from '../../../helpers/schemaHelpers';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
 
 export function FormFieldsRenderer<T extends Record<string, any>>(
   props: {
@@ -16,12 +18,14 @@ export function FormFieldsRenderer<T extends Record<string, any>>(
   } = form;
 
   return (
-    <UI.Stack spacing={4} alignItems="start" {...restProps}>
+    <UI.Stack spacing={0} alignItems="start" {...restProps}>
       {fields.map((field) => {
         const id = field.id as Path<T>; // gross
         return (
           <UI.FormControl key={id} isInvalid={!!errors[id]}>
-            <UI.FormLabel htmlFor={id}>{field.label}</UI.FormLabel>
+            <UI.FormLabel htmlFor={id} mb={1}>
+              {field.label}
+            </UI.FormLabel>
             {field.type === 'boolean' ? (
               <UI.Box>
                 <UI.Switch {...form.register(id)} />
@@ -40,7 +44,15 @@ export function FormFieldsRenderer<T extends Record<string, any>>(
             {field.helpText ? (
               <UI.FormHelperText>{field.helpText}</UI.FormHelperText>
             ) : null}
-            <UI.FormErrorMessage>{formatError(errors[id])}</UI.FormErrorMessage>
+            <UI.Box minH={5} mt={1}>
+              {/* This container mitigates layout shift during validation. */}
+              <UI.FormErrorMessage mt={0}>
+                <UI.HStack spacing={1}>
+                  <FontAwesomeIcon icon={faExclamationCircle} />
+                  <UI.Text>{formatError(errors[id])}</UI.Text>
+                </UI.HStack>
+              </UI.FormErrorMessage>
+            </UI.Box>
             {/* <UI.Code colorScheme="purple" px={3} py={2} my={2}>
                 {JSON.stringify(field)}
               </UI.Code> */}

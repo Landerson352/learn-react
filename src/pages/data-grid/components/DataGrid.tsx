@@ -43,11 +43,13 @@ export function DataGrid<Data extends object>({
   const isDisabled = fetching || loading;
 
   return (
-    <UI.VStack alignItems="stretch" spacing={4} {...containerProps}>
+    <UI.VStack alignItems="stretch" spacing={0} {...containerProps}>
       {globalFilter !== false ? (
         <DataTableGlobalFilter
           table={table}
           input={{ isDisabled }}
+          p={3}
+          pb={0}
           {...globalFilter}
         />
       ) : null}
@@ -60,7 +62,7 @@ export function DataGrid<Data extends object>({
         />
       ) : null}
       {pagination !== false ? (
-        <DataTablePagination table={table} py={2} {...pagination} />
+        <DataTablePagination table={table} p={3} {...pagination} />
       ) : null}
     </UI.VStack>
   );

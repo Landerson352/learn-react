@@ -42,6 +42,21 @@ export function DataTable<Data extends object>({
                 )
               ) : null;
 
+              const alignment = meta?.isNumeric ? 'right' : 'left';
+              const flexAlignment = meta?.isNumeric ? 'end' : 'start';
+
+              const buttonElements = [
+                <UI.Text>
+                  {ReactTable.flexRender(
+                    header.column.columnDef.header,
+                    header.getContext()
+                  )}
+                </UI.Text>,
+                <UI.Box display="inline-block" w={3}>
+                  {sortIcon}
+                </UI.Box>,
+              ];
+
               return (
                 <UI.Th
                   key={header.id}
@@ -49,29 +64,17 @@ export function DataTable<Data extends object>({
                   isNumeric={meta?.isNumeric}
                   px={3}
                 >
-                  <UI.VStack alignItems="stretch" spacing={1}>
+                  <UI.VStack alignItems={flexAlignment} spacing={1}>
                     <UI.Button
                       variant="ghost"
                       size="sm"
-                      justifyContent={meta?.isNumeric ? 'end' : 'start'}
                       onClick={header.column.getToggleSortingHandler()}
                     >
-                      {meta?.isNumeric ? (
-                        <UI.Box display="inline-block" w={3} mr={2}>
-                          {sortIcon}
-                        </UI.Box>
-                      ) : null}
-
-                      {ReactTable.flexRender(
-                        header.column.columnDef.header,
-                        header.getContext()
-                      )}
-
-                      {meta?.isNumeric ? null : (
-                        <UI.Box display="inline-block" w={3} ml={2}>
-                          {sortIcon}
-                        </UI.Box>
-                      )}
+                      <UI.HStack>
+                        {alignment === 'right'
+                          ? buttonElements.reverse()
+                          : buttonElements}
+                      </UI.HStack>
                     </UI.Button>
 
                     {header.column.getCanFilter() && columnFilter !== false ? (

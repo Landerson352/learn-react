@@ -29,11 +29,13 @@ export type Field<T> = {
   label: string;
   type: TypeString;
   helpText?: string;
-  options?: { label: string; value: string }[];
-  control?: 'select' | 'checkbox' | 'radio' | 'textarea';
-  expectedLength?: number;
-  group?: string;
   tableColumn?: Partial<Record<keyof T, ReactTable.IdentifiedColumnDef<T>>>;
+
+  // Future ideas:
+  // options?: { label: string; value: string }[];
+  // control?: 'select' | 'checkbox' | 'radio' | 'textarea';
+  // expectedLength?: number;
+  // group?: string;
 };
 
 export type Fields<T> = Field<T>[];
