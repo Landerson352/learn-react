@@ -12,6 +12,7 @@ import TabContextDemoPage from './pages/TabContextDemoPage';
 import ModalExamplesPage from './pages/modals/ModalExamplesPage';
 import DataGridExamplesPage from './pages/data-grid/DataGridExamplesPage';
 import FormExamplesPage from './pages/forms/FormExamplesPage';
+import ViewExamplesPage from './pages/views/ViewExamplesPage';
 
 const App: React.FC = () => {
   return (
@@ -31,6 +32,7 @@ const App: React.FC = () => {
         <Route path="/modals/*" element={<ModalExamplesPage />} />
         <Route path="/firebase" element={<FirebasePage />} />
         <Route path="/tab-context" element={<TabContextDemoPage />} />
+        <Route path="/views" element={<ViewExamplesPage />} />
         <Route path="/:segment" element={<ExamplesPage />} />
         <Route path="/" element={<ExamplesPage />} />
       </Routes>
