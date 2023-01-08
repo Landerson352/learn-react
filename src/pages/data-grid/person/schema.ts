@@ -34,15 +34,21 @@ export const personMetas: Metas<Person> = {
   email: {
     helpText: "We won't share your email with anyone.",
   },
+  isAlive: {
+    label: 'Are you alive?', // label override
+    trueStateLabel: 'Yes, I am currently alive and not dead',
+  },
   favoriteColor: {
-    // Example label override
-    label: 'Your color',
+    label: 'Your aura color', // label override
     options: [
       { label: 'Red', value: 'red' },
       { label: 'Green', value: 'green' },
       { label: 'Blue', value: 'blue' },
     ],
     placeholder: 'Select a color',
+  },
+  bio: {
+    multiline: true,
   },
 };
 

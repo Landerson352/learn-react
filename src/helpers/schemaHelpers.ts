@@ -32,11 +32,12 @@ export type Field<T> = {
   tableColumn?: Partial<Record<keyof T, ReactTable.IdentifiedColumnDef<T>>>;
   options?: { label: string; value: string }[] | boolean;
   placeholder?: string;
+  trueStateLabel?: string;
+  multiline?: boolean;
+  group?: string;
 
   // Future ideas:
-  // control?: 'select' | 'checkbox' | 'radio' | 'textarea';
   // expectedLength?: number;
-  // group?: string;
 };
 
 export type Fields<T> = Field<T>[];
@@ -51,7 +52,7 @@ export const createFields = <K extends zod.AnyZodObject>(
   const result: Fields<Entity> = [];
   for (let key of Object.keys(validator.shape)) {
     const type = getTypeStringFromZod(validator.shape[key]);
-    const fallbackLabel = _.capitalize(_.trimStart(_.lowerCase(key), 'is '));
+    const fallbackLabel = _.capitalize(_.lowerCase(key));
     result.push(
       _.merge(
         {

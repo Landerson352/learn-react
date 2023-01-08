@@ -15,6 +15,7 @@ const customizedFields = personFields.map((field) => {
     return {
       ...field,
       options: [
+        ...(Array.isArray(field.options) ? field.options : []),
         { label: 'Cyan', value: 'cyan' },
         { label: 'Magenta', value: 'magenta' },
         { label: 'Yellow', value: 'yellow' },
@@ -42,7 +43,7 @@ const FormExamplesPage: React.FC = () => {
     <UI.Box p={4} bg="white">
       <Form.Container form={form}>
         <UI.Heading mb={4}>Add person</UI.Heading>
-        <Form.FieldsRenderer form={form} fields={customizedFields} />
+        <Form.FieldsRenderer form={form} fields={personFields} />
         <Form.Error mb={4}>{form.formState.error}</Form.Error>
         <Form.SubmitButton isDisabled={form.formState.isSubmitting}>
           Save

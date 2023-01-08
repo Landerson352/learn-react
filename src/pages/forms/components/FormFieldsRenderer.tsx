@@ -22,11 +22,10 @@ export function FormFieldsRenderer<T extends Record<string, any>>(
     <UI.Stack spacing={0} alignItems="start" {...restProps}>
       {fields.map((field) => {
         const id = field.id as Path<T>; // gross
+
         return (
           <UI.FormControl key={id} isInvalid={!!errors[id]}>
-            <UI.FormLabel htmlFor={id} mb={1}>
-              {field.label}
-            </UI.FormLabel>
+            <UI.FormLabel htmlFor={id}>{field.label}</UI.FormLabel>
             <FormFieldRenderer form={form} field={field} />
             {field.helpText ? (
               <UI.FormHelperText>{field.helpText}</UI.FormHelperText>

@@ -18,14 +18,17 @@ export function FormFieldRenderer<
   const id = field.id as Path<TFieldValues>; // gross
   const controller = useController({ name: id, control: form.control });
 
+  // Switch control
   if (field.type === 'boolean') {
     return (
-      <UI.Box>
+      <UI.HStack spacing={3}>
         <UI.Switch {...form.register(id)} />
-      </UI.Box>
+        <UI.Text fontSize="sm">{field.trueStateLabel}</UI.Text>
+      </UI.HStack>
     );
   }
 
+  // Numeric control
   if (field.type === 'number') {
     return (
       <UI.NumberInput
@@ -43,10 +46,11 @@ export function FormFieldRenderer<
   }
 
   if (Array.isArray(field.options)) {
+    // Radio control
     if (field.options.length <= 3) {
       return (
-        <UI.RadioGroup {...controller.field}>
-          <UI.VStack alignItems="start">
+        <UI.RadioGroup {...controller.field} size="sm">
+          <UI.VStack alignItems="start" spacing={1}>
             {field.options.map((option) => (
               <UI.Radio key={option.value} value={option.value}>
                 {option.label}
@@ -57,6 +61,7 @@ export function FormFieldRenderer<
       );
     }
 
+    // Select control
     return (
       <UI.Select placeholder={field.placeholder || 'Choose one'}>
         {field.options.map((option) => (
@@ -68,5 +73,13 @@ export function FormFieldRenderer<
     );
   }
 
+  if (field.multiline) {
+    // Textarea control
+    return (
+      <UI.Textarea placeholder={field.placeholder} {...form.register(id)} />
+    );
+  }
+
+  // Text control
   return <UI.Input placeholder={field.placeholder} {...form.register(id)} />;
 }
