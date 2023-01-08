@@ -17,11 +17,12 @@ import {
 export const personSchema = zod.object({
   firstName: zod.string().min(2).max(20),
   lastName: zod.string().min(2).max(20),
-  email: zod.string().email().optional(),
+  email: zod.string().email().optional().or(zod.literal('')), // Optioanl string format validators also need to allow for empty strings
   age: zod.number().min(0).max(100).optional(),
   favoriteColor: zod.string().optional(),
   isAlive: zod.boolean().optional(),
   bio: zod.string().optional(),
+  state: zod.string().optional(),
 });
 
 export type Person = zod.infer<typeof personSchema>;
@@ -36,6 +37,12 @@ export const personMetas: Metas<Person> = {
   favoriteColor: {
     // Example label override
     label: 'Your color',
+    options: [
+      { label: 'Red', value: 'red' },
+      { label: 'Green', value: 'green' },
+      { label: 'Blue', value: 'blue' },
+    ],
+    placeholder: 'Select a color',
   },
 };
 

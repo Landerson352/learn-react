@@ -2,6 +2,7 @@ import React from 'react';
 import _ from 'lodash';
 
 import { LegitFormReturn } from '../helpers/useLegitForm';
+import { FormProvider } from 'react-hook-form';
 
 export const FormContainer: React.FC<
   React.PropsWithChildren<{ form: LegitFormReturn<any> }>
@@ -25,8 +26,10 @@ export const FormContainer: React.FC<
   }, [errors]);
 
   return (
-    <form ref={formRef} onSubmit={form.onSubmit}>
-      <fieldset disabled={form.formState.isSubmitting}>{children}</fieldset>
-    </form>
+    <FormProvider {...form}>
+      <form ref={formRef} onSubmit={form.onSubmit}>
+        <fieldset disabled={form.formState.isSubmitting}>{children}</fieldset>
+      </form>
+    </FormProvider>
   );
 };

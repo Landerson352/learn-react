@@ -1,10 +1,11 @@
 import * as UI from '@chakra-ui/react';
 import { Path, UseFormReturn } from 'react-hook-form';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
 
 import { formatError } from '../helpers/formatError';
 import { Fields } from '../../../helpers/schemaHelpers';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
+import { FormFieldRenderer } from './FormFieldRenderer';
 
 export function FormFieldsRenderer<T extends Record<string, any>>(
   props: {
@@ -26,21 +27,7 @@ export function FormFieldsRenderer<T extends Record<string, any>>(
             <UI.FormLabel htmlFor={id} mb={1}>
               {field.label}
             </UI.FormLabel>
-            {field.type === 'boolean' ? (
-              <UI.Box>
-                <UI.Switch {...form.register(id)} />
-              </UI.Box>
-            ) : null}
-            {field.type === 'text' ? <UI.Input {...form.register(id)} /> : null}
-            {field.type === 'number' ? (
-              <UI.NumberInput>
-                <UI.NumberInputField />
-                <UI.NumberInputStepper>
-                  <UI.NumberIncrementStepper />
-                  <UI.NumberDecrementStepper />
-                </UI.NumberInputStepper>
-              </UI.NumberInput>
-            ) : null}
+            <FormFieldRenderer form={form} field={field} />
             {field.helpText ? (
               <UI.FormHelperText>{field.helpText}</UI.FormHelperText>
             ) : null}

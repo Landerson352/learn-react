@@ -1,11 +1,28 @@
 import React from 'react';
 import * as UI from '@chakra-ui/react';
 import { zodResolver } from '@hookform/resolvers/zod';
+import _ from 'lodash';
 
 import { useLegitForm } from './helpers/useLegitForm';
 import { Form } from './components/Form';
 import { Person, personSchema, personFields } from '../data-grid/person/schema';
 import { delay } from '../../helpers/delay';
+
+// Example of how to add dynamic options into fields
+// You could load this from an API in the parent component
+const customizedFields = personFields.map((field) => {
+  if (field.id === 'favoriteColor') {
+    return {
+      ...field,
+      options: [
+        { label: 'Cyan', value: 'cyan' },
+        { label: 'Magenta', value: 'magenta' },
+        { label: 'Yellow', value: 'yellow' },
+      ],
+    };
+  }
+  return field;
+});
 
 const FormExamplesPage: React.FC = () => {
   const form = useLegitForm<Person>({
@@ -25,7 +42,7 @@ const FormExamplesPage: React.FC = () => {
     <UI.Box p={4} bg="white">
       <Form.Container form={form}>
         <UI.Heading mb={4}>Add person</UI.Heading>
-        <Form.FieldsRenderer form={form} fields={personFields} />
+        <Form.FieldsRenderer form={form} fields={customizedFields} />
         <Form.Error mb={4}>{form.formState.error}</Form.Error>
         <Form.SubmitButton isDisabled={form.formState.isSubmitting}>
           Save

@@ -30,9 +30,10 @@ export type Field<T> = {
   type: TypeString;
   helpText?: string;
   tableColumn?: Partial<Record<keyof T, ReactTable.IdentifiedColumnDef<T>>>;
+  options?: { label: string; value: string }[] | boolean;
+  placeholder?: string;
 
   // Future ideas:
-  // options?: { label: string; value: string }[];
   // control?: 'select' | 'checkbox' | 'radio' | 'textarea';
   // expectedLength?: number;
   // group?: string;
