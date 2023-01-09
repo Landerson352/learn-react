@@ -1,4 +1,5 @@
 import * as UI from '@chakra-ui/react';
+import { SingleDatepicker } from 'chakra-dayzed-datepicker';
 import {
   FieldValues,
   Path,
@@ -37,6 +38,17 @@ export function FormFieldRenderer<
           <UI.Text fontSize="sm">{field.trueStateLabel}</UI.Text>
         </UI.Checkbox>
       </UI.Box>
+    );
+  }
+
+  // Datepicker control
+  if (field.type === 'date') {
+    return (
+      <SingleDatepicker
+        name={controller.field.name}
+        date={controller.field.value}
+        onDateChange={controller.field.onChange}
+      />
     );
   }
 

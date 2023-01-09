@@ -31,6 +31,7 @@ export const personSchema = zod.object({
   age: zod.number().min(0).max(100).optional(),
   isAlive: zod.boolean().optional(),
   favoriteColor: zod.string().optional(),
+  startDate: zod.date().optional(),
 });
 
 export type Person = zod.infer<typeof personSchema>;
