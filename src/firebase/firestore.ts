@@ -1,14 +1,14 @@
 import {
-  getFirestore,
   DocumentData,
-  QueryDocumentSnapshot,
   FirestoreDataConverter,
-  WithFieldValue,
+  getFirestore,
+  QueryDocumentSnapshot,
   SnapshotOptions,
+  WithFieldValue,
 } from 'firebase/firestore';
+import _ from 'lodash';
 
 import { app } from '.';
-import _ from 'lodash';
 
 export const firestore = getFirestore(app);
 

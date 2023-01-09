@@ -1,5 +1,5 @@
-import React from 'react';
 import * as UI from '@chakra-ui/react';
+import React from 'react';
 
 import { useCustomDragLayer } from './hooks';
 

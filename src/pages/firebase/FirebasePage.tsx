@@ -1,5 +1,5 @@
-import React from 'react';
 import * as UI from '@chakra-ui/react';
+import React from 'react';
 
 import { signOut, useAuthState, useSignIn } from '../../firebase/auth';
 import { addMessage, useMessages } from './data';

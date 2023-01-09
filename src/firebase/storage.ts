@@ -1,4 +1,4 @@
-import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { getDownloadURL, getStorage, ref, uploadBytes } from 'firebase/storage';
 import { v4 as uuidv4 } from 'uuid';
 
 import { app } from '../firebase';

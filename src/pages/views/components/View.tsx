@@ -7,8 +7,8 @@
  * The "debug" prop can be used to add a border to the View and all descendant views.
  */
 
-import React from 'react';
 import * as UI from '@chakra-ui/react';
+import React from 'react';
 
 export type ViewProps = UI.BoxProps & {
   rigid?: boolean;

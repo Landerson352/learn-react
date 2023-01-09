@@ -1,9 +1,9 @@
 import * as UI from '@chakra-ui/react';
 import React from 'react';
 
-import { fetchPersons } from './person/queries';
 import { DataGridWithFetch } from './components/DataGridWithFetch';
-import { personColumns, getPersonColumns } from './person/schema';
+import { fetchPersons } from './person/queries';
+import { getPersonColumns } from './person/schema';
 
 //const columns = personColumns; // display all columns
 const columns = getPersonColumns(['firstName', 'lastName', 'age']); // display only firstName, lastName, age

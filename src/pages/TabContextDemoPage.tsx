@@ -1,5 +1,5 @@
-import React from 'react';
 import * as UI from '@chakra-ui/react';
+import React from 'react';
 import TabCarouselControl from '../components/TabCarouselControl';
 
 const TabContextDemoPage: React.FC = () => {

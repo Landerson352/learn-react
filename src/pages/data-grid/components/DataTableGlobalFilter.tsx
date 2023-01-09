@@ -1,10 +1,10 @@
 import * as UI from '@chakra-ui/react';
-import * as ReactTable from '@tanstack/react-table';
-import { FontAwesomeIconProps } from '@fortawesome/react-fontawesome';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIconProps } from '@fortawesome/react-fontawesome';
+import * as ReactTable from '@tanstack/react-table';
 
-import { ComponentOverride } from '../../../helpers/componentOverride';
 import { DebouncedInput } from '../../../components/DebouncedInput';
+import { ComponentOverride } from '../../../helpers/componentOverride';
 
 export const INPUT_DEBOUNCE_MS = 500;
 

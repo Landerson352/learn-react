@@ -1,10 +1,10 @@
-import React from 'react';
-import { useDebounce } from 'react-use';
 import * as UI from '@chakra-ui/react';
 import {
   FontAwesomeIcon,
   FontAwesomeIconProps,
 } from '@fortawesome/react-fontawesome';
+import React from 'react';
+import { useDebounce } from 'react-use';
 
 export const INPUT_DEBOUNCE_MS = 500;
 

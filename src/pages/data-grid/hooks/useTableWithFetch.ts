@@ -1,5 +1,5 @@
-import React from 'react';
 import * as ReactTable from '@tanstack/react-table';
+import React from 'react';
 import type { Promisable, SetOptional } from 'type-fest';
 
 export type TableWithFetchOptions<Data extends object> = SetOptional<

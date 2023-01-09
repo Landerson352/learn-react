@@ -1,14 +1,14 @@
 import * as UI from '@chakra-ui/react';
-import * as ReactTable from '@tanstack/react-table';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import * as ReactTable from '@tanstack/react-table';
 
-import { DataTableSkeleton } from './DataTableSkeleton';
+import { ComponentOverride } from '../../../helpers/componentOverride';
 import {
   DataTableColumnFilter,
   DataTableColumnFilterProps,
 } from './DataTableColumnFilter';
-import { ComponentOverride } from '../../../helpers/componentOverride';
+import { DataTableSkeleton } from './DataTableSkeleton';
 
 export type DataTableProps<Data extends object> = {
   skeleton?: boolean;

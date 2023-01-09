@@ -1,10 +1,10 @@
 import * as UI from '@chakra-ui/react';
-import { Path, UseFormReturn } from 'react-hook-form';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Path, UseFormReturn } from 'react-hook-form';
 
-import { formatError } from '../helpers/formatError';
 import { Fields } from '../../../helpers/schemaHelpers';
+import { formatError } from '../helpers/formatError';
 import { FormFieldRenderer } from './FormFieldRenderer';
 
 export function FormFieldsRenderer<T extends Record<string, any>>(

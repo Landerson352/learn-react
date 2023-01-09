@@ -1,6 +1,6 @@
+import * as UI from '@chakra-ui/react';
 import _ from 'lodash';
 import React from 'react';
-import * as UI from '@chakra-ui/react';
 import { useDrag, useDrop } from 'react-dnd';
 
 import { ChessState, ItemTypes, KnightPosition } from './chess';

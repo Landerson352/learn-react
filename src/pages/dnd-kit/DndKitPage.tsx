@@ -1,15 +1,15 @@
-import React from 'react';
 import * as UI from '@chakra-ui/react';
+import React from 'react';
 
+import { arrayMove } from '@dnd-kit/sortable';
+import { faBars } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { useFieldArray, useForm } from 'react-hook-form';
 import {
   Sortable,
   SortableList,
   SortableListItemRepeater,
 } from './helpers/sortable';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBars } from '@fortawesome/free-solid-svg-icons';
-import { arrayMove } from '@dnd-kit/sortable';
-import { useForm, useFieldArray } from 'react-hook-form';
 
 interface Person {
   name: string;

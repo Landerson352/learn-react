@@ -1,6 +1,6 @@
-import React from 'react';
 import * as UI from '@chakra-ui/react';
 import { Column } from '@tanstack/react-table';
+import React from 'react';
 
 import {
   DebouncedInput,

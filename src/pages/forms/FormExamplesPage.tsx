@@ -1,12 +1,11 @@
-import React from 'react';
 import * as UI from '@chakra-ui/react';
 import { zodResolver } from '@hookform/resolvers/zod';
-import _ from 'lodash';
+import React from 'react';
 
-import { useLegitForm } from './helpers/useLegitForm';
-import { Form } from './components/Form';
-import { Person, personSchema, personFields } from '../data-grid/person/schema';
 import { delay } from '../../helpers/delay';
+import { Person, personFields, personSchema } from '../data-grid/person/schema';
+import { Form } from './components/Form';
+import { useLegitForm } from './helpers/useLegitForm';
 
 const FormExamplesPage: React.FC = () => {
   const form = useLegitForm<Person>({

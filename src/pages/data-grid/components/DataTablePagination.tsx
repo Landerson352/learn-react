@@ -1,7 +1,7 @@
-import * as ReactTable from '@tanstack/react-table';
 import * as UI from '@chakra-ui/react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faAnglesLeft, faAnglesRight } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import * as ReactTable from '@tanstack/react-table';
 
 export type DataTablePaginationProps<Data extends object> = {
   table: ReactTable.Table<Data>;

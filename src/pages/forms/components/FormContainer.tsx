@@ -1,8 +1,8 @@
-import React from 'react';
 import _ from 'lodash';
+import React from 'react';
 
-import { LegitFormReturn } from '../helpers/useLegitForm';
 import { FormProvider } from 'react-hook-form';
+import { LegitFormReturn } from '../helpers/useLegitForm';
 
 export const FormContainer: React.FC<
   React.PropsWithChildren<{ form: LegitFormReturn<any> }>

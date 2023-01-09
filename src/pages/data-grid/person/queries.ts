@@ -1,5 +1,5 @@
-import _ from 'lodash';
 import * as ReactTable from '@tanstack/react-table';
+import _ from 'lodash';
 
 import { delay } from '../../../helpers/delay';
 import { Person } from './schema';

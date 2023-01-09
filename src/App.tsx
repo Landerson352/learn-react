@@ -1,17 +1,17 @@
 import React from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
+import LincChallenge1Page from './pages/challenges/LincChallenge1Page';
+import DataGridExamplesPage from './pages/data-grid/DataGridExamplesPage';
+import DndKitPage from './pages/dnd-kit/DndKitPage';
+import DragAndDropExample from './pages/dnd/DragAndDropExample';
 import ExamplesPage from './pages/ExamplesPage';
+import FirebasePage from './pages/firebase/FirebasePage';
+import FormExamplesPage from './pages/forms/FormExamplesPage';
+import ModalExamplesPage from './pages/modals/ModalExamplesPage';
 import CompositionalPatterns from './pages/patterns/CompositionalPatternsPage';
 import JavascriptPatterns from './pages/patterns/JavascriptPatternsPage';
-import LincChallenge1Page from './pages/challenges/LincChallenge1Page';
-import FirebasePage from './pages/firebase/FirebasePage';
-import DragAndDropExample from './pages/dnd/DragAndDropExample';
-import DndKitPage from './pages/dnd-kit/DndKitPage';
 import TabContextDemoPage from './pages/TabContextDemoPage';
-import ModalExamplesPage from './pages/modals/ModalExamplesPage';
-import DataGridExamplesPage from './pages/data-grid/DataGridExamplesPage';
-import FormExamplesPage from './pages/forms/FormExamplesPage';
 import ViewExamplesPage from './pages/views/ViewExamplesPage';
 
 const App: React.FC = () => {

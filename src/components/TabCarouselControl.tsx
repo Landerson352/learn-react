@@ -1,9 +1,9 @@
-import React from 'react';
 import * as UI from '@chakra-ui/react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { usePrevious, useToggle } from 'react-use';
 import * as icons from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import _ from 'lodash';
+import React from 'react';
+import { usePrevious, useToggle } from 'react-use';
 
 export interface TabCarouselControlProps extends UI.BoxProps {
   children?: React.ReactNode | React.ReactNode[];

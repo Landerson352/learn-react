@@ -1,6 +1,6 @@
-import React from 'react';
-import _ from 'lodash';
 import * as UI from '@chakra-ui/react';
+import _ from 'lodash';
+import React from 'react';
 
 // Not covered: getters & setters, generators, prototypes
 

@@ -1,7 +1,7 @@
 import * as UI from '@chakra-ui/react';
+import _ from 'lodash';
 import React from 'react';
 import * as reactRouter from 'react-router-dom';
-import _ from 'lodash';
 
 import { useRouteModal } from './routeModal';
 

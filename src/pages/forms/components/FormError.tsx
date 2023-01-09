@@ -1,7 +1,7 @@
-import React from 'react';
 import * as UI from '@chakra-ui/react';
 import { faCircleExclamation } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import React from 'react';
 
 export const FormError: React.FC<React.PropsWithChildren<UI.AlertProps>> = ({
   children,

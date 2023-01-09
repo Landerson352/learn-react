@@ -1,12 +1,12 @@
+import _ from 'lodash';
 import React from 'react';
 import {
   FieldValues,
-  UseFormProps,
-  useForm,
-  SubmitHandler,
   SubmitErrorHandler,
+  SubmitHandler,
+  useForm,
+  UseFormProps,
 } from 'react-hook-form';
-import _ from 'lodash';
 
 export type LegitFormReturn<TFieldValues extends FieldValues = FieldValues> =
   ReturnType<typeof useLegitForm<TFieldValues, any>>;
