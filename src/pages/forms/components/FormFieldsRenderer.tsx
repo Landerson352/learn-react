@@ -11,20 +11,34 @@ export function FormFieldsRenderer<T extends Record<string, any>>(
   props: {
     form: UseFormReturn<T>;
     fields: Fields<T>;
-  } & UI.StackProps
+  } & UI.SimpleGridProps
 ): JSX.Element {
   const { form, fields, ...restProps } = props;
   const {
     formState: { errors },
   } = form;
 
+  const columns = UI.useBreakpointValue([1, 4]) || 1;
+
   return (
-    <UI.Stack spacing={0} alignItems="start" {...restProps}>
+    <UI.SimpleGrid columns={columns} spacingX={4} spacingY={2} {...restProps}>
       {fields.map((field) => {
         const id = field.id as Path<T>; // gross
+        const spanValue = Math.min(
+          columns,
+          {
+            sm: 1,
+            md: 2,
+            lg: 4,
+          }[field.size || 'md']
+        );
 
         return (
-          <UI.FormControl key={id} isInvalid={!!errors[id]}>
+          <UI.FormControl
+            key={id}
+            isInvalid={!!errors[id]}
+            gridColumn={`span ${spanValue}`}
+          >
             <UI.FormLabel htmlFor={id}>{field.label}</UI.FormLabel>
             <FormFieldRenderer form={form} field={field} />
             {field.helpText ? (
@@ -33,8 +47,10 @@ export function FormFieldsRenderer<T extends Record<string, any>>(
             <UI.Box minH={5} mt={1}>
               {/* This container mitigates layout shift during validation. */}
               <UI.FormErrorMessage mt={0}>
-                <UI.HStack spacing={1}>
-                  <FontAwesomeIcon icon={faExclamationCircle} />
+                <UI.HStack spacing={1} alignItems="start">
+                  <UI.Text lineHeight={5}>
+                    <FontAwesomeIcon icon={faExclamationCircle} />
+                  </UI.Text>
                   <UI.Text>{formatError(errors[id])}</UI.Text>
                 </UI.HStack>
               </UI.FormErrorMessage>
@@ -45,6 +61,6 @@ export function FormFieldsRenderer<T extends Record<string, any>>(
           </UI.FormControl>
         );
       })}
-    </UI.Stack>
+    </UI.SimpleGrid>
   );
 }

@@ -33,22 +33,31 @@ export type Person = zod.infer<typeof personSchema>;
 export const personMetas: Metas<Person> = {
   email: {
     helpText: "We won't share your email with anyone.",
+    size: 'lg',
   },
-  isAlive: {
-    label: 'Are you alive?', // label override
-    trueStateLabel: 'Yes, I am currently alive and not dead',
+  age: {
+    size: 'sm',
   },
   favoriteColor: {
-    label: 'Your aura color', // label override
+    label: 'Your aura', // label override
+    placeholder: 'Select a color',
     options: [
       { label: 'Red', value: 'red' },
       { label: 'Green', value: 'green' },
       { label: 'Blue', value: 'blue' },
     ],
-    placeholder: 'Select a color',
+  },
+  isAlive: {
+    label: 'Are you alive?', // label override
+    trueStateLabel: 'Yes, I am currently alive and not dead',
+    size: 'lg',
   },
   bio: {
     multiline: true,
+    size: 'lg',
+  },
+  state: {
+    size: 'sm',
   },
 };
 
@@ -56,3 +65,27 @@ export const personFields = createFields(personSchema, personMetas);
 export const personColumns = createColumns(personSchema, personMetas);
 export const getPersonFields = createFieldsGetter(personFields);
 export const getPersonColumns = createColumnsGetter(personColumns);
+
+// TODO: consider making fields and columns into chainable objects
+// fields.overrride(), fields.pick(), fields.omit().overrride(), etc.
+
+// Example of how to pick fields and inject dynamic options
+// (You could load optins from an API in the parent component)
+const customizedFields = getPersonFields([
+  'lastName',
+  'firstName',
+  'favoriteColor',
+]).map((field) => {
+  if (field.id === 'favoriteColor') {
+    return {
+      ...field,
+      options: [
+        ...(Array.isArray(field.options) ? field.options : []),
+        { label: 'Cyan', value: 'cyan' },
+        { label: 'Magenta', value: 'magenta' },
+        { label: 'Yellow', value: 'yellow' },
+      ],
+    };
+  }
+  return field;
+});

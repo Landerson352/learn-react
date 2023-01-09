@@ -11,8 +11,8 @@ export const FormError: React.FC<React.PropsWithChildren<UI.AlertProps>> = ({
 
   return (
     <UI.Alert colorScheme="red" borderRadius="lg" {...restProps}>
-      <UI.HStack>
-        <UI.Text color="red.500" fontSize="xl">
+      <UI.HStack alignItems="start">
+        <UI.Text color="red.500" fontSize="xl" lineHeight={6}>
           <FontAwesomeIcon icon={faCircleExclamation} />
         </UI.Text>
         <UI.AlertTitle>{children}</UI.AlertTitle>

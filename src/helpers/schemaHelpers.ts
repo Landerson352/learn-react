@@ -35,14 +35,15 @@ export type Field<T> = {
   trueStateLabel?: string;
   multiline?: boolean;
   group?: string;
-
-  // Future ideas:
-  // expectedLength?: number;
+  size?: 'sm' | 'md' | 'lg';
+  control?: 'switch';
 };
 
 export type Fields<T> = Field<T>[];
 
-export type Metas<T> = Partial<Record<keyof T, Partial<Field<T>>>>;
+export type Meta<T> = Partial<Record<keyof T, Partial<Field<T>>>>;
+
+export type Metas<T> = Meta<T>;
 
 export const createFields = <K extends zod.AnyZodObject>(
   validator: K,
@@ -68,7 +69,9 @@ export const createFields = <K extends zod.AnyZodObject>(
   return result;
 };
 
-export type Columns<T> = ReactTable.ColumnDef<T, string | number | undefined>[];
+export type Column<T> = ReactTable.ColumnDef<T, string | number | undefined>;
+
+export type Columns<T> = Column<T>[];
 
 export const createColumns = <K extends zod.AnyZodObject>(
   validator: K,
@@ -113,8 +116,10 @@ export const createColumns = <K extends zod.AnyZodObject>(
 export function createColumnsGetter<T>(columns: Columns<T>) {
   // Returns a list of personColumns filtered by the given keys
   return (filterKeys: (keyof T)[]) => {
-    return columns.filter((column) => {
-      return filterKeys.includes((column.meta as Field<T>).id);
+    return filterKeys.map((key) => {
+      return columns.find((column) => {
+        return (column.meta as Field<T>).id === key;
+      }) as Column<T>;
     });
   };
 }
@@ -122,8 +127,10 @@ export function createColumnsGetter<T>(columns: Columns<T>) {
 export function createFieldsGetter<T>(fields: Fields<T>) {
   // Returns a list of personColumns filtered by the given keys
   return (filterKeys: (keyof T)[]) => {
-    return fields.filter((field) => {
-      return filterKeys.includes(field.id);
+    return filterKeys.map((key) => {
+      return fields.find((field) => {
+        return field.id === key;
+      }) as Field<T>;
     });
   };
 }

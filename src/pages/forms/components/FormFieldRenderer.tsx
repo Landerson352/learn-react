@@ -19,11 +19,22 @@ export function FormFieldRenderer<
   const controller = useController({ name: id, control: form.control });
 
   // Switch control
+  if (field.type === 'boolean' && field.control === 'switch') {
+    return (
+      <UI.HStack spacing={3} alignItems="start">
+        <UI.Switch my="1px" {...form.register(id)} />
+        <UI.Text fontSize="sm">{field.trueStateLabel}</UI.Text>
+      </UI.HStack>
+    );
+  }
+
+  // Checkbox control
   if (field.type === 'boolean') {
     return (
-      <UI.HStack spacing={3}>
-        <UI.Switch {...form.register(id)} />
-        <UI.Text fontSize="sm">{field.trueStateLabel}</UI.Text>
+      <UI.HStack spacing={3} alignItems="start">
+        <UI.Checkbox size="lg" my="1px" {...form.register(id)}>
+          <UI.Text fontSize="sm">{field.trueStateLabel}</UI.Text>
+        </UI.Checkbox>
       </UI.HStack>
     );
   }
@@ -35,6 +46,7 @@ export function FormFieldRenderer<
         placeholder={field.placeholder}
         {...controller.field}
         onChange={(str, num) => controller.field.onChange(num)}
+        isDisabled={form.formState.isSubmitting}
       >
         <UI.NumberInputField />
         <UI.NumberInputStepper>
