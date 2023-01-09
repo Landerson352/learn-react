@@ -1,4 +1,5 @@
 import * as zod from 'zod';
+import { masks } from '../../../helpers/masks';
 
 import {
   createColumns,
@@ -18,12 +19,18 @@ import {
 export const personSchema = zod.object({
   firstName: zod.string().min(2).max(20),
   lastName: zod.string().min(2).max(20),
-  email: zod.string().email().optional().or(zod.literal('')), // Optioanl string format validators also need to allow for empty strings
-  age: zod.number().min(0).max(100).optional(),
-  favoriteColor: zod.string().optional(),
-  isAlive: zod.boolean().optional(),
-  bio: zod.string().optional(),
+  city: zod.string().optional(),
   state: zod.string().optional(),
+  zip: zod
+    .string()
+    .regex(/^\d{5}$|^\d{9}$/, 'Invalid zip code')
+    .optional(),
+  email: zod.string().email().optional().or(zod.literal('')), // Optional string format validators also need to allow for empty strings
+  phone: zod.string().length(10).optional().or(zod.literal('')), // Optional string format validators also need to allow for empty strings
+  bio: zod.string().optional(),
+  age: zod.number().min(0).max(100).optional(),
+  isAlive: zod.boolean().optional(),
+  favoriteColor: zod.string().optional(),
 });
 
 export type Person = zod.infer<typeof personSchema>;
@@ -32,32 +39,38 @@ export type Person = zod.infer<typeof personSchema>;
  * Optional metadata for each field
  */
 export const personMetas: Metas<Person> = {
+  state: {
+    size: 'sm',
+  },
+  zip: {
+    size: 'sm',
+    mask: masks.zip,
+  },
   email: {
     helpText: "We won't share your email with anyone.",
+  },
+  phone: {
+    mask: masks.phone,
+  },
+  bio: {
+    multiline: true,
     size: 'lg',
   },
   age: {
     size: 'sm',
   },
+  isAlive: {
+    label: 'Are you alive?',
+    trueStateLabel: 'Yes, I am currently alive',
+  },
   favoriteColor: {
-    label: 'Your aura', // label override
+    label: 'Your aura',
     placeholder: 'Select a color',
     options: [
       { label: 'Red', value: 'red' },
       { label: 'Green', value: 'green' },
       { label: 'Blue', value: 'blue' },
     ],
-  },
-  isAlive: {
-    label: 'Are you alive?', // label override
-    trueStateLabel: 'Yes, I am currently alive and not dead',
-    size: 'lg',
-  },
-  bio: {
-    multiline: true,
-    size: 'lg',
-  },
-  state: {
     size: 'sm',
   },
 };

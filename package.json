@@ -45,6 +45,7 @@
     "react-dom": "^18.2.0",
     "react-firebase-hooks": "^5.1.1",
     "react-hook-form": "^7.40.0",
+    "react-hook-mask": "^1.1.11",
     "react-router-dom": "^6.4.4",
     "react-scripts": "^5.0.1",
     "react-use": "^17.4.0",

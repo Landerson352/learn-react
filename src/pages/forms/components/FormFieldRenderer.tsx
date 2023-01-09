@@ -7,6 +7,7 @@ import {
 } from 'react-hook-form';
 
 import { Field } from '../../../helpers/schemaHelpers';
+import { MaskedInput } from './MaskedInput';
 
 export function FormFieldRenderer<
   TFieldValues extends FieldValues = FieldValues
@@ -21,7 +22,7 @@ export function FormFieldRenderer<
   // Switch control
   if (field.type === 'boolean' && field.control === 'switch') {
     return (
-      <UI.HStack spacing={3} alignItems="start">
+      <UI.HStack spacing={3} alignItems="start" py={2}>
         <UI.Switch my="1px" {...form.register(id)} />
         <UI.Text fontSize="sm">{field.trueStateLabel}</UI.Text>
       </UI.HStack>
@@ -31,11 +32,11 @@ export function FormFieldRenderer<
   // Checkbox control
   if (field.type === 'boolean') {
     return (
-      <UI.HStack spacing={3} alignItems="start">
+      <UI.Box py={2}>
         <UI.Checkbox size="lg" my="1px" {...form.register(id)}>
           <UI.Text fontSize="sm">{field.trueStateLabel}</UI.Text>
         </UI.Checkbox>
-      </UI.HStack>
+      </UI.Box>
     );
   }
 
@@ -85,10 +86,21 @@ export function FormFieldRenderer<
     );
   }
 
+  // Textarea control
   if (field.multiline) {
-    // Textarea control
     return (
       <UI.Textarea placeholder={field.placeholder} {...form.register(id)} />
+    );
+  }
+
+  // Masked input
+  if (field.mask) {
+    return (
+      <MaskedInput
+        maskGenerator={field.mask}
+        placeholder={field.placeholder}
+        {...controller.field}
+      />
     );
   }
 

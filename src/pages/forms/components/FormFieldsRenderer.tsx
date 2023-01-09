@@ -39,7 +39,14 @@ export function FormFieldsRenderer<T extends Record<string, any>>(
             isInvalid={!!errors[id]}
             gridColumn={`span ${spanValue}`}
           >
-            <UI.FormLabel htmlFor={id}>{field.label}</UI.FormLabel>
+            <UI.FormLabel htmlFor={id}>
+              {field.label}{' '}
+              {field.required ? (
+                <UI.Text as="span" color="red.500">
+                  *
+                </UI.Text>
+              ) : null}
+            </UI.FormLabel>
             <FormFieldRenderer form={form} field={field} />
             {field.helpText ? (
               <UI.FormHelperText>{field.helpText}</UI.FormHelperText>

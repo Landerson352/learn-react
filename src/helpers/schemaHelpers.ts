@@ -1,5 +1,6 @@
 import * as ReactTable from '@tanstack/react-table';
 import _ from 'lodash';
+import { MaskGenerator } from 'react-hook-mask';
 import * as zod from 'zod';
 
 /**
@@ -37,6 +38,8 @@ export type Field<T> = {
   group?: string;
   size?: 'sm' | 'md' | 'lg';
   control?: 'switch';
+  mask?: MaskGenerator;
+  required?: boolean;
 };
 
 export type Fields<T> = Field<T>[];
@@ -54,12 +57,14 @@ export const createFields = <K extends zod.AnyZodObject>(
   for (let key of Object.keys(validator.shape)) {
     const type = getTypeStringFromZod(validator.shape[key]);
     const fallbackLabel = _.capitalize(_.lowerCase(key));
+    const required = !validator.shape[key].safeParse(undefined).success;
     result.push(
       _.merge(
         {
           id: key,
           label: fallbackLabel,
           type: type,
+          required,
         },
         metas?.[key],
         metas?.[key]?.tableColumn?.meta
