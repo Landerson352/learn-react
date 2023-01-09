@@ -17,7 +17,7 @@ export const FormContainer: React.FC<
   React.useEffect(() => {
     if (formRef.current && _.isEmpty(errors)) {
       const firstInvalidElement = formRef.current.querySelector(
-        '[aria-invalid="false"]'
+        '[aria-invalid="true"]'
       );
       if (firstInvalidElement) {
         (firstInvalidElement as HTMLElement).focus();
