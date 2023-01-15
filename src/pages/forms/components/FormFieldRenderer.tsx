@@ -1,5 +1,6 @@
 import * as UI from '@chakra-ui/react';
 import { SingleDatepicker } from 'chakra-dayzed-datepicker';
+import _ from 'lodash';
 import {
   FieldValues,
   Path,
@@ -48,6 +49,15 @@ export function FormFieldRenderer<
         name={controller.field.name}
         date={controller.field.value}
         onDateChange={controller.field.onChange}
+        propsConfigs={{
+          inputProps: {
+            cursor: 'pointer',
+            isReadOnly: true,
+          },
+        }}
+        configs={{
+          dateFormat: field.dateFormat,
+        }}
       />
     );
   }
@@ -58,7 +68,9 @@ export function FormFieldRenderer<
       <UI.NumberInput
         placeholder={field.placeholder}
         {...controller.field}
-        onChange={(str, num) => controller.field.onChange(num)}
+        onChange={(str, num) =>
+          controller.field.onChange(_.isNaN(num) ? str : num)
+        }
         isDisabled={form.formState.isSubmitting}
       >
         <UI.NumberInputField />
@@ -88,7 +100,10 @@ export function FormFieldRenderer<
 
     // Select control
     return (
-      <UI.Select placeholder={field.placeholder || 'Choose one'}>
+      <UI.Select
+        {...form.register(id)}
+        placeholder={field.placeholder || 'Choose one'}
+      >
         {field.options.map((option) => (
           <option key={option.value} value={option.value}>
             {option.label}
@@ -112,6 +127,8 @@ export function FormFieldRenderer<
         maskGenerator={field.mask}
         placeholder={field.placeholder}
         {...controller.field}
+        // This component can't handle a nullish value
+        value={controller.field.value ?? ''}
       />
     );
   }

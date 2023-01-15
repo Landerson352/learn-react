@@ -3,10 +3,17 @@ import React from 'react';
 
 import { DataGridWithFetch } from './components/DataGridWithFetch';
 import { fetchPersons } from './person/queries';
-import { getPersonColumns } from './person/schema';
+import { getPersonColumns, personColumns } from './person/schema';
 
-//const columns = personColumns; // display all columns
-const columns = getPersonColumns(['firstName', 'lastName', 'age']); // display only firstName, lastName, age
+const columns = personColumns; // display all columns
+// const columns = getPersonColumns([
+//   'firstName',
+//   // 'lastName',
+//   // 'email',
+//   // 'phone',
+//   // 'isAlive',
+//   'startDate',
+// ]); // display only a subset of columns
 
 const DataGridExamplesPage: React.FC = () => {
   return (
@@ -16,13 +23,10 @@ const DataGridExamplesPage: React.FC = () => {
           <DataGridWithFetch
             tableOptions={{ columns }}
             fetchDataFromState={fetchPersons}
-            // globalFilter={{
-            //   icon: { color: 'red' },
-            //   input: { bg: 'yellow' },
-            // }}
-            // dataTable={{ fontSize: '2xl', columnFilter: false }}
-            dataTable={{ size: 'sm' }}
+            // globalFilter={false}
+            // dataTable={{ columnFilter: false }}
             // pagination={false}
+            dataTable={{ size: 'sm' }}
           />
         </UI.Box>
       </UI.VStack>

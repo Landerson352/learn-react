@@ -28,8 +28,8 @@ export function DataTableGlobalFilter<Data extends object>({
       {input === false ? null : (
         <DebouncedInput
           {...input}
-          value={table.getState().globalFilter ?? ''}
-          onChange={(value) => table.setGlobalFilter(value)}
+          value={table.getState().globalFilter}
+          onChange={table.setGlobalFilter}
           leftIcon={
             icon === false
               ? undefined

@@ -13,6 +13,13 @@ const theme = extendTheme({
       },
     },
   },
+  components: {
+    Link: {
+      baseStyle: {
+        color: 'blue.500',
+      },
+    },
+  },
 });
 
 createRoot(document.getElementById('root') as HTMLElement).render(

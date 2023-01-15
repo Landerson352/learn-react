@@ -1,7 +1,13 @@
+import * as UI from '@chakra-ui/react';
 import * as ReactTable from '@tanstack/react-table';
 import _ from 'lodash';
 import { MaskGenerator } from 'react-hook-mask';
 import * as zod from 'zod';
+
+import { setCustomErrorMap } from './setCustomErrorMap';
+import { SubtypeMetaKey, subtypeMetas } from './subtypeMetas';
+
+setCustomErrorMap();
 
 /**
  * Utilities for generating table columns and form fields from a zod schema
@@ -10,19 +16,30 @@ import * as zod from 'zod';
 
 type TypeString = 'text' | 'number' | 'date' | 'boolean';
 
+/**
+ * Recur into the zod type to find the first primitive used in the chain.
+ */
 export const getTypeStringFromZod = (type: zod.ZodTypeAny): TypeString => {
-  const innerType = type._def.innerType;
-  if (innerType instanceof zod.ZodString) {
+  if (type instanceof zod.ZodString) {
     return 'text';
-  } else if (innerType instanceof zod.ZodNumber) {
+  } else if (type instanceof zod.ZodNumber) {
     return 'number';
-  } else if (innerType instanceof zod.ZodDate) {
+  } else if (type instanceof zod.ZodDate) {
     return 'date';
-  } else if (innerType instanceof zod.ZodBoolean) {
+  } else if (type instanceof zod.ZodBoolean) {
     return 'boolean';
   } else {
-    return 'text';
+    return getTypeStringFromZod(
+      type._def.schema || type._def.innerType || type._def.options?.[0]
+    );
   }
+};
+
+export const createOptionalSchema = <T>(schema: zod.ZodType<T>) => {
+  // TODO: FInd out how to make this work with Prisma generated types
+
+  // Allow for missing, undefined, null, or empty string
+  return schema.nullish().optional().or(zod.literal(''));
 };
 
 export type Field<T> = {
@@ -30,23 +47,29 @@ export type Field<T> = {
   label: string;
   type: TypeString;
   helpText?: string;
-  tableColumn?: Partial<Record<keyof T, ReactTable.IdentifiedColumnDef<T>>>;
-  options?: { label: string; value: string }[] | boolean;
+  tableColumn?: ReactTable.IdentifiedColumnDef<T>;
+  options?: { label: string; value: string }[];
   placeholder?: string;
   trueStateLabel?: string;
+  trueFalseLabels?: [string, string];
   multiline?: boolean;
   group?: string;
   size?: 'sm' | 'md' | 'lg';
   control?: 'switch';
-  mask?: MaskGenerator;
   required?: boolean;
+  mask?: MaskGenerator;
+  format?: (value: string) => string;
+  dateFormat?: string; // date-fns format, used by ValueDisplay and chakra-dayzed-datepicker
+  subtype?: SubtypeMetaKey;
+  isNumeric?: boolean;
+  cellProps?: (value: any) => UI.TableCellProps;
 };
 
 export type Fields<T> = Field<T>[];
 
-export type Meta<T> = Partial<Record<keyof T, Partial<Field<T>>>>;
+export type Meta<T> = Partial<Field<T>>;
 
-export type Metas<T> = Meta<T>;
+export type Metas<T> = Partial<Record<keyof T, Meta<T>>>;
 
 export const createFields = <K extends zod.AnyZodObject>(
   validator: K,
@@ -58,6 +81,9 @@ export const createFields = <K extends zod.AnyZodObject>(
     const type = getTypeStringFromZod(validator.shape[key]);
     const fallbackLabel = _.capitalize(_.lowerCase(key));
     const required = !validator.shape[key].safeParse(undefined).success;
+    const meta = metas?.[key];
+    const subtypeKey = meta?.subtype;
+
     result.push(
       _.merge(
         {
@@ -66,8 +92,9 @@ export const createFields = <K extends zod.AnyZodObject>(
           type: type,
           required,
         },
-        metas?.[key],
-        metas?.[key]?.tableColumn?.meta
+        subtypeKey ? subtypeMetas[subtypeKey] : {},
+        meta,
+        meta?.tableColumn?.meta
       )
     );
   }
@@ -99,6 +126,13 @@ export const createColumns = <K extends zod.AnyZodObject>(
             id: field.id,
             header: field.label,
           },
+          field.format
+            ? {
+                cell: (props: { getValue: () => any }) => {
+                  return field.format?.(String(props.getValue()));
+                },
+              }
+            : {},
           field.tableColumn,
           {
             meta: _.merge(
