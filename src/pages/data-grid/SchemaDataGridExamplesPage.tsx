@@ -15,7 +15,7 @@ const columns = personColumns; // display all columns
 //   'startDate',
 // ]); // display only a subset of columns
 
-const DataGridExamplesPage: React.FC = () => {
+const SchemaDataGridExamplesPage: React.FC = () => {
   return (
     <UI.Box p={4}>
       <UI.VStack alignItems="stretch" spacing={4}>
@@ -34,4 +34,4 @@ const DataGridExamplesPage: React.FC = () => {
   );
 };
 
-export default DataGridExamplesPage;
+export default SchemaDataGridExamplesPage;

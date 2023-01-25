@@ -2,12 +2,13 @@ import React from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
 import LincChallenge1Page from './pages/challenges/LincChallenge1Page';
-import DataGridExamplesPage from './pages/data-grid/DataGridExamplesPage';
+import SchemaDataGridExamplesPage from './pages/data-grid/SchemaDataGridExamplesPage';
 import DndKitPage from './pages/dnd-kit/DndKitPage';
 import DragAndDropExample from './pages/dnd/DragAndDropExample';
 import ExamplesPage from './pages/ExamplesPage';
 import FirebasePage from './pages/firebase/FirebasePage';
 import FormExamplesPage from './pages/forms/FormExamplesPage';
+import SchemaFormExamplesPage from './pages/forms/SchemaFormExamplesPage';
 import ModalExamplesPage from './pages/modals/ModalExamplesPage';
 import CompositionalPatterns from './pages/patterns/CompositionalPatternsPage';
 import JavascriptPatterns from './pages/patterns/JavascriptPatternsPage';
@@ -26,11 +27,15 @@ const App: React.FC = () => {
         <Route path="/patterns/js" element={<JavascriptPatterns />} />
         <Route path="/dnd" element={<DragAndDropExample />} />
         <Route path="/dnd-kit" element={<DndKitPage />} />
-        <Route path="/data-grids" element={<DataGridExamplesPage />} />
         <Route path="/forms" element={<FormExamplesPage />} />
         {/* Support route modals by appending the "/*" catch-all to the path. */}
         <Route path="/modals/*" element={<ModalExamplesPage />} />
         <Route path="/firebase" element={<FirebasePage />} />
+        <Route
+          path="/schema-data-grids"
+          element={<SchemaDataGridExamplesPage />}
+        />
+        <Route path="/schema-forms" element={<SchemaFormExamplesPage />} />
         <Route path="/tab-context" element={<TabContextDemoPage />} />
         <Route path="/views" element={<ViewExamplesPage />} />
         <Route path="/:segment" element={<ExamplesPage />} />
