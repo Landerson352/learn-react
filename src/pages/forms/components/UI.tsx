@@ -5,6 +5,18 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { SingleDatepicker } from 'chakra-dayzed-datepicker';
+import {
+  AsyncCreatableSelect,
+  AsyncProps,
+  AsyncSelect,
+  CreatableSelect,
+  Select,
+} from 'chakra-react-select';
+import {
+  CurrencyInputProps,
+  removeNonNumericsExceptDash,
+  useCurrencyFormat,
+} from 'input-currency-react';
 import _ from 'lodash';
 import React from 'react';
 import {
@@ -176,13 +188,14 @@ export const FullFormControl: React.FC<FullFormControlProps> = ({
 /* Must be placed inside a form-context-provider */
 export type FormInputProps = {
   name: string;
-  type?: 'date' | 'email' | 'password' | 'tel' | 'text' | 'boolean';
+  type?: 'boolean' | 'date' | 'email' | 'money' | 'password' | 'phone' | 'text';
   format?: string;
   multiline?: boolean;
   placeholder?: string;
   options?: { label: string; value: string }[];
   control?: 'radio' | 'select' | 'checkbox' | 'switch';
   label?: string;
+  loadOptions?: AsyncProps<any, any, any>['loadOptions'];
 };
 export const FormInput: React.FC<FormInputProps> = ({
   name,
@@ -193,9 +206,20 @@ export const FormInput: React.FC<FormInputProps> = ({
   options,
   control,
   label,
+  loadOptions,
 }) => {
   const form = useFormContext();
   const controller = useController({ name, control: form.control });
+
+  // Money control
+  if (type === 'money') {
+    return (
+      <MoneyInput
+        value={controller.field.value}
+        onChange={controller.field.onChange}
+      />
+    );
+  }
 
   // Switch control
   if (type === 'boolean' && control === 'switch') {
@@ -207,7 +231,7 @@ export const FormInput: React.FC<FormInputProps> = ({
     );
   }
 
-  // Checkbox control
+  // Checkbox control (default)
   if (type === 'boolean') {
     return (
       <UI.Box py={2}>
@@ -234,6 +258,21 @@ export const FormInput: React.FC<FormInputProps> = ({
         configs={{
           dateFormat: format,
         }}
+      />
+    );
+  }
+
+  // Async select control
+  if (loadOptions) {
+    return (
+      <AsyncSelect
+        name={controller.field.name}
+        value={controller.field.value}
+        onChange={controller.field.onChange}
+        placeholder={placeholder}
+        loadOptions={loadOptions}
+        defaultOptions
+        cacheOptions
       />
     );
   }
@@ -283,7 +322,7 @@ export const FormInput: React.FC<FormInputProps> = ({
 
   // Masked input control
   let mask;
-  if (type === 'tel') {
+  if (type === 'phone') {
     mask = subtypeMetas.phone.mask;
   }
 
@@ -311,7 +350,8 @@ export const FormInput: React.FC<FormInputProps> = ({
   );
 };
 
-export const TextInput = React.forwardRef<HTMLInputElement, UI.InputProps>(
+export type TextInputProps = UI.InputProps;
+export const TextInput = React.forwardRef<HTMLInputElement, TextInputProps>(
   ({ ...restProps }, ref) => {
     return <UI.Input ref={ref} data-lpignore="true" {...restProps} />;
   }
@@ -331,6 +371,39 @@ export const MaskedInput = React.forwardRef<
 
   return <TextInput {...restProps} {...webMask} />;
 });
+
+export type MoneyInputProps = Omit<UI.InputProps, 'value'> & {
+  options?: CurrencyInputProps['options'];
+  value: number | undefined;
+  onChange(value: number | undefined): any;
+};
+export const MoneyInput: React.FC<MoneyInputProps> = (props) => {
+  const { value, options, onChange, ...otherProps } = props;
+  const stringValue = String(value);
+  // console.log('stringValue', stringValue);
+
+  const [formattedValue, handleOnChange, handleOnKeyDown, handleOnClick] =
+    useCurrencyFormat(stringValue, {
+      locale: 'en-US',
+      i18nCurrency: 'USD',
+      ...options,
+      onChangeCallBack: (_, maskedValue, value) => {
+        const intValue = parseInt(removeNonNumericsExceptDash(value));
+        // console.log('intValue', intValue);
+        onChange?.(intValue);
+      },
+    });
+
+  return (
+    <UI.Input
+      onChange={handleOnChange}
+      onKeyDown={handleOnKeyDown}
+      onClick={handleOnClick}
+      value={formattedValue}
+      {...otherProps}
+    />
+  );
+};
 
 export const FormErrorMessage: React.FC<
   React.PropsWithChildren<UI.AlertProps>

@@ -1,9 +1,28 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import React from 'react';
+import states from 'states-us';
 import { z } from 'zod';
 
 import { createOptionalSchema } from '../../helpers/schemaHelpers';
 import * as UI from './components/UI';
+
+const stateOptions = states.map((state) => ({
+  label: state.name,
+  value: state.abbreviation,
+}));
+
+const findStates = (inputValue: string) => {
+  if (!inputValue) {
+    return stateOptions;
+  }
+
+  return stateOptions.filter((state) => {
+    return (
+      state.label.toLowerCase().indexOf(inputValue.toLowerCase()) >= 0 ||
+      state.value.toLowerCase().indexOf(inputValue.toLowerCase()) >= 0
+    );
+  });
+};
 
 const personSchema = z.object({
   firstName: z.string().min(2),
@@ -14,6 +33,8 @@ const personSchema = z.object({
   bio: z.string(),
   isAlive: createOptionalSchema(z.boolean()),
   isHappy: createOptionalSchema(z.boolean()),
+  price: createOptionalSchema(z.number()),
+  state: z.string(),
 });
 
 type Person = z.infer<typeof personSchema>;
@@ -31,6 +52,7 @@ const FormExamplesPage: React.FC = () => {
   return (
     <UI.Box bg="white" p={4}>
       <UI.Form form={form}>
+        <UI.FormField input={{ name: 'price', type: 'money' }} required />
         <UI.FormField input={{ name: 'firstName' }} required />
         <UI.FormField
           input={{
@@ -68,7 +90,7 @@ const FormExamplesPage: React.FC = () => {
             ],
           }}
         />
-        <UI.FormField input={{ name: 'phone', type: 'tel' }} required />
+        <UI.FormField input={{ name: 'phone', type: 'phone' }} required />
         <UI.FormField input={{ name: 'email', type: 'email' }} required />
         <UI.FormField
           label="D.O.B"
@@ -76,6 +98,14 @@ const FormExamplesPage: React.FC = () => {
           required
         />
         <UI.FormField required input={{ name: 'bio', multiline: true }} />
+        <UI.FormField
+          input={{
+            name: 'state',
+            loadOptions: (inputValue, callback) => {
+              callback(findStates(inputValue));
+            },
+          }}
+        />
         <UI.FormErrorMessage>{form.formState.error}</UI.FormErrorMessage>
         <UI.FormButtonStack>
           <UI.SubmitButton>Save</UI.SubmitButton>
