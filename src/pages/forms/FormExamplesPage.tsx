@@ -93,6 +93,7 @@ const FormExamplesPage: React.FC = () => {
                 { label: 'Yellow', value: 'yellow' },
               ],
             }}
+            span="sm"
           />
           <UI.FormField
             name="color"
