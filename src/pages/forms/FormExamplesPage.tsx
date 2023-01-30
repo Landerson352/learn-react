@@ -12,11 +12,12 @@ const personSchema = z.object({
   phone: z.string().min(10),
   email: z.string().email(),
   dob: z.date(),
-  bio: z.string(),
-  isAlive: createOptionalSchema(z.boolean()),
+  bio: z.string().min(1),
+  isAlive: z.literal(true, {
+    errorMap: () => ({ message: 'You must be alive to submit this form' }),
+  }),
   isHappy: createOptionalSchema(z.boolean()),
   price: z.number(),
-  //createOptionalSchema(
   state: z.object(
     {
       value: z.string(),
@@ -24,7 +25,6 @@ const personSchema = z.object({
     },
     { invalid_type_error: 'Required' }
   ),
-  //),
   percent: z.number(),
 });
 

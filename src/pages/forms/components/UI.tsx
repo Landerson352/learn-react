@@ -411,6 +411,9 @@ export const FormInput: React.FC<FormInputProps> = (props) => {
           id={name}
           {...controller.field}
           value={controller.field.value ?? ''}
+          onChange={(e) => {
+            controller.field.onChange(e.target.value || undefined);
+          }}
           placeholder={placeholder}
         />
       );
@@ -429,6 +432,9 @@ export const FormInput: React.FC<FormInputProps> = (props) => {
           maskGenerator={mask}
           {...controller.field}
           value={controller.field.value ?? ''}
+          onChange={(value) => {
+            controller.field.onChange(value || undefined);
+          }}
           placeholder={placeholder}
         />
       );
@@ -441,6 +447,9 @@ export const FormInput: React.FC<FormInputProps> = (props) => {
         type={type}
         {...controller.field}
         value={controller.field.value ?? ''}
+        onChange={(e) => {
+          controller.field.onChange(e.target.value || undefined);
+        }}
         placeholder={placeholder}
       />
     );
