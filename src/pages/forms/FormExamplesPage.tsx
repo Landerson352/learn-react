@@ -26,6 +26,7 @@ const personSchema = z.object({
     { invalid_type_error: 'Required' }
   ),
   percent: z.number(),
+  photoUrl: z.string(),
 });
 
 type Person = z.infer<typeof personSchema>;
@@ -49,6 +50,37 @@ const FormExamplesPage: React.FC = () => {
         <UI.FormGrid>
           <UI.FormField name="firstName" requiredStyling />
           <UI.FormField
+            name="photoUrl"
+            label="Passport photo"
+            input={{ type: 'photo' }}
+            requiredStyling
+          />
+          <UI.FormField
+            name="phone"
+            input={{ type: 'phone' }}
+            requiredStyling
+          />
+          <UI.FormField
+            name="email"
+            input={{ type: 'email' }}
+            requiredStyling
+          />
+          <UI.FormField
+            name="bio"
+            input={{ multiline: true }}
+            requiredStyling
+            span="lg"
+          />
+          <UI.FormField
+            name="state"
+            input={{
+              type: 'options',
+              options: (inputValue, callback) => {
+                callback(findUsStatesFromSearchtring(inputValue));
+              },
+            }}
+          />
+          <UI.FormField
             name="percent"
             input={{ type: 'number', config: { suffix: '%' } }}
             requiredStyling
@@ -61,18 +93,18 @@ const FormExamplesPage: React.FC = () => {
             span="sm"
           />
           <UI.FormField
-            name="isAlive"
-            input={{
-              type: 'boolean',
-              label: 'I am still alive',
-            }}
-          />
-          <UI.FormField
             name="isHappy"
             input={{
               type: 'boolean',
               label: 'I am a happy guy',
               control: 'switch',
+            }}
+          />
+          <UI.FormField
+            name="isAlive"
+            input={{
+              type: 'boolean',
+              label: 'I am still alive',
             }}
           />
           <UI.FormField
@@ -90,7 +122,6 @@ const FormExamplesPage: React.FC = () => {
                 { label: 'Red', value: 'red' },
                 { label: 'Green', value: 'green' },
                 { label: 'Blue', value: 'blue' },
-                { label: 'Yellow', value: 'yellow' },
               ],
             }}
             span="sm"
@@ -103,34 +134,9 @@ const FormExamplesPage: React.FC = () => {
                 { label: 'Red', value: 'red' },
                 { label: 'Green', value: 'green' },
                 { label: 'Blue', value: 'blue' },
+                { label: 'Yellow', value: 'yellow' },
               ],
             }}
-            span="sm"
-          />
-          <UI.FormField
-            name="state"
-            input={{
-              type: 'options',
-              options: (inputValue, callback) => {
-                callback(findUsStatesFromSearchtring(inputValue));
-              },
-            }}
-          />
-          <UI.FormField
-            name="phone"
-            input={{ type: 'phone' }}
-            requiredStyling
-          />
-          <UI.FormField
-            name="email"
-            input={{ type: 'email' }}
-            requiredStyling
-          />
-          <UI.FormField
-            name="bio"
-            input={{ multiline: true }}
-            requiredStyling
-            span="lg"
           />
           <UI.FormErrorMessage>{form.formState.error}</UI.FormErrorMessage>
           <UI.FormButtonStack>

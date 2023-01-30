@@ -29,6 +29,7 @@ import { useMeasure } from 'react-use';
 
 import { subtypeMetas } from '../../../helpers/subtypeMetas';
 import { formatError } from '../helpers/formatError';
+import { CameraInput } from './CameraInput';
 
 export * from '@chakra-ui/react';
 
@@ -250,6 +251,9 @@ export type FormInputByTypeProps =
       config?: NumericFormatProps;
     }
   | {
+      type: 'photo';
+    }
+  | {
       type?: 'email' | 'password' | 'phone' | 'text';
       multiline?: boolean;
       placeholder?: string;
@@ -391,6 +395,15 @@ export const FormInput: React.FC<FormInputProps> = (props) => {
         thousandSeparator=","
         {...config}
         customInput={UI.Input}
+      />
+    );
+  }
+
+  if (type === 'photo') {
+    return (
+      <CameraInput
+        {...controller.field}
+        onValueChange={controller.field.onChange}
       />
     );
   }
