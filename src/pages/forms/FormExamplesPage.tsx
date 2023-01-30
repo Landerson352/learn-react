@@ -6,20 +6,20 @@ import { z } from 'zod';
 import { createOptionalSchema } from '../../helpers/schemaHelpers';
 import * as UI from './components/UI';
 
+// Example dataset for autocomplete
 const stateOptions = states.map((state) => ({
   label: state.name,
   value: state.abbreviation,
 }));
-
-const findStates = (inputValue: string) => {
-  if (!inputValue) {
+const findStatesFromSearchtring = (str: string) => {
+  if (!str) {
     return stateOptions;
   }
 
   return stateOptions.filter((state) => {
     return (
-      state.label.toLowerCase().indexOf(inputValue.toLowerCase()) >= 0 ||
-      state.value.toLowerCase().indexOf(inputValue.toLowerCase()) >= 0
+      state.label.toLowerCase().indexOf(str.toLowerCase()) >= 0 ||
+      state.value.toLowerCase().indexOf(str.toLowerCase()) >= 0
     );
   });
 };
@@ -34,7 +34,9 @@ const personSchema = z.object({
   isAlive: createOptionalSchema(z.boolean()),
   isHappy: createOptionalSchema(z.boolean()),
   price: createOptionalSchema(z.number()),
-  state: z.string(),
+  state: createOptionalSchema(
+    z.object({ value: z.string(), label: z.string() })
+  ),
   count: z.number(),
 });
 
@@ -43,7 +45,9 @@ type Person = z.infer<typeof personSchema>;
 const FormExamplesPage: React.FC = () => {
   const form = UI.useHookForm<Person>({
     resolver: zodResolver(personSchema),
-    defaultValues: {},
+    defaultValues: {
+      state: { value: 'FL', label: 'Florida' },
+    },
     onValid: (data) => {
       console.log('onValid', data);
       // This function can be async, and can throw errors to users.
@@ -104,7 +108,7 @@ const FormExamplesPage: React.FC = () => {
           input={{
             name: 'state',
             loadOptions: (inputValue, callback) => {
-              callback(findStates(inputValue));
+              callback(findStatesFromSearchtring(inputValue));
             },
           }}
         />

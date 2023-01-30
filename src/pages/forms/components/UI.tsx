@@ -271,11 +271,17 @@ export const FormInput: React.FC<FormInputProps> = ({
       <AsyncSelect
         name={controller.field.name}
         value={controller.field.value}
-        onChange={controller.field.onChange}
+        onChange={(value) => {
+          console.log(value);
+          controller.field.onChange(value);
+        }}
         placeholder={placeholder}
         loadOptions={loadOptions}
         defaultOptions
         cacheOptions
+        isClearable
+        openMenuOnFocus={false}
+        openMenuOnClick={false}
       />
     );
   }
@@ -314,8 +320,8 @@ export const FormInput: React.FC<FormInputProps> = ({
   if (type === 'number') {
     return (
       <NumericFormat
-        value={controller.field.value}
-        onChange={controller.field.onChange}
+        value={parseFloat(controller.field.value ?? 0)}
+        onValueChange={(values) => controller.field.onChange(values.floatValue)}
         thousandSeparator=","
         customInput={UI.Input}
         suffix="%"
