@@ -35,6 +35,7 @@ const personSchema = z.object({
   isHappy: createOptionalSchema(z.boolean()),
   price: createOptionalSchema(z.number()),
   state: z.string(),
+  count: z.number(),
 });
 
 type Person = z.infer<typeof personSchema>;
@@ -52,6 +53,7 @@ const FormExamplesPage: React.FC = () => {
   return (
     <UI.Box bg="white" p={4}>
       <UI.Form form={form}>
+        <UI.FormField input={{ name: 'count', type: 'number' }} required />
         <UI.FormField input={{ name: 'price', type: 'money' }} required />
         <UI.FormField input={{ name: 'firstName' }} required />
         <UI.FormField

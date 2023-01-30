@@ -5,13 +5,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { SingleDatepicker } from 'chakra-dayzed-datepicker';
-import {
-  AsyncCreatableSelect,
-  AsyncProps,
-  AsyncSelect,
-  CreatableSelect,
-  Select,
-} from 'chakra-react-select';
+import { AsyncProps, AsyncSelect } from 'chakra-react-select';
 import {
   CurrencyInputProps,
   removeNonNumericsExceptDash,
@@ -30,6 +24,7 @@ import {
   UseFormProps,
 } from 'react-hook-form';
 import { MaskedInput as RHMMaskedInput, useWebMask } from 'react-hook-mask';
+import { NumericFormat } from 'react-number-format';
 
 import { subtypeMetas } from '../../../helpers/subtypeMetas';
 import { formatError } from '../helpers/formatError';
@@ -188,7 +183,15 @@ export const FullFormControl: React.FC<FullFormControlProps> = ({
 /* Must be placed inside a form-context-provider */
 export type FormInputProps = {
   name: string;
-  type?: 'boolean' | 'date' | 'email' | 'money' | 'password' | 'phone' | 'text';
+  type?:
+    | 'boolean'
+    | 'date'
+    | 'email'
+    | 'money'
+    | 'number'
+    | 'password'
+    | 'phone'
+    | 'text';
   format?: string;
   multiline?: boolean;
   placeholder?: string;
@@ -305,6 +308,18 @@ export const FormInput: React.FC<FormInputProps> = ({
           </option>
         ))}
       </UI.Select>
+    );
+  }
+
+  if (type === 'number') {
+    return (
+      <NumericFormat
+        value={controller.field.value}
+        onChange={controller.field.onChange}
+        thousandSeparator=","
+        customInput={UI.Input}
+        suffix="%"
+      />
     );
   }
 
