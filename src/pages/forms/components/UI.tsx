@@ -4,7 +4,7 @@ import {
   faExclamationCircle,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { SingleDatepicker } from 'chakra-dayzed-datepicker';
+import { DatepickerConfigs, SingleDatepicker } from 'chakra-dayzed-datepicker';
 import { AsyncProps, AsyncSelect } from 'chakra-react-select';
 import {
   CurrencyInputProps,
@@ -24,7 +24,7 @@ import {
   UseFormProps,
 } from 'react-hook-form';
 import { MaskedInput as RHMMaskedInput, useWebMask } from 'react-hook-mask';
-import { NumericFormat } from 'react-number-format';
+import { NumericFormat, NumericFormatProps } from 'react-number-format';
 
 import { subtypeMetas } from '../../../helpers/subtypeMetas';
 import { formatError } from '../helpers/formatError';
@@ -99,27 +99,28 @@ export const FormGrid: React.FC<FormGridProps> = ({ ...restProps }) => {
 
 /* Renders a form-control-display wrapper with dynamic form-input */
 /* Must be placed inside a form-context-provider */
-export type FormFieldProps = Omit<FullFormControlProps, 'name'> & {
-  input: FormInputProps;
+export type FormFieldProps = FullFormControlProps & {
+  input?: FormInputByTypeProps;
 };
 export const FormField: React.FC<FormFieldProps> = ({
+  name,
   input,
   ...restProps
 }) => {
   // Pull error out of formState
   const form = useFormContext();
-  const errors = form.formState.errors[input.name];
-  const fallbackLabel = _.capitalize(_.lowerCase(input.name));
+  const errors = form.formState.errors[name];
+  const fallbackLabel = _.capitalize(_.lowerCase(name));
 
   return (
     <FullFormControl
       {...restProps}
-      name={input.name}
+      name={name}
       label={restProps.label || fallbackLabel}
       isInvalid={!!errors}
       errorMessage={formatError(errors)}
     >
-      <FormInput {...input} />
+      <FormInput name={name} {...input} />
     </FullFormControl>
   );
 };
@@ -146,14 +147,14 @@ export const FormFieldErrorMessage: React.FC<UI.BoxProps> = ({
 /* Renders a form-control, label, helper-text, children, and error message */
 export type FullFormControlProps = UI.FormControlProps & {
   label?: string;
-  required?: boolean;
+  requiredStyling?: boolean;
   name: string;
   helperText?: string;
   errorMessage?: string;
 };
 export const FullFormControl: React.FC<FullFormControlProps> = ({
   label,
-  required,
+  requiredStyling: required,
   name,
   children,
   helperText,
@@ -181,36 +182,45 @@ export const FullFormControl: React.FC<FullFormControlProps> = ({
 
 /* Renders a different input depending on type */
 /* Must be placed inside a form-context-provider */
+export type FormInputByTypeProps =
+  | {
+      type: 'boolean';
+      label?: string;
+      control?: 'checkbox' | 'switch';
+    }
+  | {
+      type: 'options';
+      options?:
+        | { label: string; value: string }[]
+        | AsyncProps<any, any, any>['loadOptions'];
+      control?: 'radio' | 'select';
+      placeholder?: string;
+    }
+  | {
+      type: 'date';
+      config?: DatepickerConfigs;
+    }
+  | {
+      type: 'email';
+    }
+  | {
+      type: 'money';
+    }
+  | {
+      type: 'number';
+      config?: NumericFormatProps;
+    }
+  | {
+      type?: 'text' | 'password' | 'phone';
+      multiline?: boolean;
+      placeholder?: string;
+    };
 export type FormInputProps = {
   name: string;
-  type?:
-    | 'boolean'
-    | 'date'
-    | 'email'
-    | 'money'
-    | 'number'
-    | 'password'
-    | 'phone'
-    | 'text';
-  format?: string;
-  multiline?: boolean;
-  placeholder?: string;
-  options?: { label: string; value: string }[];
-  control?: 'radio' | 'select' | 'checkbox' | 'switch';
-  label?: string;
-  loadOptions?: AsyncProps<any, any, any>['loadOptions'];
-};
-export const FormInput: React.FC<FormInputProps> = ({
-  name,
-  type,
-  format = 'MM/dd/yyyy',
-  multiline,
-  placeholder,
-  options,
-  control,
-  label,
-  loadOptions,
-}) => {
+} & FormInputByTypeProps;
+export const FormInput: React.FC<FormInputProps> = (props) => {
+  const { name, type } = props;
+
   const form = useFormContext();
   const controller = useController({ name, control: form.control });
 
@@ -225,11 +235,11 @@ export const FormInput: React.FC<FormInputProps> = ({
   }
 
   // Switch control
-  if (type === 'boolean' && control === 'switch') {
+  if (type === 'boolean' && props.control === 'switch') {
     return (
       <UI.HStack spacing={3} alignItems="start" py={2}>
         <UI.Switch my="1px" {...form.register(name)} />
-        <UI.Text fontSize="sm">{label}</UI.Text>
+        <UI.Text fontSize="sm">{props.label}</UI.Text>
       </UI.HStack>
     );
   }
@@ -239,7 +249,7 @@ export const FormInput: React.FC<FormInputProps> = ({
     return (
       <UI.Box py={2}>
         <UI.Checkbox size="lg" my="1px" {...form.register(name)}>
-          <UI.Text fontSize="sm">{label}</UI.Text>
+          <UI.Text fontSize="sm">{props.label}</UI.Text>
         </UI.Checkbox>
       </UI.Box>
     );
@@ -247,6 +257,7 @@ export const FormInput: React.FC<FormInputProps> = ({
 
   // Datepicker control
   if (type === 'date') {
+    const { config } = props;
     return (
       <SingleDatepicker
         name={controller.field.name}
@@ -259,81 +270,129 @@ export const FormInput: React.FC<FormInputProps> = ({
           },
         }}
         configs={{
-          dateFormat: format,
+          dateFormat: 'MM/dd/yyyy',
+          ...config,
         }}
       />
     );
   }
 
   // Async select control
-  if (loadOptions) {
-    return (
-      <AsyncSelect
-        name={controller.field.name}
-        value={controller.field.value}
-        onChange={(value) => {
-          console.log(value);
-          controller.field.onChange(value);
-        }}
-        placeholder={placeholder}
-        loadOptions={loadOptions}
-        defaultOptions
-        cacheOptions
-        isClearable
-        openMenuOnFocus={false}
-        openMenuOnClick={false}
-      />
-    );
-  }
+  if (type === 'options') {
+    const { control, options, placeholder } = props;
 
-  if (Array.isArray(options)) {
-    // Radio control
-    if ((options.length <= 3 || control === 'radio') && control !== 'select') {
+    if (_.isFunction(options)) {
       return (
-        <UI.RadioGroup {...controller.field} size="sm">
-          <UI.VStack alignItems="start" spacing={1}>
-            {options.map((option) => (
-              <UI.Radio key={option.value} value={option.value}>
-                {option.label}
-              </UI.Radio>
-            ))}
-          </UI.VStack>
-        </UI.RadioGroup>
+        <AsyncSelect
+          name={controller.field.name}
+          value={controller.field.value}
+          onChange={(value) => {
+            console.log(value);
+            controller.field.onChange(value);
+          }}
+          placeholder={placeholder}
+          loadOptions={options}
+          defaultOptions
+          cacheOptions
+          isClearable
+          openMenuOnFocus={false}
+          openMenuOnClick={false}
+        />
       );
     }
 
-    // Select control
-    return (
-      <UI.Select
-        {...controller.field}
-        placeholder={placeholder || 'Choose one'}
-      >
-        {options.map((option) => (
-          <option key={option.value} value={option.value}>
-            {option.label}
-          </option>
-        ))}
-      </UI.Select>
-    );
+    if (Array.isArray(options)) {
+      // Radio control
+      if (
+        (options.length <= 3 || control === 'radio') &&
+        control !== 'select'
+      ) {
+        return (
+          <UI.RadioGroup {...controller.field} size="sm">
+            <UI.VStack alignItems="start" spacing={1}>
+              {options.map((option) => (
+                <UI.Radio key={option.value} value={option.value}>
+                  {option.label}
+                </UI.Radio>
+              ))}
+            </UI.VStack>
+          </UI.RadioGroup>
+        );
+      }
+
+      // Select control
+      return (
+        <UI.Select
+          {...controller.field}
+          placeholder={placeholder || 'Choose one'}
+        >
+          {options.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </UI.Select>
+      );
+    }
   }
 
   if (type === 'number') {
+    const { config } = props;
+
     return (
       <NumericFormat
         value={parseFloat(controller.field.value ?? 0)}
         onValueChange={(values) => controller.field.onChange(values.floatValue)}
         thousandSeparator=","
+        {...config}
         customInput={UI.Input}
-        suffix="%"
       />
     );
   }
 
   // Textarea control
-  if (multiline) {
+  if (
+    type === 'text' ||
+    type === 'password' ||
+    type === 'phone' ||
+    type === undefined
+  ) {
+    const { multiline, placeholder } = props;
+
+    if (multiline) {
+      return (
+        <UI.Textarea
+          id={name}
+          {...controller.field}
+          value={controller.field.value ?? ''}
+          placeholder={placeholder}
+        />
+      );
+    }
+
+    // Masked input control
+    let mask;
+    if (type === 'phone') {
+      mask = subtypeMetas.phone.mask;
+    }
+
+    if (mask) {
+      return (
+        <MaskedInput
+          id={name}
+          maskGenerator={mask}
+          {...controller.field}
+          value={controller.field.value ?? ''}
+          placeholder={placeholder}
+        />
+      );
+    }
+
+    // Text input control
     return (
-      <UI.Textarea
+      <TextInput
         id={name}
+        type={type}
         {...controller.field}
         value={controller.field.value ?? ''}
         placeholder={placeholder}
@@ -341,34 +400,7 @@ export const FormInput: React.FC<FormInputProps> = ({
     );
   }
 
-  // Masked input control
-  let mask;
-  if (type === 'phone') {
-    mask = subtypeMetas.phone.mask;
-  }
-
-  if (mask) {
-    return (
-      <MaskedInput
-        id={name}
-        maskGenerator={mask}
-        {...controller.field}
-        value={controller.field.value ?? ''}
-        placeholder={placeholder}
-      />
-    );
-  }
-
-  // Text input control
-  return (
-    <TextInput
-      id={name}
-      type={type}
-      {...controller.field}
-      value={controller.field.value ?? ''}
-      placeholder={placeholder}
-    />
-  );
+  return null;
 };
 
 export type TextInputProps = UI.InputProps;

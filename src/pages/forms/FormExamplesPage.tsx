@@ -1,28 +1,10 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import React from 'react';
-import states from 'states-us';
 import { z } from 'zod';
 
 import { createOptionalSchema } from '../../helpers/schemaHelpers';
+import { findUsStatesFromSearchtring } from '../../helpers/usStates';
 import * as UI from './components/UI';
-
-// Example dataset for autocomplete
-const stateOptions = states.map((state) => ({
-  label: state.name,
-  value: state.abbreviation,
-}));
-const findStatesFromSearchtring = (str: string) => {
-  if (!str) {
-    return stateOptions;
-  }
-
-  return stateOptions.filter((state) => {
-    return (
-      state.label.toLowerCase().indexOf(str.toLowerCase()) >= 0 ||
-      state.value.toLowerCase().indexOf(str.toLowerCase()) >= 0
-    );
-  });
-};
 
 const personSchema = z.object({
   firstName: z.string().min(2),
@@ -37,7 +19,7 @@ const personSchema = z.object({
   state: createOptionalSchema(
     z.object({ value: z.string(), label: z.string() })
   ),
-  count: z.number(),
+  percent: z.number(),
 });
 
 type Person = z.infer<typeof personSchema>;
@@ -46,6 +28,7 @@ const FormExamplesPage: React.FC = () => {
   const form = UI.useHookForm<Person>({
     resolver: zodResolver(personSchema),
     defaultValues: {
+      // example of default value for autocomplete
       state: { value: 'FL', label: 'Florida' },
     },
     onValid: (data) => {
@@ -57,27 +40,32 @@ const FormExamplesPage: React.FC = () => {
   return (
     <UI.Box bg="white" p={4}>
       <UI.Form form={form}>
-        <UI.FormField input={{ name: 'count', type: 'number' }} required />
-        <UI.FormField input={{ name: 'price', type: 'money' }} required />
-        <UI.FormField input={{ name: 'firstName' }} required />
+        <UI.FormField name="firstName" requiredStyling />
         <UI.FormField
+          name="percent"
+          input={{ type: 'number', config: { suffix: '%' } }}
+          requiredStyling
+        />
+        <UI.FormField name="price" input={{ type: 'money' }} requiredStyling />
+        <UI.FormField
+          name="isAlive"
           input={{
-            name: 'isAlive',
             type: 'boolean',
             label: 'I am still alive',
           }}
         />
         <UI.FormField
+          name="isHappy"
           input={{
-            name: 'isHappy',
             type: 'boolean',
             label: 'I am a happy guy',
             control: 'switch',
           }}
         />
         <UI.FormField
+          name="color"
           input={{
-            name: 'color',
+            type: 'options',
             options: [
               { label: 'Red', value: 'red' },
               { label: 'Green', value: 'green' },
@@ -87,8 +75,9 @@ const FormExamplesPage: React.FC = () => {
           }}
         />
         <UI.FormField
+          name="color"
           input={{
-            name: 'color',
+            type: 'options',
             options: [
               { label: 'Red', value: 'red' },
               { label: 'Green', value: 'green' },
@@ -96,19 +85,21 @@ const FormExamplesPage: React.FC = () => {
             ],
           }}
         />
-        <UI.FormField input={{ name: 'phone', type: 'phone' }} required />
-        <UI.FormField input={{ name: 'email', type: 'email' }} required />
+        <UI.FormField name="phone" input={{ type: 'phone' }} requiredStyling />
+        <UI.FormField name="email" input={{ type: 'email' }} requiredStyling />
         <UI.FormField
+          name="dob"
           label="D.O.B"
-          input={{ name: 'dob', type: 'date' }}
-          required
+          input={{ type: 'date' }}
+          requiredStyling
         />
-        <UI.FormField required input={{ name: 'bio', multiline: true }} />
+        <UI.FormField name="bio" input={{ multiline: true }} requiredStyling />
         <UI.FormField
+          name="state"
           input={{
-            name: 'state',
-            loadOptions: (inputValue, callback) => {
-              callback(findStatesFromSearchtring(inputValue));
+            type: 'options',
+            options: (inputValue, callback) => {
+              callback(findUsStatesFromSearchtring(inputValue));
             },
           }}
         />
