@@ -15,10 +15,16 @@ const personSchema = z.object({
   bio: z.string(),
   isAlive: createOptionalSchema(z.boolean()),
   isHappy: createOptionalSchema(z.boolean()),
-  price: createOptionalSchema(z.number()),
-  state: createOptionalSchema(
-    z.object({ value: z.string(), label: z.string() })
+  price: z.number(),
+  //createOptionalSchema(
+  state: z.object(
+    {
+      value: z.string(),
+      label: z.string(),
+    },
+    { invalid_type_error: 'Required' }
   ),
+  //),
   percent: z.number(),
 });
 
@@ -40,73 +46,96 @@ const FormExamplesPage: React.FC = () => {
   return (
     <UI.Box bg="white" p={4}>
       <UI.Form form={form}>
-        <UI.FormField name="firstName" requiredStyling />
-        <UI.FormField
-          name="percent"
-          input={{ type: 'number', config: { suffix: '%' } }}
-          requiredStyling
-        />
-        <UI.FormField name="price" input={{ type: 'money' }} requiredStyling />
-        <UI.FormField
-          name="isAlive"
-          input={{
-            type: 'boolean',
-            label: 'I am still alive',
-          }}
-        />
-        <UI.FormField
-          name="isHappy"
-          input={{
-            type: 'boolean',
-            label: 'I am a happy guy',
-            control: 'switch',
-          }}
-        />
-        <UI.FormField
-          name="color"
-          input={{
-            type: 'options',
-            options: [
-              { label: 'Red', value: 'red' },
-              { label: 'Green', value: 'green' },
-              { label: 'Blue', value: 'blue' },
-              { label: 'Yellow', value: 'yellow' },
-            ],
-          }}
-        />
-        <UI.FormField
-          name="color"
-          input={{
-            type: 'options',
-            options: [
-              { label: 'Red', value: 'red' },
-              { label: 'Green', value: 'green' },
-              { label: 'Blue', value: 'blue' },
-            ],
-          }}
-        />
-        <UI.FormField name="phone" input={{ type: 'phone' }} requiredStyling />
-        <UI.FormField name="email" input={{ type: 'email' }} requiredStyling />
-        <UI.FormField
-          name="dob"
-          label="D.O.B"
-          input={{ type: 'date' }}
-          requiredStyling
-        />
-        <UI.FormField name="bio" input={{ multiline: true }} requiredStyling />
-        <UI.FormField
-          name="state"
-          input={{
-            type: 'options',
-            options: (inputValue, callback) => {
-              callback(findUsStatesFromSearchtring(inputValue));
-            },
-          }}
-        />
-        <UI.FormErrorMessage>{form.formState.error}</UI.FormErrorMessage>
-        <UI.FormButtonStack>
-          <UI.SubmitButton>Save</UI.SubmitButton>
-        </UI.FormButtonStack>
+        <UI.FormGrid>
+          <UI.FormField name="firstName" requiredStyling />
+          <UI.FormField
+            name="percent"
+            input={{ type: 'number', config: { suffix: '%' } }}
+            requiredStyling
+            span="sm"
+          />
+          <UI.FormField
+            name="price"
+            input={{ type: 'money' }}
+            requiredStyling
+            span="sm"
+          />
+          <UI.FormField
+            name="isAlive"
+            input={{
+              type: 'boolean',
+              label: 'I am still alive',
+            }}
+          />
+          <UI.FormField
+            name="isHappy"
+            input={{
+              type: 'boolean',
+              label: 'I am a happy guy',
+              control: 'switch',
+            }}
+          />
+          <UI.FormField
+            name="dob"
+            label="D.O.B"
+            input={{ type: 'date' }}
+            requiredStyling
+            span="sm"
+          />
+          <UI.FormField
+            name="color"
+            input={{
+              type: 'options',
+              options: [
+                { label: 'Red', value: 'red' },
+                { label: 'Green', value: 'green' },
+                { label: 'Blue', value: 'blue' },
+                { label: 'Yellow', value: 'yellow' },
+              ],
+            }}
+          />
+          <UI.FormField
+            name="color"
+            input={{
+              type: 'options',
+              options: [
+                { label: 'Red', value: 'red' },
+                { label: 'Green', value: 'green' },
+                { label: 'Blue', value: 'blue' },
+              ],
+            }}
+            span="sm"
+          />
+          <UI.FormField
+            name="state"
+            input={{
+              type: 'options',
+              options: (inputValue, callback) => {
+                callback(findUsStatesFromSearchtring(inputValue));
+              },
+            }}
+          />
+          <UI.FormField
+            name="phone"
+            input={{ type: 'phone' }}
+            requiredStyling
+          />
+          <UI.FormField
+            name="email"
+            input={{ type: 'email' }}
+            requiredStyling
+          />
+          <UI.FormField
+            name="bio"
+            input={{ multiline: true }}
+            requiredStyling
+            span="lg"
+          />
+          <UI.FormErrorMessage>{form.formState.error}</UI.FormErrorMessage>
+          <UI.FormButtonStack>
+            <UI.SubmitButton>Save</UI.SubmitButton>
+          </UI.FormButtonStack>
+        </UI.FormGrid>
       </UI.Form>
     </UI.Box>
   );

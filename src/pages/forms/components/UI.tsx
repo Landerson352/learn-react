@@ -25,6 +25,7 @@ import {
 } from 'react-hook-form';
 import { MaskedInput as RHMMaskedInput, useWebMask } from 'react-hook-mask';
 import { NumericFormat, NumericFormatProps } from 'react-number-format';
+import { useMeasure } from 'react-use';
 
 import { subtypeMetas } from '../../../helpers/subtypeMetas';
 import { formatError } from '../helpers/formatError';
@@ -77,24 +78,52 @@ export function useHookForm<
 
 /* Creates a form-context-provider,and renders a form element and form-grid with children */
 export function Form<TFieldValues extends FieldValues = FieldValues>(
-  props: FormGridProps & {
+  props: React.PropsWithChildren<{
     form: UseHookFormReturn<TFieldValues>;
-  }
+  }>
 ): JSX.Element {
-  const { form, ...restProps } = props;
+  const { form, children } = props;
   return (
     <FormProvider {...form}>
-      <form onSubmit={form.onSubmit}>
-        <FormGrid {...restProps} />
-      </form>
+      <form onSubmit={form.onSubmit}>{children}</form>
     </FormProvider>
   );
 }
 
+/* Context primarily for accessing column count from cells */
+const FormGridContext = React.createContext<
+  FormGridProps & { columns?: number }
+>({});
+const useFormGridContext = () => React.useContext(FormGridContext);
+
 /* Renders a simple-grid with children */
-export type FormGridProps = UI.SimpleGridProps;
+export type FormGridProps = Omit<UI.SimpleGridProps, 'columns'>;
 export const FormGrid: React.FC<FormGridProps> = ({ ...restProps }) => {
-  return <UI.SimpleGrid spacingX={4} spacingY={2} {...restProps} />;
+  const [measureRef, { width }] = useMeasure<HTMLDivElement>();
+
+  let columns = 1;
+  if (width > 260) {
+    columns = 2;
+  }
+  if (width > 260 * 2) {
+    columns = 4;
+  }
+  if (width > 260 * 4) {
+    columns = 8;
+  }
+
+  const gridProps = {
+    ref: measureRef,
+    columns: columns,
+    spacingX: 4,
+    spacingY: 2,
+    ...restProps,
+  };
+  return (
+    <FormGridContext.Provider value={gridProps}>
+      <UI.SimpleGrid {...gridProps} />
+    </FormGridContext.Provider>
+  );
 };
 
 /* Renders a form-control-display wrapper with dynamic form-input */
@@ -145,12 +174,14 @@ export const FormFieldErrorMessage: React.FC<UI.BoxProps> = ({
 };
 
 /* Renders a form-control, label, helper-text, children, and error message */
+/* Must be placed inside a form-grid-context-provider */
 export type FullFormControlProps = UI.FormControlProps & {
   label?: string;
   requiredStyling?: boolean;
   name: string;
   helperText?: string;
   errorMessage?: string;
+  span?: 'sm' | 'md' | 'lg';
 };
 export const FullFormControl: React.FC<FullFormControlProps> = ({
   label,
@@ -159,10 +190,21 @@ export const FullFormControl: React.FC<FullFormControlProps> = ({
   children,
   helperText,
   errorMessage,
+  span = 'md',
   ...restProps
 }) => {
+  const gridProps = useFormGridContext();
+  const spanColumns = Math.min(
+    {
+      sm: 1,
+      md: 2,
+      lg: 4,
+    }[span],
+    gridProps.columns || 1
+  );
+
   return (
-    <UI.FormControl {...restProps}>
+    <UI.FormControl gridColumn={`span ${spanColumns}`} {...restProps}>
       {label ? (
         <UI.FormLabel htmlFor={name}>
           {label}{' '}
@@ -201,9 +243,6 @@ export type FormInputByTypeProps =
       config?: DatepickerConfigs;
     }
   | {
-      type: 'email';
-    }
-  | {
       type: 'money';
     }
   | {
@@ -211,7 +250,7 @@ export type FormInputByTypeProps =
       config?: NumericFormatProps;
     }
   | {
-      type?: 'text' | 'password' | 'phone';
+      type?: 'email' | 'password' | 'phone' | 'text';
       multiline?: boolean;
       placeholder?: string;
     };
@@ -228,6 +267,7 @@ export const FormInput: React.FC<FormInputProps> = (props) => {
   if (type === 'money') {
     return (
       <MoneyInput
+        id={name}
         value={controller.field.value}
         onChange={controller.field.onChange}
       />
@@ -239,7 +279,9 @@ export const FormInput: React.FC<FormInputProps> = (props) => {
     return (
       <UI.HStack spacing={3} alignItems="start" py={2}>
         <UI.Switch my="1px" {...form.register(name)} />
-        <UI.Text fontSize="sm">{props.label}</UI.Text>
+        <UI.FormLabel cursor="pointer" fontSize="sm">
+          {props.label}
+        </UI.FormLabel>
       </UI.HStack>
     );
   }
@@ -260,13 +302,13 @@ export const FormInput: React.FC<FormInputProps> = (props) => {
     const { config } = props;
     return (
       <SingleDatepicker
+        id={'TEST'}
         name={controller.field.name}
         date={controller.field.value}
         onDateChange={controller.field.onChange}
         propsConfigs={{
           inputProps: {
             cursor: 'pointer',
-            // isReadOnly: true,
           },
         }}
         configs={{
@@ -277,13 +319,14 @@ export const FormInput: React.FC<FormInputProps> = (props) => {
     );
   }
 
-  // Async select control
   if (type === 'options') {
     const { control, options, placeholder } = props;
 
+    // Async select control
     if (_.isFunction(options)) {
       return (
         <AsyncSelect
+          inputId={name}
           name={controller.field.name}
           value={controller.field.value}
           onChange={(value) => {
@@ -323,6 +366,7 @@ export const FormInput: React.FC<FormInputProps> = (props) => {
       // Select control
       return (
         <UI.Select
+          id={name}
           {...controller.field}
           placeholder={placeholder || 'Choose one'}
         >
@@ -341,7 +385,8 @@ export const FormInput: React.FC<FormInputProps> = (props) => {
 
     return (
       <NumericFormat
-        value={parseFloat(controller.field.value ?? 0)}
+        id={name}
+        value={parseFloat(controller.field.value)}
         onValueChange={(values) => controller.field.onChange(values.floatValue)}
         thousandSeparator=","
         {...config}
@@ -352,9 +397,10 @@ export const FormInput: React.FC<FormInputProps> = (props) => {
 
   // Textarea control
   if (
-    type === 'text' ||
+    type === 'email' ||
     type === 'password' ||
     type === 'phone' ||
+    type === 'text' ||
     type === undefined
   ) {
     const { multiline, placeholder } = props;
@@ -432,8 +478,9 @@ export type MoneyInputProps = Omit<UI.InputProps, 'value'> & {
 };
 export const MoneyInput: React.FC<MoneyInputProps> = (props) => {
   const { value, options, onChange, ...otherProps } = props;
+  console.log('value', value);
   const stringValue = String(value);
-  // console.log('stringValue', stringValue);
+  console.log('stringValue', stringValue);
 
   const [formattedValue, handleOnChange, handleOnKeyDown, handleOnClick] =
     useCurrencyFormat(stringValue, {
@@ -441,20 +488,30 @@ export const MoneyInput: React.FC<MoneyInputProps> = (props) => {
       i18nCurrency: 'USD',
       ...options,
       onChangeCallBack: (_, maskedValue, value) => {
+        console.log('value', value);
         const intValue = parseInt(removeNonNumericsExceptDash(value));
-        // console.log('intValue', intValue);
+        console.log('intValue', intValue);
         onChange?.(intValue);
       },
     });
 
   return (
-    <UI.Input
-      onChange={handleOnChange}
-      onKeyDown={handleOnKeyDown}
-      onClick={handleOnClick}
-      value={formattedValue}
-      {...otherProps}
-    />
+    <UI.InputGroup>
+      <UI.Input
+        onChange={handleOnChange}
+        onKeyDown={handleOnKeyDown}
+        onClick={handleOnClick}
+        value={_.isNil(value) ? '' : formattedValue}
+        {...otherProps}
+      />
+      <UI.InputRightElement>
+        <UI.CloseButton
+          onClick={() => {
+            onChange?.(undefined);
+          }}
+        />
+      </UI.InputRightElement>
+    </UI.InputGroup>
   );
 };
 
@@ -480,7 +537,7 @@ export const FormButtonStack: React.FC<UI.StackProps> = ({
   ...restProps
 }) => {
   return (
-    <UI.HStack spacing={4} {...restProps}>
+    <UI.HStack gridColumn="1/-1" spacing={4} {...restProps}>
       {children}
     </UI.HStack>
   );
