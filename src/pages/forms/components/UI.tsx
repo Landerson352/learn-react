@@ -334,7 +334,7 @@ export const FormInput: React.FC<FormInputProps> = (props) => {
           name={controller.field.name}
           value={controller.field.value}
           onChange={(value) => {
-            console.log(value);
+            // console.log(value);
             controller.field.onChange(value);
           }}
           placeholder={placeholder}
@@ -500,9 +500,9 @@ export type MoneyInputProps = Omit<UI.InputProps, 'value'> & {
 };
 export const MoneyInput: React.FC<MoneyInputProps> = (props) => {
   const { value, options, onChange, ...otherProps } = props;
-  console.log('value', value);
+  // console.log('value', value);
   const stringValue = String(value);
-  console.log('stringValue', stringValue);
+  // console.log('stringValue', stringValue);
 
   const [formattedValue, handleOnChange, handleOnKeyDown, handleOnClick] =
     useCurrencyFormat(stringValue, {
@@ -510,9 +510,9 @@ export const MoneyInput: React.FC<MoneyInputProps> = (props) => {
       i18nCurrency: 'USD',
       ...options,
       onChangeCallBack: (_, maskedValue, value) => {
-        console.log('value', value);
+        // console.log('value', value);
         const intValue = parseInt(removeNonNumericsExceptDash(value));
-        console.log('intValue', intValue);
+        // console.log('intValue', intValue);
         onChange?.(intValue);
       },
     });

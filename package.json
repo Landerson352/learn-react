@@ -29,6 +29,7 @@
     "axios": "^1.2.0",
     "axios-hooks": "^4.0.0",
     "babel-loader": "9.1.0",
+    "bowser": "^2.11.0",
     "chakra-dayzed-datepicker": "^0.2.6",
     "chakra-react-select": "^4.4.3",
     "date-fns": "^2.29.3",
