@@ -129,13 +129,14 @@ export const CameraInput = React.forwardRef<HTMLInputElement, CameraInputProps>(
           <UI.ModalContent
             justifyContent="center"
             alignItems="center"
+            bg="black"
             sx={{
               '& video': {
                 borderRadius: 'lg',
+                objectFit: 'contain',
               },
             }}
           >
-            <UI.ModalCloseButton />
             {error ? (
               <UI.VStack maxW="420px" textAlign="center" spacing={6}>
                 <FriendlyCameraError error={error} />
@@ -150,9 +151,13 @@ export const CameraInput = React.forwardRef<HTMLInputElement, CameraInputProps>(
                   setError(e);
                 }}
                 isSilentMode
+                isImageMirror
+                isFullscreen
+                idealFacingMode="user"
                 onTakePhoto={handleCameraTakePhoto}
               />
             )}
+            <UI.ModalCloseButton color="white" />
           </UI.ModalContent>
         </UI.Modal>
       </React.Fragment>

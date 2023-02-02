@@ -4,7 +4,11 @@ import {
   faExclamationCircle,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { DatepickerConfigs, SingleDatepicker } from 'chakra-dayzed-datepicker';
+import {
+  DatepickerConfigs,
+  RangeDatepicker,
+  SingleDatepicker,
+} from 'chakra-dayzed-datepicker';
 import { AsyncProps, AsyncSelect } from 'chakra-react-select';
 import {
   CurrencyInputProps,
@@ -237,10 +241,11 @@ export type FormInputByTypeProps =
         | { label: string; value: string }[]
         | AsyncProps<any, any, any>['loadOptions'];
       control?: 'radio' | 'select';
+      direction?: 'vertical' | 'horizontal';
       placeholder?: string;
     }
   | {
-      type: 'date';
+      type: 'date' | 'date-range';
       config?: DatepickerConfigs;
     }
   | {
@@ -283,7 +288,7 @@ export const FormInput: React.FC<FormInputProps> = (props) => {
     return (
       <UI.HStack spacing={3} alignItems="start" py={2}>
         <UI.Switch my="1px" {...form.register(name)} />
-        <UI.FormLabel cursor="pointer" fontSize="sm">
+        <UI.FormLabel cursor="pointer" fontWeight="normal" fontSize="sm">
           {props.label}
         </UI.FormLabel>
       </UI.HStack>
@@ -323,8 +328,29 @@ export const FormInput: React.FC<FormInputProps> = (props) => {
     );
   }
 
+  // Datepicker range control
+  if (type === 'date-range') {
+    const { config } = props;
+    return (
+      <RangeDatepicker
+        name={controller.field.name}
+        selectedDates={controller.field.value || []}
+        onDateChange={controller.field.onChange}
+        propsConfigs={{
+          inputProps: {
+            cursor: 'pointer',
+          },
+        }}
+        configs={{
+          dateFormat: 'MM/dd/yyyy',
+          ...config,
+        }}
+      />
+    );
+  }
+
   if (type === 'options') {
-    const { control, options, placeholder } = props;
+    const { control, options, placeholder, direction } = props;
 
     // Async select control
     if (_.isFunction(options)) {
@@ -354,15 +380,24 @@ export const FormInput: React.FC<FormInputProps> = (props) => {
         (options.length <= 3 || control === 'radio') &&
         control !== 'select'
       ) {
+        const optionElements = options.map((option) => (
+          <UI.Radio key={option.value} value={option.value}>
+            {option.label}
+          </UI.Radio>
+        ));
         return (
-          <UI.RadioGroup {...controller.field} size="sm">
-            <UI.VStack alignItems="start" spacing={1}>
-              {options.map((option) => (
-                <UI.Radio key={option.value} value={option.value}>
-                  {option.label}
-                </UI.Radio>
-              ))}
-            </UI.VStack>
+          <UI.RadioGroup {...controller.field}>
+            {direction === 'horizontal' ? (
+              <UI.HStack alignItems="center" spacing={4} minH={10}>
+                {optionElements}
+              </UI.HStack>
+            ) : (
+              /* These stack dimensions render a 2-option radio that is the same
+            height as other form inputs. */
+              <UI.VStack alignItems="start" spacing={0} my="-2px">
+                {optionElements}
+              </UI.VStack>
+            )}
           </UI.RadioGroup>
         );
       }

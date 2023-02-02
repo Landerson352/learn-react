@@ -14,6 +14,11 @@ const theme = extendTheme({
     },
   },
   components: {
+    FormLabel: {
+      baseStyle: {
+        fontWeight: '600',
+      },
+    },
     Link: {
       baseStyle: {
         color: 'blue.500',
