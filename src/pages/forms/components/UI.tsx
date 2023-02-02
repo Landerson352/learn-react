@@ -231,17 +231,22 @@ export const FullFormControl: React.FC<FullFormControlProps> = ({
 /* Must be placed inside a form-context-provider */
 export type FormInputByTypeProps =
   | {
-      type: 'boolean';
+      type: 'checkbox' | 'switch';
       label?: string;
-      control?: 'checkbox' | 'switch';
     }
   | {
-      type: 'options';
-      options?:
-        | { label: string; value: string }[]
-        | AsyncProps<any, any, any>['loadOptions'];
-      control?: 'radio' | 'select';
+      type: 'combo-box';
+      loadOptions: AsyncProps<any, any, any>['loadOptions'];
+      placeholder?: string;
+    }
+  | {
+      type: 'radio';
+      options: { label: string; value: string }[];
       direction?: 'vertical' | 'horizontal';
+    }
+  | {
+      type: 'select';
+      options: { label: string; value: string }[];
       placeholder?: string;
     }
   | {
@@ -284,7 +289,7 @@ export const FormInput: React.FC<FormInputProps> = (props) => {
   }
 
   // Switch control
-  if (type === 'boolean' && props.control === 'switch') {
+  if (type === 'switch') {
     return (
       <UI.HStack spacing={3} alignItems="start" py={2}>
         <UI.Switch my="1px" {...form.register(name)} />
@@ -296,7 +301,7 @@ export const FormInput: React.FC<FormInputProps> = (props) => {
   }
 
   // Checkbox control (default)
-  if (type === 'boolean') {
+  if (type === 'checkbox') {
     return (
       <UI.Box py={2}>
         <UI.Checkbox size="lg" my="1px" {...form.register(name)}>
@@ -349,74 +354,74 @@ export const FormInput: React.FC<FormInputProps> = (props) => {
     );
   }
 
-  if (type === 'options') {
-    const { control, options, placeholder, direction } = props;
+  if (type === 'combo-box') {
+    const { loadOptions, placeholder } = props;
 
     // Async select control
-    if (_.isFunction(options)) {
-      return (
-        <AsyncSelect
-          inputId={name}
-          name={controller.field.name}
-          value={controller.field.value}
-          onChange={(value) => {
-            // console.log(value);
-            controller.field.onChange(value);
-          }}
-          placeholder={placeholder}
-          loadOptions={options}
-          defaultOptions
-          cacheOptions
-          isClearable
-          openMenuOnFocus={false}
-          openMenuOnClick={false}
-        />
-      );
-    }
+    return (
+      <AsyncSelect
+        inputId={name}
+        name={controller.field.name}
+        value={controller.field.value}
+        onChange={(value) => {
+          // console.log(value);
+          controller.field.onChange(value);
+        }}
+        placeholder={placeholder}
+        loadOptions={loadOptions}
+        defaultOptions
+        cacheOptions
+        isClearable
+        openMenuOnFocus={false}
+        openMenuOnClick={false}
+      />
+    );
+  }
 
-    if (Array.isArray(options)) {
-      // Radio control
-      if (
-        (options.length <= 3 || control === 'radio') &&
-        control !== 'select'
-      ) {
-        const optionElements = options.map((option) => (
-          <UI.Radio key={option.value} value={option.value}>
-            {option.label}
-          </UI.Radio>
-        ));
-        return (
-          <UI.RadioGroup {...controller.field}>
-            {direction === 'horizontal' ? (
-              <UI.HStack alignItems="center" spacing={4} minH={10}>
-                {optionElements}
-              </UI.HStack>
-            ) : (
-              /* These stack dimensions render a 2-option radio that is the same
+  // Radio control
+  if (type === 'radio') {
+    const { options, direction } = props;
+
+    if (options.length <= 3) {
+      const optionElements = options.map((option) => (
+        <UI.Radio key={option.value} value={option.value}>
+          {option.label}
+        </UI.Radio>
+      ));
+      return (
+        <UI.RadioGroup {...controller.field}>
+          {direction === 'horizontal' ? (
+            <UI.HStack alignItems="center" spacing={4} minH={10}>
+              {optionElements}
+            </UI.HStack>
+          ) : (
+            /* These stack dimensions render a 2-option radio that is the same
             height as other form inputs. */
-              <UI.VStack alignItems="start" spacing={0} my="-2px">
-                {optionElements}
-              </UI.VStack>
-            )}
-          </UI.RadioGroup>
-        );
-      }
-
-      // Select control
-      return (
-        <UI.Select
-          id={name}
-          {...controller.field}
-          placeholder={placeholder || 'Choose one'}
-        >
-          {options.map((option) => (
-            <option key={option.value} value={option.value}>
-              {option.label}
-            </option>
-          ))}
-        </UI.Select>
+            <UI.VStack alignItems="start" spacing={0} my="-2px">
+              {optionElements}
+            </UI.VStack>
+          )}
+        </UI.RadioGroup>
       );
     }
+  }
+
+  // Select control
+  if (type === 'select') {
+    const { options, placeholder } = props;
+    return (
+      <UI.Select
+        id={name}
+        {...controller.field}
+        placeholder={placeholder || 'Choose one'}
+      >
+        {options.map((option) => (
+          <option key={option.value} value={option.value}>
+            {option.label}
+          </option>
+        ))}
+      </UI.Select>
+    );
   }
 
   if (type === 'number') {

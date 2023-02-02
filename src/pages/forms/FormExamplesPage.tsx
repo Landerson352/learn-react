@@ -74,9 +74,9 @@ const FormExamplesPage: React.FC = () => {
             span="lg"
           />
           <UI.FormField
-            name="color"
+            name="select"
             input={{
-              type: 'options',
+              type: 'select',
               options: [
                 { label: 'Red', value: 'red' },
                 { label: 'Green', value: 'green' },
@@ -88,7 +88,7 @@ const FormExamplesPage: React.FC = () => {
           <UI.FormField
             name="pet"
             input={{
-              type: 'options',
+              type: 'radio',
               direction: 'horizontal',
               options: [
                 { label: 'Cat', value: 'cat' },
@@ -100,8 +100,8 @@ const FormExamplesPage: React.FC = () => {
           <UI.FormField
             name="state"
             input={{
-              type: 'options',
-              options: (inputValue, callback) => {
+              type: 'combo-box',
+              loadOptions: (inputValue, callback) => {
                 callback(findUsStatesFromSearchtring(inputValue));
               },
             }}
@@ -122,16 +122,15 @@ const FormExamplesPage: React.FC = () => {
             name="isActive"
             label="Notification setting"
             input={{
-              type: 'boolean',
+              type: 'switch',
               label: 'Notify me of changes',
-              control: 'switch',
             }}
           />
           <UI.FormField
             name="agreedToTerms"
             label="Agreement"
             input={{
-              type: 'boolean',
+              type: 'checkbox',
               label: 'I agree to the terms & conditions',
             }}
           />
