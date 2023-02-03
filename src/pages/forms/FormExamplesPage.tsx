@@ -9,7 +9,7 @@ const personSchema = z.object({
   firstName: z.string().min(2),
   phone: z.string().min(10),
   email: z.string().email(),
-  photoUrl: z.string(),
+  profilePhoto: z.string(),
   bio: z.string().min(1),
   color: z.string(),
   pet: z.string(),
@@ -26,7 +26,7 @@ const personSchema = z.object({
   agreedToTerms: z.literal(true, {
     errorMap: () => ({ message: 'You must agree to the terms & conditions' }),
   }),
-  dob: z.date(),
+  deadline: z.date(),
   eventDates: z.array(z.date()).length(2, 'A start and end date are required'),
 });
 
@@ -45,19 +45,18 @@ const FormExamplesPage: React.FC = () => {
     },
   });
 
-  const pet = form.watch('pet');
-
   return (
     <UI.Box bg="white" p={4}>
       <UI.Form form={form}>
-        <UI.FormGrid>
+        <UI.FormGrid maxW="520px">
           <UI.FormField name="firstName" requiredStyling />
           <UI.FormField name="phone" type="phone" requiredStyling />
           <UI.FormField name="email" type="email" requiredStyling />
           <UI.FormField
-            name="photoUrl"
+            name="profilePhoto"
             label="Passport photo"
             type="photo"
+            // input={{ cameraProps: { idealFacingMode: 'environment' } }}
             requiredStyling
           />
           <UI.FormField name="bio" type="textarea" requiredStyling span="lg" />
@@ -117,8 +116,8 @@ const FormExamplesPage: React.FC = () => {
             input={{ label: 'I agree to the terms & conditions' }}
           />
           <UI.FormField
-            name="dob"
-            label="D.O.B"
+            name="deadline"
+            label="Deadline"
             type="date"
             requiredStyling
             span="sm"

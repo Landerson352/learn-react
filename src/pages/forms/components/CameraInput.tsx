@@ -2,7 +2,7 @@ import * as UI from '@chakra-ui/react';
 import * as Bowser from 'bowser';
 import _ from 'lodash';
 import React from 'react';
-import Camera from 'react-html5-camera-photo';
+import Camera, { CameraProps } from 'react-html5-camera-photo';
 
 import 'react-html5-camera-photo/build/css/index.css';
 
@@ -82,9 +82,13 @@ const FriendlyCameraError: React.FC<{ error: Error } & UI.StackProps> = ({
 export type CameraInputProps = Omit<UI.InputProps, 'value'> & {
   value: string | undefined;
   onChange(str: string | undefined): any;
+  /**
+   * Supports all props from [react-html5-camera-photo](https://www.npmjs.com/package/react-html5-camera-photo)
+   */
+  cameraProps?: Partial<CameraProps>;
 };
 export const CameraInput = React.forwardRef<HTMLInputElement, CameraInputProps>(
-  ({ value, onChange, ...restProps }, ref) => {
+  ({ value, onChange, cameraProps }, ref) => {
     const modal = UI.useDisclosure();
     const [error, setError] = React.useState<Error>();
 
@@ -136,7 +140,7 @@ export const CameraInput = React.forwardRef<HTMLInputElement, CameraInputProps>(
           >
             {error ? (
               <UI.VStack maxW="420px" textAlign="center" spacing={6}>
-                <FriendlyCameraError error={error} />
+                <FriendlyCameraError color="white" error={error} />
                 <UI.Button onClick={handleRetryClick}>Retry camera</UI.Button>
                 <UI.Button variant="link" size="sm" onClick={modal.onClose}>
                   Cancel
@@ -144,14 +148,15 @@ export const CameraInput = React.forwardRef<HTMLInputElement, CameraInputProps>(
               </UI.VStack>
             ) : (
               <Camera
-                onCameraError={(e) => {
-                  setError(e);
-                }}
                 isSilentMode
                 isImageMirror
                 isFullscreen
                 idealFacingMode="user"
+                {...cameraProps}
                 onTakePhoto={handleCameraTakePhoto}
+                onCameraError={(e) => {
+                  setError(e);
+                }}
               />
             )}
             <UI.ModalCloseButton color="white" />

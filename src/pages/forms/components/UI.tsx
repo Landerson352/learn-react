@@ -108,19 +108,19 @@ export const FormGrid: React.FC<FormGridProps> = ({ ...restProps }) => {
   const [measureRef, { width }] = useMeasure<HTMLDivElement>();
 
   let columns = 1;
-  if (width > 260) {
+  if (width >= 260) {
     columns = 2;
   }
-  if (width > 260 * 2) {
+  if (width >= 260 * 2) {
     columns = 4;
   }
-  if (width > 260 * 4) {
+  if (width >= 260 * 4) {
     columns = 8;
   }
 
   const gridProps = {
     ref: measureRef,
-    columns: columns,
+    columns,
     spacingX: 4,
     spacingY: 2,
     ...restProps,
@@ -232,19 +232,88 @@ export const FullFormControl: React.FC<FullFormControlProps> = ({
 /* Renders a different input depending on type */
 /* Must be placed inside a form-context-provider */
 export type FormInputByTypeProps =
-  | { type: 'checkbox'; input?: CheckboxInputProps }
-  | { type: 'switch'; input?: SwitchInputProps }
-  | { type: 'combobox'; input?: ComboboxInputProps }
-  | { type: 'radio'; input: RadioWithOptionsProps }
-  | { type: 'select'; input: SelectWithOptionsProps }
-  | { type: 'date'; input?: DateInputProps }
-  | { type: 'daterange'; input?: DateRangeInputProps }
-  | { type: 'money'; input?: MoneyInputProps }
-  | { type: 'number'; input?: NumberInputProps }
-  | { type: 'photo'; input?: CameraInputProps }
-  | { type: 'textarea'; input?: UI.TextareaProps }
-  | { type: 'phone'; input?: MaskedInputProps }
-  | { type?: 'email' | 'password' | 'text'; input?: TextInputProps };
+  | {
+      type: 'checkbox';
+      /**
+       * Supports all props of [@chakra-ui/checkbox](https://chakra-ui.com/docs/form/checkbox)
+       * */
+      input?: CheckboxInputProps;
+    }
+  | {
+      type: 'switch';
+      /**
+       * Supports all props of [@chakra-ui/switch](https://chakra-ui.com/docs/form/switch)
+       * */
+      input?: SwitchInputProps;
+    }
+  | {
+      type: 'combobox';
+      /**
+       * Supports all props of [chakra-react-select/AsyncSelect](https://www.npmjs.com/package/chakra-react-select), and by extension [react-select/async](https://react-select.com/async)
+       */
+      input?: ComboboxInputProps;
+    }
+  | {
+      type: 'radio';
+      /**
+       * Supports all props of [@chakra-ui/radiogroup](https://chakra-ui.com/docs/form/radio)
+       */
+      input: RadioWithOptionsProps;
+    }
+  | {
+      type: 'select';
+      /**
+       * Supports all props of [@chakraui/select](https://chakra-ui.com/docs/form/select)
+       */
+      input: SelectWithOptionsProps;
+    }
+  | {
+      type: 'date';
+      /**
+       * Supports all props of [chakra-dayzed-datepicker/SingleDatepicker](https://www.npmjs.com/package/chakra-dayzed-datepicker)
+       */
+      input?: Partial<DateInputProps>;
+    }
+  | {
+      type: 'daterange';
+      /**
+       * Supports all props of [chakra-dayzed-datepicker/RangeDatepicker](https://www.npmjs.com/package/chakra-dayzed-datepicker)
+       */
+      input?: Partial<DateRangeInputProps>;
+    }
+  | {
+      type: 'money';
+      /**
+       * Supports all props of [input-currency-react](https://www.npmjs.com/package/input-currency-react)
+       */
+      input?: Partial<MoneyInputProps>;
+    }
+  | {
+      type: 'number';
+      /**
+       * Supports all props of [react-number-format/NumericFormat](https://www.npmjs.com/package/react-number-format)
+       */
+      input?: Partial<NumberInputProps>;
+    }
+  | {
+      type: 'photo';
+      input?: Partial<CameraInputProps>;
+    }
+  | {
+      type: 'textarea';
+      /**
+       * Supports all props of [@chakra-ui/textarea](https://chakra-ui.com/docs/form/textarea)
+       * */
+      input?: UI.TextareaProps;
+    }
+  | { type: 'phone'; input?: Partial<MaskedInputProps> }
+  | {
+      type?: 'email' | 'password' | 'text';
+      /**
+       * Supports all props of [@chakra-ui/input](https://chakra-ui.com/docs/form/input)
+       * */
+      input?: TextInputProps;
+    };
 
 export type FormInputProps = {
   name: string;
@@ -267,14 +336,11 @@ export const FormInput: React.FC<FormInputProps> = (props) => {
   }
 
   if (type === 'switch') {
-    const { name, type, ...restProps } = props;
-    // TODO: forward ref?
-    return <SwitchInput {...form.register(name)} {...restProps} />;
+    return <SwitchInput {...props.input} {...form.register(name)} />;
   }
 
   if (type === 'checkbox') {
-    // TODO: forward ref?
-    return <CheckboxInput {...form.register(name)} {...props.input} />;
+    return <CheckboxInput {...props.input} {...form.register(name)} />;
   }
 
   if (type === 'date') {
@@ -344,6 +410,7 @@ export const FormInput: React.FC<FormInputProps> = (props) => {
   if (type === 'photo') {
     return (
       <CameraInput
+        {...props.input}
         value={controller.field.value}
         onChange={controller.field.onChange}
       />
@@ -371,6 +438,7 @@ export const FormInput: React.FC<FormInputProps> = (props) => {
         data-lpignore="true"
         {...props.input}
         {...controller.field}
+        type={type === 'phone' ? 'tel' : undefined}
         id={controller.field.name}
         maskGenerator={mask}
         value={controller.field.value ?? ''}
@@ -518,12 +586,12 @@ export const CheckboxInput = React.forwardRef<
   );
 });
 
-export type SwitchInputProps = { label?: string } & UI.SwitchProps;
+export type SwitchInputProps = { label?: string } & UI.StackProps;
 export const SwitchInput = React.forwardRef<HTMLInputElement, SwitchInputProps>(
   ({ label, ...restProps }, ref) => {
     return (
-      <UI.HStack spacing={3} alignItems="start" py={2}>
-        <UI.Switch ref={ref} my="1px" {...restProps} />
+      <UI.HStack spacing={3} alignItems="start" py={2} {...restProps}>
+        <UI.Switch ref={ref} my="1px" />
         {label ? (
           <UI.FormLabel cursor="pointer" fontWeight="normal" fontSize="sm">
             {label}

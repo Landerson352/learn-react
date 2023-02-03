@@ -20,7 +20,7 @@ export const FormContainer: React.FC<
         '[aria-invalid="true"]'
       );
       if (firstInvalidElement) {
-        (firstInvalidElement as HTMLElement).focus();
+        // (firstInvalidElement as HTMLElement).focus();
       }
     }
   }, [errors]);

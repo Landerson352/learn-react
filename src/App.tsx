@@ -7,6 +7,7 @@ import DndKitPage from './pages/dnd-kit/DndKitPage';
 import DragAndDropExample from './pages/dnd/DragAndDropExample';
 import ExamplesPage from './pages/ExamplesPage';
 import FirebasePage from './pages/firebase/FirebasePage';
+import FormDocsPage from './pages/forms/FormDocsPage';
 import FormExamplesPage from './pages/forms/FormExamplesPage';
 import SchemaFormExamplesPage from './pages/forms/SchemaFormExamplesPage';
 import ModalExamplesPage from './pages/modals/ModalExamplesPage';
@@ -28,6 +29,7 @@ const App: React.FC = () => {
         <Route path="/dnd" element={<DragAndDropExample />} />
         <Route path="/dnd-kit" element={<DndKitPage />} />
         <Route path="/forms" element={<FormExamplesPage />} />
+        <Route path="/form-docs" element={<FormDocsPage />} />
         {/* Support route modals by appending the "/*" catch-all to the path. */}
         <Route path="/modals/*" element={<ModalExamplesPage />} />
         <Route path="/firebase" element={<FirebasePage />} />
