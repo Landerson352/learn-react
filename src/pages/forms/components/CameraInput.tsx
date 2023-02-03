@@ -81,16 +81,16 @@ const FriendlyCameraError: React.FC<{ error: Error } & UI.StackProps> = ({
 
 export type CameraInputProps = Omit<UI.InputProps, 'value'> & {
   value: string | undefined;
-  onValueChange(str: string | undefined): any;
+  onChange(str: string | undefined): any;
 };
 export const CameraInput = React.forwardRef<HTMLInputElement, CameraInputProps>(
-  ({ value, onValueChange, ...restProps }, ref) => {
+  ({ value, onChange, ...restProps }, ref) => {
     const modal = UI.useDisclosure();
     const [error, setError] = React.useState<Error>();
 
     const handleCameraTakePhoto = (dataUri: string) => {
       modal.onClose();
-      onValueChange(dataUri);
+      onChange(dataUri);
     };
 
     const handleRetryClick = () => {
@@ -99,7 +99,6 @@ export const CameraInput = React.forwardRef<HTMLInputElement, CameraInputProps>(
 
     return (
       <React.Fragment>
-        <UI.Input ref={ref} type="hidden" value={value} {...restProps} />
         <UI.VStack
           alignItems="start"
           sx={{
@@ -118,9 +117,7 @@ export const CameraInput = React.forwardRef<HTMLInputElement, CameraInputProps>(
               {value ? 'Retake photo' : 'Take photo'}
             </UI.Button>
             {value ? (
-              <UI.Button onClick={() => onValueChange(undefined)}>
-                Remove
-              </UI.Button>
+              <UI.Button onClick={() => onChange(undefined)}>Remove</UI.Button>
             ) : null}
           </UI.HStack>
         </UI.VStack>

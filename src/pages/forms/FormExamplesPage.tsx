@@ -2,7 +2,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import React from 'react';
 import { z } from 'zod';
 
-// import { createOptionalSchema } from '../../helpers/schemaHelpers';
 import { findUsStatesFromSearchtring } from '../../helpers/usStates';
 import * as UI from './components/UI';
 
@@ -46,37 +45,26 @@ const FormExamplesPage: React.FC = () => {
     },
   });
 
+  const pet = form.watch('pet');
+
   return (
     <UI.Box bg="white" p={4}>
       <UI.Form form={form}>
         <UI.FormGrid>
           <UI.FormField name="firstName" requiredStyling />
-          <UI.FormField
-            name="phone"
-            input={{ type: 'phone' }}
-            requiredStyling
-          />
-          <UI.FormField
-            name="email"
-            input={{ type: 'email' }}
-            requiredStyling
-          />
+          <UI.FormField name="phone" type="phone" requiredStyling />
+          <UI.FormField name="email" type="email" requiredStyling />
           <UI.FormField
             name="photoUrl"
             label="Passport photo"
-            input={{ type: 'photo' }}
+            type="photo"
             requiredStyling
           />
+          <UI.FormField name="bio" type="textarea" requiredStyling span="lg" />
           <UI.FormField
-            name="bio"
-            input={{ multiline: true }}
-            requiredStyling
-            span="lg"
-          />
-          <UI.FormField
-            name="select"
+            name="color"
+            type="select"
             input={{
-              type: 'select',
               options: [
                 { label: 'Red', value: 'red' },
                 { label: 'Green', value: 'green' },
@@ -87,8 +75,8 @@ const FormExamplesPage: React.FC = () => {
           />
           <UI.FormField
             name="pet"
+            type="radio"
             input={{
-              type: 'radio',
               direction: 'horizontal',
               options: [
                 { label: 'Cat', value: 'cat' },
@@ -99,8 +87,8 @@ const FormExamplesPage: React.FC = () => {
           />
           <UI.FormField
             name="state"
+            type="combobox"
             input={{
-              type: 'combo-box',
               loadOptions: (inputValue, callback) => {
                 callback(findUsStatesFromSearchtring(inputValue));
               },
@@ -108,43 +96,37 @@ const FormExamplesPage: React.FC = () => {
           />
           <UI.FormField
             name="percent"
-            input={{ type: 'number', config: { suffix: '%' } }}
+            type="number"
+            input={{ suffix: '%' }}
             requiredStyling
             span="sm"
           />
-          <UI.FormField
-            name="price"
-            input={{ type: 'money' }}
-            requiredStyling
-            span="sm"
-          />
+          <UI.FormField name="price" type="money" requiredStyling span="sm" />
           <UI.FormField
             name="isActive"
             label="Notification setting"
+            type="switch"
             input={{
-              type: 'switch',
               label: 'Notify me of changes',
             }}
           />
           <UI.FormField
             name="agreedToTerms"
             label="Agreement"
-            input={{
-              type: 'checkbox',
-              label: 'I agree to the terms & conditions',
-            }}
+            type="checkbox"
+            input={{ label: 'I agree to the terms & conditions' }}
           />
           <UI.FormField
             name="dob"
             label="D.O.B"
-            input={{ type: 'date' }}
+            type="date"
             requiredStyling
             span="sm"
           />
           <UI.FormField
             name="eventDates"
             label="Event start & end"
-            input={{ type: 'date-range' }}
+            type="daterange"
             requiredStyling
           />
           <UI.FormErrorMessage>{form.formState.error}</UI.FormErrorMessage>

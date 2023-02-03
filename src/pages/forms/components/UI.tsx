@@ -5,9 +5,10 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-  DatepickerConfigs,
   RangeDatepicker,
+  RangeDatepickerProps,
   SingleDatepicker,
+  SingleDatepickerProps,
 } from 'chakra-dayzed-datepicker';
 import { AsyncProps, AsyncSelect } from 'chakra-react-select';
 import {
@@ -33,7 +34,7 @@ import { useMeasure } from 'react-use';
 
 import { subtypeMetas } from '../../../helpers/subtypeMetas';
 import { formatError } from '../helpers/formatError';
-import { CameraInput } from './CameraInput';
+import { CameraInput, CameraInputProps } from './CameraInput';
 
 export * from '@chakra-ui/react';
 
@@ -133,11 +134,11 @@ export const FormGrid: React.FC<FormGridProps> = ({ ...restProps }) => {
 
 /* Renders a form-control-display wrapper with dynamic form-input */
 /* Must be placed inside a form-context-provider */
-export type FormFieldProps = FullFormControlProps & {
-  input?: FormInputByTypeProps;
-};
+export type FormFieldProps = Omit<FullFormControlProps, 'type'> &
+  FormInputProps;
 export const FormField: React.FC<FormFieldProps> = ({
   name,
+  type,
   input,
   ...restProps
 }) => {
@@ -154,7 +155,8 @@ export const FormField: React.FC<FormFieldProps> = ({
       isInvalid={!!errors}
       errorMessage={formatError(errors)}
     >
-      <FormInput name={name} {...input} />
+      {/* @ts-ignore */}
+      <FormInput name={name} type={type} input={input} />
     </FullFormControl>
   );
 };
@@ -230,44 +232,20 @@ export const FullFormControl: React.FC<FullFormControlProps> = ({
 /* Renders a different input depending on type */
 /* Must be placed inside a form-context-provider */
 export type FormInputByTypeProps =
-  | {
-      type: 'checkbox' | 'switch';
-      label?: string;
-    }
-  | {
-      type: 'combo-box';
-      loadOptions: AsyncProps<any, any, any>['loadOptions'];
-      placeholder?: string;
-    }
-  | {
-      type: 'radio';
-      options: { label: string; value: string }[];
-      direction?: 'vertical' | 'horizontal';
-    }
-  | {
-      type: 'select';
-      options: { label: string; value: string }[];
-      placeholder?: string;
-    }
-  | {
-      type: 'date' | 'date-range';
-      config?: DatepickerConfigs;
-    }
-  | {
-      type: 'money';
-    }
-  | {
-      type: 'number';
-      config?: NumericFormatProps;
-    }
-  | {
-      type: 'photo';
-    }
-  | {
-      type?: 'email' | 'password' | 'phone' | 'text';
-      multiline?: boolean;
-      placeholder?: string;
-    };
+  | { type: 'checkbox'; input?: CheckboxInputProps }
+  | { type: 'switch'; input?: SwitchInputProps }
+  | { type: 'combobox'; input?: ComboboxInputProps }
+  | { type: 'radio'; input: RadioWithOptionsProps }
+  | { type: 'select'; input: SelectWithOptionsProps }
+  | { type: 'date'; input?: DateInputProps }
+  | { type: 'daterange'; input?: DateRangeInputProps }
+  | { type: 'money'; input?: MoneyInputProps }
+  | { type: 'number'; input?: NumberInputProps }
+  | { type: 'photo'; input?: CameraInputProps }
+  | { type: 'textarea'; input?: UI.TextareaProps }
+  | { type: 'phone'; input?: MaskedInputProps }
+  | { type?: 'email' | 'password' | 'text'; input?: TextInputProps };
+
 export type FormInputProps = {
   name: string;
 } & FormInputByTypeProps;
@@ -277,164 +255,88 @@ export const FormInput: React.FC<FormInputProps> = (props) => {
   const form = useFormContext();
   const controller = useController({ name, control: form.control });
 
-  // Money control
   if (type === 'money') {
     return (
       <MoneyInput
-        id={name}
+        {...props.input}
+        id={controller.field.name}
         value={controller.field.value}
         onChange={controller.field.onChange}
       />
     );
   }
 
-  // Switch control
   if (type === 'switch') {
-    return (
-      <UI.HStack spacing={3} alignItems="start" py={2}>
-        <UI.Switch my="1px" {...form.register(name)} />
-        <UI.FormLabel cursor="pointer" fontWeight="normal" fontSize="sm">
-          {props.label}
-        </UI.FormLabel>
-      </UI.HStack>
-    );
+    const { name, type, ...restProps } = props;
+    // TODO: forward ref?
+    return <SwitchInput {...form.register(name)} {...restProps} />;
   }
 
-  // Checkbox control (default)
   if (type === 'checkbox') {
-    return (
-      <UI.Box py={2}>
-        <UI.Checkbox size="lg" my="1px" {...form.register(name)}>
-          <UI.Text fontSize="sm">{props.label}</UI.Text>
-        </UI.Checkbox>
-      </UI.Box>
-    );
+    // TODO: forward ref?
+    return <CheckboxInput {...form.register(name)} {...props.input} />;
   }
 
-  // Datepicker control
   if (type === 'date') {
-    const { config } = props;
     return (
-      <SingleDatepicker
-        id={'TEST'}
-        name={controller.field.name}
+      <DateInput
+        {...props.input}
         date={controller.field.value}
         onDateChange={controller.field.onChange}
-        propsConfigs={{
-          inputProps: {
-            cursor: 'pointer',
-          },
-        }}
-        configs={{
-          dateFormat: 'MM/dd/yyyy',
-          ...config,
-        }}
       />
     );
   }
 
-  // Datepicker range control
-  if (type === 'date-range') {
-    const { config } = props;
+  if (type === 'daterange') {
     return (
-      <RangeDatepicker
-        name={controller.field.name}
+      <DateRangeInput
+        {...props.input}
         selectedDates={controller.field.value || []}
         onDateChange={controller.field.onChange}
-        propsConfigs={{
-          inputProps: {
-            cursor: 'pointer',
-          },
-        }}
-        configs={{
-          dateFormat: 'MM/dd/yyyy',
-          ...config,
-        }}
       />
     );
   }
 
-  if (type === 'combo-box') {
-    const { loadOptions, placeholder } = props;
-
-    // Async select control
+  if (type === 'combobox') {
     return (
-      <AsyncSelect
-        inputId={name}
-        name={controller.field.name}
+      <ComboboxInput
+        {...props.input}
+        inputId={controller.field.name}
         value={controller.field.value}
         onChange={(value) => {
-          // console.log(value);
           controller.field.onChange(value);
         }}
-        placeholder={placeholder}
-        loadOptions={loadOptions}
-        defaultOptions
-        cacheOptions
-        isClearable
-        openMenuOnFocus={false}
-        openMenuOnClick={false}
       />
     );
   }
 
-  // Radio control
   if (type === 'radio') {
-    const { options, direction } = props;
-
-    if (options.length <= 3) {
-      const optionElements = options.map((option) => (
-        <UI.Radio key={option.value} value={option.value}>
-          {option.label}
-        </UI.Radio>
-      ));
-      return (
-        <UI.RadioGroup {...controller.field}>
-          {direction === 'horizontal' ? (
-            <UI.HStack alignItems="center" spacing={4} minH={10}>
-              {optionElements}
-            </UI.HStack>
-          ) : (
-            /* These stack dimensions render a 2-option radio that is the same
-            height as other form inputs. */
-            <UI.VStack alignItems="start" spacing={0} my="-2px">
-              {optionElements}
-            </UI.VStack>
-          )}
-        </UI.RadioGroup>
-      );
-    }
+    return (
+      <RadioWithOptions
+        {...props.input}
+        value={controller.field.value}
+        onChange={controller.field.onChange}
+      />
+    );
   }
 
-  // Select control
   if (type === 'select') {
-    const { options, placeholder } = props;
     return (
-      <UI.Select
-        id={name}
+      <SelectWithOptions
+        {...props.input}
+        id={controller.field.name}
         {...controller.field}
-        placeholder={placeholder || 'Choose one'}
-      >
-        {options.map((option) => (
-          <option key={option.value} value={option.value}>
-            {option.label}
-          </option>
-        ))}
-      </UI.Select>
+      />
     );
   }
 
   if (type === 'number') {
-    const { config } = props;
-
     return (
-      <NumericFormat
-        id={name}
+      <NumberInput
+        {...props.input}
+        id={controller.field.name}
         value={parseFloat(controller.field.value)}
         onValueChange={(values) => controller.field.onChange(values.floatValue)}
-        thousandSeparator=","
-        {...config}
-        customInput={UI.Input}
       />
     );
   }
@@ -442,68 +344,62 @@ export const FormInput: React.FC<FormInputProps> = (props) => {
   if (type === 'photo') {
     return (
       <CameraInput
-        {...controller.field}
-        onValueChange={controller.field.onChange}
+        value={controller.field.value}
+        onChange={controller.field.onChange}
       />
     );
   }
 
-  // Textarea control
+  if (type === 'textarea') {
+    return (
+      <UI.Textarea
+        {...props.input}
+        {...controller.field}
+        id={controller.field.name}
+        onChange={(e) => {
+          // Assist validation in identifying empty strings as undefined.
+          controller.field.onChange(e.target.value || undefined);
+        }}
+      />
+    );
+  }
+
+  if (type === 'phone') {
+    const mask = subtypeMetas[type].mask;
+    return (
+      <MaskedInput
+        data-lpignore="true"
+        {...props.input}
+        {...controller.field}
+        id={controller.field.name}
+        maskGenerator={mask}
+        value={controller.field.value ?? ''}
+        onChange={(value) => {
+          // Assist validation in identifying empty strings as undefined.
+          controller.field.onChange(value || undefined);
+        }}
+      />
+    );
+  }
+
   if (
     type === 'email' ||
     type === 'password' ||
-    type === 'phone' ||
     type === 'text' ||
     type === undefined
   ) {
-    const { multiline, placeholder } = props;
-
-    if (multiline) {
-      return (
-        <UI.Textarea
-          id={name}
-          {...controller.field}
-          value={controller.field.value ?? ''}
-          onChange={(e) => {
-            controller.field.onChange(e.target.value || undefined);
-          }}
-          placeholder={placeholder}
-        />
-      );
-    }
-
-    // Masked input control
-    let mask;
-    if (type === 'phone') {
-      mask = subtypeMetas.phone.mask;
-    }
-
-    if (mask) {
-      return (
-        <MaskedInput
-          id={name}
-          maskGenerator={mask}
-          {...controller.field}
-          value={controller.field.value ?? ''}
-          onChange={(value) => {
-            controller.field.onChange(value || undefined);
-          }}
-          placeholder={placeholder}
-        />
-      );
-    }
-
-    // Text input control
     return (
-      <TextInput
-        id={name}
+      <UI.Input
         type={type}
+        data-lpignore="true"
+        {...props.input}
         {...controller.field}
+        id={controller.field.name}
         value={controller.field.value ?? ''}
         onChange={(e) => {
+          // Assist validation in identifying empty strings as undefined.
           controller.field.onChange(e.target.value || undefined);
         }}
-        placeholder={placeholder}
       />
     );
   }
@@ -511,38 +407,162 @@ export const FormInput: React.FC<FormInputProps> = (props) => {
   return null;
 };
 
-export type TextInputProps = UI.InputProps;
-export const TextInput = React.forwardRef<HTMLInputElement, TextInputProps>(
-  ({ ...restProps }, ref) => {
-    return <UI.Input ref={ref} data-lpignore="true" {...restProps} />;
+export type RadioWithOptionsProps = {
+  options: { value: string; label: string }[];
+  direction?: 'horizontal' | 'vertical' | undefined;
+} & Omit<UI.RadioGroupProps, 'children'>;
+export const RadioWithOptions: React.FC<RadioWithOptionsProps> = (props) => {
+  const { options, direction, ...restProps } = props;
+
+  const optionElements = options.map((option) => (
+    <UI.Radio key={option.value} value={option.value}>
+      {option.label}
+    </UI.Radio>
+  ));
+
+  return (
+    <UI.RadioGroup {...restProps}>
+      {direction === 'horizontal' ? (
+        <UI.HStack alignItems="center" spacing={4} minH={10}>
+          {optionElements}
+        </UI.HStack>
+      ) : (
+        /* These stack dimensions render a 2-option radio that is the same
+            height as other form inputs. */
+        <UI.VStack alignItems="start" spacing={0} my="-2px">
+          {optionElements}
+        </UI.VStack>
+      )}
+    </UI.RadioGroup>
+  );
+};
+
+export type NumberInputProps = NumericFormatProps<UI.InputProps>;
+export const NumberInput: React.FC<NumberInputProps> = (props) => {
+  return (
+    <NumericFormat thousandSeparator="," customInput={UI.Input} {...props} />
+  );
+};
+
+export type SelectWithOptionsProps = {
+  options: { label: string; value: string }[];
+} & UI.SelectProps;
+export const SelectWithOptions = React.forwardRef<
+  HTMLSelectElement,
+  SelectWithOptionsProps
+>(({ options, ...restProps }, ref) => {
+  return (
+    <UI.Select ref={ref} placeholder="Choose one" {...restProps}>
+      {options.map((option) => (
+        <option key={option.value} value={option.value}>
+          {option.label}
+        </option>
+      ))}
+    </UI.Select>
+  );
+});
+
+export type ComboboxInputProps = AsyncProps<any, any, any>;
+export const ComboboxInput: React.FC<ComboboxInputProps> = (props) => {
+  return (
+    <AsyncSelect
+      defaultOptions
+      cacheOptions
+      isClearable
+      openMenuOnFocus={false}
+      openMenuOnClick={false}
+      {...props}
+    />
+  );
+};
+
+export type DateInputProps = SingleDatepickerProps;
+export const DateInput: React.FC<DateInputProps> = (props) => {
+  const defaultProps: Partial<DateInputProps> = {
+    propsConfigs: {
+      inputProps: {
+        cursor: 'pointer',
+      },
+    },
+    configs: {
+      dateFormat: 'MM/dd/yyyy',
+    },
+  };
+  return <SingleDatepicker {..._.merge(defaultProps, props)} />;
+};
+
+export type DateRangeInputProps = RangeDatepickerProps;
+export const DateRangeInput: React.FC<DateRangeInputProps> = (props) => {
+  const defaultProps: Partial<DateRangeInputProps> = {
+    propsConfigs: {
+      inputProps: {
+        cursor: 'pointer',
+      },
+    },
+    configs: {
+      dateFormat: 'MM/dd/yyyy',
+    },
+  };
+  return <RangeDatepicker {..._.merge(defaultProps, props)} />;
+};
+
+export type CheckboxInputProps = { label?: string } & UI.CheckboxProps;
+export const CheckboxInput = React.forwardRef<
+  HTMLInputElement,
+  CheckboxInputProps
+>(({ label, ...restProps }, ref) => {
+  return (
+    <UI.Checkbox ref={ref} py={2} size="lg" my="1px" {...restProps}>
+      {label ? <UI.Text fontSize="sm">{label}</UI.Text> : null}
+    </UI.Checkbox>
+  );
+});
+
+export type SwitchInputProps = { label?: string } & UI.SwitchProps;
+export const SwitchInput = React.forwardRef<HTMLInputElement, SwitchInputProps>(
+  ({ label, ...restProps }, ref) => {
+    return (
+      <UI.HStack spacing={3} alignItems="start" py={2}>
+        <UI.Switch ref={ref} my="1px" {...restProps} />
+        {label ? (
+          <UI.FormLabel cursor="pointer" fontWeight="normal" fontSize="sm">
+            {label}
+          </UI.FormLabel>
+        ) : null}
+      </UI.HStack>
+    );
   }
 );
 
-export const MaskedInput = React.forwardRef<
-  HTMLInputElement,
-  Parameters<typeof RHMMaskedInput>[0] & UI.InputProps
->(({ value = '', onChange, maskGenerator, keepMask, ...restProps }, ref) => {
-  const webMask = useWebMask({
-    value,
-    onChange,
-    maskGenerator,
-    keepMask,
-    ref,
-  });
+export type TextInputProps = UI.InputProps;
+export const TextInput = React.forwardRef<HTMLInputElement, TextInputProps>(
+  (props, ref) => {
+    return <UI.Input ref={ref} {...props} />;
+  }
+);
 
-  return <TextInput {...restProps} {...webMask} />;
-});
+type MaskedInputProps = Parameters<typeof RHMMaskedInput>[0] & UI.InputProps;
+export const MaskedInput = React.forwardRef<HTMLInputElement, MaskedInputProps>(
+  ({ value = '', onChange, maskGenerator, keepMask, ...restProps }, ref) => {
+    const webMask = useWebMask({
+      value,
+      onChange,
+      maskGenerator,
+      keepMask,
+      ref,
+    });
+    return <UI.Input {...restProps} {...webMask} />;
+  }
+);
 
-export type MoneyInputProps = Omit<UI.InputProps, 'value'> & {
+export type MoneyInputProps = {
   options?: CurrencyInputProps['options'];
   value: number | undefined;
   onChange(value: number | undefined): any;
-};
+} & Omit<UI.InputProps, 'value'>;
 export const MoneyInput: React.FC<MoneyInputProps> = (props) => {
-  const { value, options, onChange, ...otherProps } = props;
-  // console.log('value', value);
+  const { value, options, onChange, ...restProps } = props;
   const stringValue = String(value);
-  // console.log('stringValue', stringValue);
 
   const [formattedValue, handleOnChange, handleOnKeyDown, handleOnClick] =
     useCurrencyFormat(stringValue, {
@@ -550,9 +570,7 @@ export const MoneyInput: React.FC<MoneyInputProps> = (props) => {
       i18nCurrency: 'USD',
       ...options,
       onChangeCallBack: (_, maskedValue, value) => {
-        // console.log('value', value);
         const intValue = parseInt(removeNonNumericsExceptDash(value));
-        // console.log('intValue', intValue);
         onChange?.(intValue);
       },
     });
@@ -564,7 +582,7 @@ export const MoneyInput: React.FC<MoneyInputProps> = (props) => {
         onKeyDown={handleOnKeyDown}
         onClick={handleOnClick}
         value={_.isNil(value) ? '' : formattedValue}
-        {...otherProps}
+        {...restProps}
       />
       <UI.InputRightElement>
         <UI.CloseButton
