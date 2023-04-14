@@ -14,7 +14,7 @@ import * as reactUse from 'react-use';
 import useLocalStorageState from 'use-local-storage-state';
 import * as util from 'util';
 
-import logoSrc from '../images/logo.svg';
+import { ReactComponent as ReactLogo } from '../images/logo.svg';
 
 // Wrap components with Framer Motion for use in animated components.
 // (You only have to do this once.)
@@ -29,7 +29,7 @@ const ImageExample: React.FC = () => {
       <UI.Heading size="md" mb={4}>
         Working with images
       </UI.Heading>
-      <img src={logoSrc} alt="Logo" width="100" />
+      <ReactLogo width="100" />
     </UI.Box>
   );
 };
