@@ -14,8 +14,12 @@
     "linc",
     "lpignore",
     "metas",
+    "pupper",
+    "rdndmb",
     "streamich",
-    "uuid"
+    "svgr",
+    "uuid",
+    "vite"
   ],
   "flagWords": []
 }
