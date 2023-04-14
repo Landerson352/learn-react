@@ -283,7 +283,7 @@ const CopyToClipboardExample: React.FC = () => {
         <UI.Input readOnly defaultValue={url} />
       </UI.InputGroup>
       <UI.Button mb={2} onClick={() => copyToClipboard(url)}>
-        Copy to clipbaord
+        Copy to clipboard
       </UI.Button>
       {state.error ? (
         <UI.Text color="red.300">Unable to copy value.</UI.Text>
@@ -502,7 +502,7 @@ const LocalStorageExample: React.FC = () => {
   return (
     <UI.Box mb={8}>
       <UI.Heading size="md" mb={4}>
-        Working with localstorage state
+        Working with local-storage state
       </UI.Heading>
       <UI.Button mb={2} onClick={() => setCount(count + 1)}>
         Click me!
