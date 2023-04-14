@@ -40,7 +40,7 @@ interface BreedData {
 /**
  * Loads, parses and sorts the breed data.
  */
-const useBreeds = (): [string[], boolean, AxiosError | null] => {
+const useBreeds = (): [string[], boolean, AxiosError | null | undefined] => {
   const [{ data, loading, error }] = useAxios<BreedData>(
     'https://dog.ceo/api/breeds/list/all'
   );
