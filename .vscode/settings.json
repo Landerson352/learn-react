@@ -2,5 +2,6 @@
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.formatOnSave": true,
   "npm.enableRunFromFolder": true,
-  "npm.packageManager": "yarn"
+  "npm.packageManager": "yarn",
+  "typescript.tsdk": "node_modules/typescript/lib"
 }

@@ -1,3 +1,4 @@
+/* cspell:disable */
 const firebaseConfig = {
   apiKey: 'AIzaSyDXthEXUgmBO0RQbRG7jOs91_EhfLWA7Lo',
   authDomain: 'react-buddies.firebaseapp.com',

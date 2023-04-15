@@ -1,6 +1,8 @@
 import * as UI from '@chakra-ui/react';
 import _ from 'lodash';
 import React from 'react';
+import { routes } from '../../navigation/routes';
+import { RouteTitle } from '../../navigation/RouteTitle';
 
 // http://reactjs.org/docs/render-props.html
 const CounterComponent: React.FC<{
@@ -44,7 +46,7 @@ const NestedCompositionExample: React.FC = () => {
   );
 };
 
-const Wrapper: React.FC = ({ children }) => {
+const Wrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
     <UI.Box
       borderRadius="8px"
@@ -195,10 +197,9 @@ const CompositionalPatternsPage: React.FC = () => {
   ];
 
   return (
-    <UI.Box p="4">
-      <UI.Heading size="3xl" mb={8}>
-        Compositional patterns
-      </UI.Heading>
+    <UI.Box p={4}>
+      <RouteTitle route={routes.patterns_composition()} />
+
       <UI.Text mb={8}>
         There are many ways to combine React components into an application
         structure. Here we outline some common patterns, and why you might use

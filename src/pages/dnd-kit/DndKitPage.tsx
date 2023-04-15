@@ -10,6 +10,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars } from '@fortawesome/free-solid-svg-icons';
 import { arrayMove } from '@dnd-kit/sortable';
 import { useForm, useFieldArray } from 'react-hook-form';
+import { RouteTitle } from '../../navigation/RouteTitle';
+import { routes } from '../../navigation/routes';
 
 interface Person {
   name: string;
@@ -109,12 +111,16 @@ const SortableWithHookForm: React.FC = () => {
 
 const DndKitPage: React.FC = () => {
   return (
-    <UI.Stack p={8} spacing={8} alignItems="center">
-      <UI.Heading size="md">Using component state</UI.Heading>
-      <SortableWithState />
-      <UI.Heading size="md">Using hook-form</UI.Heading>
-      <SortableWithHookForm />
-    </UI.Stack>
+    <UI.Box p={4}>
+      <RouteTitle route={routes.dndKit()} />
+
+      <UI.Stack p={4} spacing={8} alignItems="center">
+        <UI.Heading size="md">Using component state</UI.Heading>
+        <SortableWithState />
+        <UI.Heading size="md">Using hook-form</UI.Heading>
+        <SortableWithHookForm />
+      </UI.Stack>
+    </UI.Box>
   );
 };
 

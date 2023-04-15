@@ -3,6 +3,8 @@ import * as UI from '@chakra-ui/react';
 
 import { signOut, useAuthState, useSignIn } from '../../firebase/auth';
 import { addMessage, useMessages } from './data';
+import { RouteTitle } from '../../navigation/RouteTitle';
+import { routes } from '../../navigation/routes';
 
 export const SignInButton: React.FC = () => {
   const [signIn, , loading] = useSignIn();
@@ -58,7 +60,9 @@ const FirebasePage: React.FC = () => {
   };
 
   return (
-    <React.Fragment>
+    <UI.Box p={4}>
+      <RouteTitle route={routes.firebase()} />
+
       <UI.Button colorScheme="green" onClick={() => signOut()}>
         Sign Out
       </UI.Button>
@@ -68,7 +72,7 @@ const FirebasePage: React.FC = () => {
       </UI.Button>
       <UI.Divider />
       <MessageList />
-    </React.Fragment>
+    </UI.Box>
   );
 };
 

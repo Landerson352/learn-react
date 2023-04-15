@@ -1,14 +1,14 @@
-import React from 'react';
 import * as UI from '@chakra-ui/react';
+import { yupResolver } from '@hookform/resolvers/yup';
 import { AxiosError } from 'axios';
 import useAxios from 'axios-hooks';
-import * as reactHookForm from 'react-hook-form';
+import * as FramerMotion from 'framer-motion';
 import flatMap from 'lodash/flatMap';
 import startCase from 'lodash/startCase';
-import * as yup from 'yup';
-import { yupResolver } from '@hookform/resolvers/yup';
 import ParticlesBg from 'particles-bg';
-import * as FramerMotion from 'framer-motion';
+import React from 'react';
+import * as reactHookForm from 'react-hook-form';
+import * as yup from 'yup';
 
 const MotionUI = {
   Box: FramerMotion.motion(UI.Box),
@@ -40,7 +40,7 @@ interface BreedData {
 /**
  * Loads, parses and sorts the breed data.
  */
-const useBreeds = (): [string[], boolean, AxiosError | undefined] => {
+const useBreeds = (): [string[], boolean, AxiosError | null | undefined] => {
   const [{ data, loading, error }] = useAxios<BreedData>(
     'https://dog.ceo/api/breeds/list/all'
   );

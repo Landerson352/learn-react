@@ -13,10 +13,11 @@ import * as reactHookForm from 'react-hook-form';
 import * as reactRouter from 'react-router-dom';
 import * as reactUse from 'react-use';
 import useLocalStorageState from 'use-local-storage-state';
-import { useQueryParam, NumberParam, withDefault } from 'use-query-params';
 import * as util from 'util';
 
-import logoSrc from '../images/logo.svg';
+import { ReactComponent as ReactLogo } from '../images/logo.svg';
+import { routes } from '../navigation/routes';
+import { RouteTitle } from '../navigation/RouteTitle';
 
 // Wrap components with Framer Motion for use in animated components.
 // (You only have to do this once.)
@@ -32,7 +33,7 @@ const ImageExample: React.FC = () => {
       <UI.Heading size="md" mb={4}>
         Working with images
       </UI.Heading>
-      <img src={logoSrc} alt="Logo" width="100" />
+      <ReactLogo width="100" />
     </UI.Box>
   );
 };
@@ -314,7 +315,7 @@ const CopyToClipboardExample: React.FC = () => {
         <UI.Input readOnly defaultValue={url} />
       </UI.InputGroup>
       <UI.Button mb={2} onClick={() => copyToClipboard(url)}>
-        Copy to clipbaord
+        Copy to clipboard
       </UI.Button>
       {state.error ? (
         <UI.Text color="red.300">Unable to copy value.</UI.Text>
@@ -499,10 +500,17 @@ const PreviousExample: React.FC = () => {
   );
 };
 
-// https://github.com/pbeshai/use-query-params#readme
+// https://reactrouter.com/en/v6.3.0/api#usesearchparams
 // Note that this implementation is dependent on React Router.
+// Note that this example parses and casts an integer from the query-string.
 const QueryStateExample: React.FC = () => {
-  const [count, setCount] = useQueryParam('count', withDefault(NumberParam, 0));
+  const [searchParams, setSearchParams] = reactRouter.useSearchParams();
+
+  const count = parseInt(searchParams.get('count') || '0', 10);
+
+  const setCount = (newCount: number) => {
+    setSearchParams({ count: `${newCount}` });
+  };
 
   return (
     <UI.Box mb={8}>
@@ -519,12 +527,14 @@ const QueryStateExample: React.FC = () => {
 
 // https://www.npmjs.com/package/use-local-storage-state
 const LocalStorageExample: React.FC = () => {
-  const [count, setCount, { removeItem }] = useLocalStorageState('count', 0);
+  const [count, setCount, { removeItem }] = useLocalStorageState('count', {
+    defaultValue: 0,
+  });
 
   return (
     <UI.Box mb={8}>
       <UI.Heading size="md" mb={4}>
-        Working with localstorage state
+        Working with local-storage state
       </UI.Heading>
       <UI.Button mb={2} onClick={() => setCount(count + 1)}>
         Click me!
@@ -760,10 +770,8 @@ const ExamplesPage: React.FC = () => {
   ];
 
   return (
-    <UI.Box p="4">
-      <UI.Heading size="3xl" mb={8}>
-        Examples
-      </UI.Heading>
+    <UI.Box p={4}>
+      <RouteTitle route={routes.home('')} />
 
       <UI.SimpleGrid minChildWidth="400px" spacing={2}>
         {_.map(exampleComponents, (Component) => (
