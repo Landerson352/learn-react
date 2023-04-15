@@ -38,7 +38,7 @@ export const routes = {
 export type AppRoute = ReturnType<typeof routes[keyof typeof routes]>;
 
 export const mainMenuMenuItems = {
-  Examples: [
+  Demos: [
     routes.home(''),
     routes.tabContext(),
     routes.dnd(),
