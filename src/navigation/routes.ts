@@ -25,6 +25,10 @@ export const routes = {
     path: '/firebase',
     title: 'Firebase',
   }),
+  globe: () => ({
+    path: '/globe',
+    title: 'Globe',
+  }),
   tabContext: () => ({
     path: '/tab-context',
     title: 'Tab Context',
@@ -44,6 +48,7 @@ export const mainMenuMenuItems = {
     routes.dnd(),
     routes.dndKit(),
     routes.firebase(),
+    routes.globe(),
   ],
   Patterns: [routes.patterns_composition(), routes.patterns_js()],
   Challenges: [routes.challenges_linc_1()],

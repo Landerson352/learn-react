@@ -190,7 +190,6 @@ const FramerMotion3DExample: React.FC = () => {
       </UI.Heading>
       <UI.Box w="80px" h="80px">
         <FramerMotion3D.MotionCanvas>
-          {/* @ts-ignore */}
           <FramerMotion3D.LayoutCamera position={[0, 0, 6]} />
           <motion3d.ambientLight intensity={0.3} />
           <motion3d.pointLight position={[10, 10, 10]} />

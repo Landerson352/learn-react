@@ -13,6 +13,7 @@ import FirebasePage from '../pages/firebase/FirebasePage';
 import DragAndDropExample from '../pages/dnd/DragAndDropExample';
 import DndKitPage from '../pages/dnd-kit/DndKitPage';
 import TabContextDemoPage from '../pages/TabContextDemoPage';
+import GlobePage from '../pages/GlobePage';
 
 export const Router: React.FC = () => {
   return (
@@ -31,6 +32,7 @@ export const Router: React.FC = () => {
           <Route {...routes.dnd()} element={<DragAndDropExample />} />
           <Route {...routes.dndKit()} element={<DndKitPage />} />
           <Route {...routes.firebase()} element={<FirebasePage />} />
+          <Route {...routes.globe()} element={<GlobePage />} />
           <Route {...routes.tabContext()} element={<TabContextDemoPage />} />
           <Route {...routes.home()} element={<ExamplesPage />} />
         </Route>
