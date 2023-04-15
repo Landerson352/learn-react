@@ -15,6 +15,8 @@ import useLocalStorageState from 'use-local-storage-state';
 import * as util from 'util';
 
 import { ReactComponent as ReactLogo } from '../images/logo.svg';
+import { routes } from '../navigation/routes';
+import { RouteTitle } from '../navigation/RouteTitle';
 
 // Wrap components with Framer Motion for use in animated components.
 // (You only have to do this once.)
@@ -737,10 +739,8 @@ const ExamplesPage: React.FC = () => {
   ];
 
   return (
-    <UI.Box p="4">
-      <UI.Heading size="3xl" mb={8}>
-        Examples
-      </UI.Heading>
+    <UI.Box p={4}>
+      <RouteTitle route={routes.home('')} />
 
       <UI.SimpleGrid minChildWidth="400px" spacing={2}>
         {_.map(exampleComponents, (Component) => (

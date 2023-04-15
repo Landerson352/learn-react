@@ -1,10 +1,15 @@
 import React from 'react';
 import * as UI from '@chakra-ui/react';
+
 import TabCarouselControl from '../components/TabCarouselControl';
+import { RouteTitle } from '../navigation/RouteTitle';
+import { routes } from '../navigation/routes';
 
 const TabContextDemoPage: React.FC = () => {
   return (
-    <React.Fragment>
+    <UI.Box p={4}>
+      <RouteTitle route={routes.tabContext()} />
+
       <UI.Box p={8} bg="white" mb={4}>
         <UI.Tabs>
           <UI.TabList>
@@ -51,7 +56,7 @@ const TabContextDemoPage: React.FC = () => {
           </TabCarouselControl>
         </UI.Tabs>
       </UI.Box>
-    </React.Fragment>
+    </UI.Box>
   );
 };
 

@@ -1,6 +1,8 @@
 import React from 'react';
 import _ from 'lodash';
 import * as UI from '@chakra-ui/react';
+import { routes } from '../../navigation/routes';
+import { RouteTitle } from '../../navigation/RouteTitle';
 
 // Not covered: getters & setters, generators, prototypes
 
@@ -171,10 +173,14 @@ const shorthandMethodNames = () => {
 
 const JavascriptPatternsPage: React.FC = () => {
   return (
-    <UI.Box p="4">
-      <UI.Heading size="3xl" mb={8}>
-        Javascript Patterns
-      </UI.Heading>
+    <UI.Box p={4}>
+      <RouteTitle route={routes.patterns_js()} />
+
+      <UI.Text mb={8} maxW="550px">
+        This page doesn't have much to look at visually, but if you open the dev
+        console, you'll see the result of various function calls. View the page
+        source to see what they are doing.
+      </UI.Text>
 
       <UI.Stack alignItems="start">
         <UI.Button onClick={initializeMultiple}>initializeMultiple</UI.Button>

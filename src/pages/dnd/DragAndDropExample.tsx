@@ -7,6 +7,8 @@ import { ChessState, ItemTypes, KnightPosition } from './chess';
 import CustomDragLayer from './dnd-helpers/CustomDragLayer';
 import DndMultiProvider from './dnd-helpers/DndMultiProvider';
 import { useDisableNativePreview } from './dnd-helpers/hooks';
+import { RouteTitle } from '../../navigation/RouteTitle';
+import { routes } from '../../navigation/routes';
 
 /**
  * Adapted from https://react-dnd.github.io/react-dnd/docs/tutorial
@@ -86,7 +88,7 @@ const BoardSquare: React.FC<{ pos: KnightPosition }> = ({ pos }) => {
 
 const Board: React.FC = () => {
   return (
-    <UI.SimpleGrid columns={8} width={320} m={10}>
+    <UI.SimpleGrid columns={8} width={320}>
       {_.times(64, (i) => {
         const x = i % 8;
         const y = Math.floor(i / 8);
@@ -98,16 +100,22 @@ const Board: React.FC = () => {
 
 const DragAndDropExample: React.FC = () => {
   return (
-    <DndMultiProvider>
-      <ChessState.Provider value={null}>
-        <Board />
-        <CustomDragLayer>
-          {(dragLayer) => {
-            return dragLayer.itemType === ItemTypes.KNIGHT ? <Knight /> : null;
-          }}
-        </CustomDragLayer>
-      </ChessState.Provider>
-    </DndMultiProvider>
+    <UI.Box p={4}>
+      <RouteTitle route={routes.dnd()} />
+
+      <DndMultiProvider>
+        <ChessState.Provider value={null}>
+          <Board />
+          <CustomDragLayer>
+            {(dragLayer) => {
+              return dragLayer.itemType === ItemTypes.KNIGHT ? (
+                <Knight />
+              ) : null;
+            }}
+          </CustomDragLayer>
+        </ChessState.Provider>
+      </DndMultiProvider>
+    </UI.Box>
   );
 };
 
