@@ -5,21 +5,34 @@ import _ from 'lodash';
 import { routes } from './routes';
 import { Layout } from '../Layout';
 
+import ExamplesPage from '../pages/ExamplesPage';
+import CompositionalPatterns from '../pages/patterns/CompositionalPatternsPage';
+import JavascriptPatterns from '../pages/patterns/JavascriptPatternsPage';
+import LincChallenge1Page from '../pages/challenges/LincChallenge1Page';
+import FirebasePage from '../pages/firebase/FirebasePage';
+import DragAndDropExample from '../pages/dnd/DragAndDropExample';
+import DndKitPage from '../pages/dnd-kit/DndKitPage';
+import TabContextDemoPage from '../pages/TabContextDemoPage';
+
 export const Router: React.FC = () => {
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Layout />}>
-          {_.map(routes, (routeFn, routeId) => {
-            const route = routeFn();
-            return (
-              <Route
-                key={routeId}
-                path={route.path}
-                element={<route.element />}
-              />
-            );
-          })}
+          <Route
+            {...routes.challenges_linc_1()}
+            element={<LincChallenge1Page />}
+          />
+          <Route
+            {...routes.patterns_composition()}
+            element={<CompositionalPatterns />}
+          />
+          <Route {...routes.patterns_js()} element={<JavascriptPatterns />} />
+          <Route {...routes.dnd()} element={<DragAndDropExample />} />
+          <Route {...routes.dndKit()} element={<DndKitPage />} />
+          <Route {...routes.firebase()} element={<FirebasePage />} />
+          <Route {...routes.tabContext()} element={<TabContextDemoPage />} />
+          <Route {...routes.home()} element={<ExamplesPage />} />
         </Route>
       </Routes>
     </BrowserRouter>

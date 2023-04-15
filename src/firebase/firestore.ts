@@ -6,9 +6,9 @@ import {
   WithFieldValue,
   SnapshotOptions,
 } from 'firebase/firestore';
-
-import { app } from '.';
 import _ from 'lodash';
+
+import { app } from './app';
 
 export const firestore = getFirestore(app);
 

@@ -4,7 +4,7 @@ import {
   useSignInWithGoogle,
 } from 'react-firebase-hooks/auth';
 
-import { app } from '.';
+import { app } from './app';
 
 export const auth = getAuth(app);
 export const signOut = () => fb_signOut(auth);
