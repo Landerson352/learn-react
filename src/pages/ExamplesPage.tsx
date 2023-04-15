@@ -1,6 +1,7 @@
 import * as UI from '@chakra-ui/react';
 import * as icons from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { extend } from '@react-three/fiber';
 import useAxios from 'axios-hooks';
 import * as dateFns from 'date-fns';
 import * as FramerMotion from 'framer-motion';
@@ -12,6 +13,7 @@ import React from 'react';
 import * as reactHookForm from 'react-hook-form';
 import * as reactRouter from 'react-router-dom';
 import * as reactUse from 'react-use';
+import * as three from 'three';
 import useLocalStorageState from 'use-local-storage-state';
 import * as util from 'util';
 
@@ -24,7 +26,10 @@ import { RouteTitle } from '../navigation/RouteTitle';
 const MotionUI = {
   Box: FramerMotion.motion(UI.Box),
 };
+// Inject Three.js into React Three Fiber.
+// (This should be optimized for production.)
 const motion3d = FramerMotion3D.motion;
+extend(three);
 
 // https://create-react-app.dev/docs/adding-images-fonts-and-files/
 const ImageExample: React.FC = () => {
@@ -738,7 +743,7 @@ const ContextExample: React.FC = () => {
   );
 };
 
-const ExamplesPage: React.FC = () => {
+export const ExamplesPage: React.FC = () => {
   const exampleComponents = [
     ImageExample,
     NumbersExample,
