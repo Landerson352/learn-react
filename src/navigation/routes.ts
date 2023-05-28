@@ -29,6 +29,10 @@ export const routes = {
     path: '/tab-context',
     title: 'Tab Context',
   }),
+  tileIt: () => ({
+    path: '/tile-it',
+    title: 'Tile-It!',
+  }),
   home: (segment = ':segment?') => ({
     path: `/${segment}`,
     title: 'Examples',
@@ -46,5 +50,5 @@ export const mainMenuMenuItems = {
     routes.firebase(),
   ],
   Patterns: [routes.patterns_composition(), routes.patterns_js()],
-  Challenges: [routes.challenges_linc_1()],
+  Challenges: [routes.challenges_linc_1(), routes.tileIt()],
 };
