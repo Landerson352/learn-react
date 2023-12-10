@@ -14,6 +14,7 @@ import DragAndDropExample from '../pages/dnd/DragAndDropExample';
 import DndKitPage from '../pages/dnd-kit/DndKitPage';
 import TabContextDemoPage from '../pages/TabContextDemoPage';
 import TileItPage from '../pages/tile-it/TileItPage';
+import CodenamePage from '../pages/codename/CodenamePage';
 
 export const Router: React.FC = () => {
   return (
@@ -29,6 +30,7 @@ export const Router: React.FC = () => {
             element={<CompositionalPatterns />}
           />
           <Route {...routes.patterns_js()} element={<JavascriptPatterns />} />
+          <Route {...routes.codename()} element={<CodenamePage />} />
           <Route {...routes.dnd()} element={<DragAndDropExample />} />
           <Route {...routes.dndKit()} element={<DndKitPage />} />
           <Route {...routes.firebase()} element={<FirebasePage />} />

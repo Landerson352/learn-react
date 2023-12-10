@@ -13,6 +13,10 @@ export const routes = {
     path: '/patterns/js',
     title: 'Javascript Patterns',
   }),
+  codename: () => ({
+    path: '/codename',
+    title: 'Codename',
+  }),
   dnd: () => ({
     path: '/dnd',
     title: 'Drag and Drop',
@@ -44,6 +48,7 @@ export type AppRoute = ReturnType<typeof routes[keyof typeof routes]>;
 export const mainMenuMenuItems = {
   Demos: [
     routes.home(''),
+    routes.codename(),
     routes.tabContext(),
     routes.dnd(),
     routes.dndKit(),
